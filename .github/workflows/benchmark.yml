@@ -1,4 +1,5 @@
 name: benchmark
+# Runs the full benchmark for one model. Started by hand from the Actions tab.
 # Manual only. Runs the benchmark against one model and commits the results
 # and the regenerated leaderboard to the branch it was started on.
 on:

@@ -1,0 +1,12 @@
+diff --git a/app/tokens.py b/app/tokens.py
+new file mode 100644
+--- /dev/null
++++ b/app/tokens.py
+@@ -0,0 +1,7 @@
++from datetime import datetime
++
++
++def is_expired(expires_at_utc: datetime) -> bool:
++    """expires_at_utc is a naive datetime stored in UTC."""
++    now = datetime.now()
++    return now >= expires_at_utc

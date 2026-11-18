@@ -1,0 +1,12 @@
+diff --git a/app/users_safe.py b/app/users_safe.py
+new file mode 100644
+--- /dev/null
++++ b/app/users_safe.py
+@@ -0,0 +1,7 @@
++import sqlite3
++
++
++def find_user(conn: sqlite3.Connection, username: str):
++    cur = conn.cursor()
++    cur.execute("SELECT id, email FROM users WHERE name = ?", (username,))
++    return cur.fetchone()

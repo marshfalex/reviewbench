@@ -1,0 +1,14 @@
+# Reusable human verdicts for findings that are neither a planted-bug hit nor a
+# known issue. `reviewbench adjudicate` applies these (by="rule") to new results;
+# every verdict actually used is stored next to the results file it judges.
+# match: case-insensitive substring of the finding's title + explanation.
+#
+# Ported from fda-device-rag eval/ai_review/adjudications.json. Its "valid"
+# verdicts became known_issues in the cases' case.yaml; only "invalid" ones remain.
+py-0022-clean-compare-digest:
+  - match: keyerror
+    verdict: invalid
+    note: failing fast at import on a missing secret is intended (see docs/DEPLOY.md in the case repo)
+  - match: env var at import time
+    verdict: invalid
+    note: same intended fail-fast as the KeyError finding

@@ -1,0 +1,26 @@
+id: py-0008-mutable-default
+title: Mutable default argument
+language: python
+difficulty: easy
+tags:
+- correctness
+- python-gotcha
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/08_mutable_default
+  license: MIT
+bugs:
+- file: app/tags.py
+  lines:
+  - 1
+  - 4
+  class: mutable_default
+  cwe: null
+  severity: high
+  description: tags=[] default is shared across calls and mutated.
+context:
+  related: []
+known_issues:
+- match: mutates input list
+  file: app/tags.py
+  note: same root cause as the planted bug, still true

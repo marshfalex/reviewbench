@@ -1,0 +1,17 @@
+id: py-0021-clean-locked-reserve
+title: 'Clean control: locked reserve'
+language: python
+difficulty: easy
+tags:
+- control
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/92_clean_locked_reserve
+  license: MIT
+bugs: []
+context:
+  related: []
+known_issues:
+- match: negative quantity
+  file: app/inventory_safe.py
+  note: reserve(item, -5) increases stock (found by the model; not planted)

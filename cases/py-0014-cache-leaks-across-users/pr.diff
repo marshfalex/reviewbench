@@ -1,0 +1,14 @@
+diff --git a/app/profile.py b/app/profile.py
+new file mode 100644
+--- /dev/null
++++ b/app/profile.py
+@@ -0,0 +1,9 @@
++from functools import lru_cache
++
++from flask_login import current_user
++
++
++@lru_cache(maxsize=1024)
++def dashboard_data(page: int) -> dict:
++    """Expensive per-user dashboard query, cached for speed."""
++    return {"user": current_user.id, "items": current_user.items(page=page)}

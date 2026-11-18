@@ -1,0 +1,15 @@
+diff --git a/app/config_loader.py b/app/config_loader.py
+new file mode 100644
+--- /dev/null
++++ b/app/config_loader.py
+@@ -0,0 +1,10 @@
++import json
++
++
++def load_config(path: str) -> dict:
++    """Load config; raise if the file is missing or invalid."""
++    try:
++        f = open(path)
++        return json.load(f)
++    except Exception:
++        return {}

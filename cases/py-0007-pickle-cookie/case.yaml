@@ -1,0 +1,23 @@
+id: py-0007-pickle-cookie
+title: pickle.loads on a cookie
+language: python
+difficulty: easy
+tags:
+- security
+- deserialization
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/07_unsafe_deserialization
+  license: MIT
+bugs:
+- file: app/session.py
+  lines:
+  - 7
+  - 7
+  class: unsafe_deserialization
+  cwe: CWE-502
+  severity: critical
+  description: Unpickling attacker-controlled cookie data allows code execution.
+context:
+  related: []
+known_issues: []

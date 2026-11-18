@@ -1,0 +1,23 @@
+id: py-0001-sql-injection
+title: SQL query built with an f-string
+language: python
+difficulty: easy
+tags:
+- security
+- injection
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/01_sql_injection
+  license: MIT
+bugs:
+- file: app/users.py
+  lines:
+  - 6
+  - 6
+  class: sql_injection
+  cwe: CWE-89
+  severity: critical
+  description: username is interpolated into SQL, allowing injection.
+context:
+  related: []
+known_issues: []

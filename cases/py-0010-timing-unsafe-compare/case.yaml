@@ -1,0 +1,31 @@
+id: py-0010-timing-unsafe-compare
+title: HMAC signature compared with ==
+language: python
+difficulty: easy
+tags:
+- security
+- crypto
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/10_timing_unsafe_compare
+  license: MIT
+bugs:
+- file: app/webhooks.py
+  lines:
+  - 9
+  - 9
+  class: timing_unsafe_compare
+  cwe: CWE-208
+  severity: high
+  description: == on the HMAC digest leaks timing; use hmac.compare_digest.
+context:
+  related: []
+known_issues:
+- match: empty webhook secret
+  file: app/webhooks.py
+- match: hard-coded to empty
+  file: app/webhooks.py
+- match: empty key
+  file: app/webhooks.py
+- match: empty secret
+  file: app/webhooks.py

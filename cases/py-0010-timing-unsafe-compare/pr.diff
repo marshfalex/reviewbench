@@ -1,0 +1,14 @@
+diff --git a/app/webhooks.py b/app/webhooks.py
+new file mode 100644
+--- /dev/null
++++ b/app/webhooks.py
+@@ -0,0 +1,9 @@
++import hashlib
++import hmac
++
++WEBHOOK_SECRET = b""  # loaded from env at startup
++
++
++def verify(body: bytes, signature: str) -> bool:
++    expected = hmac.new(WEBHOOK_SECRET, body, hashlib.sha256).hexdigest()
++    return expected == signature

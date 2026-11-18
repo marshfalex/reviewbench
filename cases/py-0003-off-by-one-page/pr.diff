@@ -1,0 +1,11 @@
+diff --git a/app/pagination.py b/app/pagination.py
+new file mode 100644
+--- /dev/null
++++ b/app/pagination.py
+@@ -0,0 +1,6 @@
++def paginate(items: list, page: int, per_page: int) -> list:
++    """Return the 1-indexed `page` of `items`."""
++    if page < 1:
++        raise ValueError("page must be >= 1")
++    start = page * per_page
++    return items[start:start + per_page]

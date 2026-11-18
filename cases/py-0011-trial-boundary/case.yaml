@@ -1,0 +1,23 @@
+id: py-0011-trial-boundary
+title: Trial length off by one day
+language: python
+difficulty: easy
+tags:
+- correctness
+- dates
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/11_wrong_boundary_dates
+  license: MIT
+bugs:
+- file: app/billing.py
+  lines:
+  - 6
+  - 6
+  class: wrong_boundary_dates
+  cwe: CWE-193
+  severity: medium
+  description: <= trial_days gives a 15-day trial; should be <.
+context:
+  related: []
+known_issues: []

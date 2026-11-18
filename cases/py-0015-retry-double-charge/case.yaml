@@ -1,0 +1,25 @@
+id: py-0015-retry-double-charge
+title: Non-idempotent charge retried on timeout
+language: python
+difficulty: hard
+tags:
+- correctness
+- payments
+- idempotency
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/22_retry_double_charge
+  license: MIT
+bugs:
+- file: app/billing_client.py
+  lines:
+  - 8
+  - 14
+  class: retry_double_charge
+  cwe: null
+  severity: high
+  description: A timeout after the server processed the POST causes a second charge; needs an idempotency
+    key.
+context:
+  related: []
+known_issues: []

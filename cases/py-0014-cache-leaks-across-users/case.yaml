@@ -1,0 +1,23 @@
+id: py-0014-cache-leaks-across-users
+title: lru_cache keyed without the current user
+language: python
+difficulty: hard
+tags:
+- security
+- caching
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/21_cache_leaks_across_users
+  license: MIT
+bugs:
+- file: app/profile.py
+  lines:
+  - 6
+  - 9
+  class: cache_leaks_across_users
+  cwe: CWE-524
+  severity: high
+  description: Cache key is only page, so one user's dashboard is served to others.
+context:
+  related: []
+known_issues: []

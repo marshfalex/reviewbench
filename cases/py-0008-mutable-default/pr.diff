@@ -1,0 +1,9 @@
+diff --git a/app/tags.py b/app/tags.py
+new file mode 100644
+--- /dev/null
++++ b/app/tags.py
+@@ -0,0 +1,4 @@
++def add_tag(tag: str, tags: list = []) -> list:
++    """Return a new list of tags including `tag`."""
++    tags.append(tag)
++    return tags

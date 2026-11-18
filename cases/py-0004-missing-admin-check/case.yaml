@@ -1,0 +1,24 @@
+id: py-0004-missing-admin-check
+title: Admin delete route without auth
+language: python
+difficulty: easy
+tags:
+- security
+- authz
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/04_missing_auth
+  license: MIT
+bugs:
+- file: app/admin_routes.py
+  lines:
+  - 18
+  - 21
+  class: missing_auth
+  cwe: CWE-862
+  severity: critical
+  description: DELETE /admin/users has neither @login_required nor an is_admin check.
+context:
+  related:
+  - app/models.py
+known_issues: []

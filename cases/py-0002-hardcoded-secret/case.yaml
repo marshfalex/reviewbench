@@ -1,0 +1,32 @@
+id: py-0002-hardcoded-secret
+title: Payment API key hard-coded in source
+language: python
+difficulty: easy
+tags:
+- security
+- secrets
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/02_leaked_secret
+  license: MIT
+bugs:
+- file: app/payments.py
+  lines:
+  - 3
+  - 3
+  class: leaked_secret
+  cwe: CWE-798
+  severity: critical
+  description: A live payment secret key is committed in source.
+context:
+  related: []
+known_issues:
+- match: http error handling
+  file: app/payments.py
+- match: api response
+  file: app/payments.py
+- match: http request failures
+  file: app/payments.py
+- match: raise_for_status
+  file: app/payments.py
+  note: r.json() on a 4xx/5xx hides the failure

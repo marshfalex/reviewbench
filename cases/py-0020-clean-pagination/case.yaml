@@ -1,0 +1,14 @@
+id: py-0020-clean-pagination
+title: 'Clean control: correct 1-indexed pagination'
+language: python
+difficulty: easy
+tags:
+- control
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/91_clean_pagination
+  license: MIT
+bugs: []
+context:
+  related: []
+known_issues: []

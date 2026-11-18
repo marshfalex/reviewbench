@@ -1,0 +1,25 @@
+id: py-0013-idor-invoice
+title: Invoice lookup without ownership check
+language: python
+difficulty: hard
+tags:
+- security
+- authz
+- idor
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/20_idor_invoice
+  license: MIT
+bugs:
+- file: app/invoices.py
+  lines:
+  - 9
+  - 12
+  class: idor_invoice
+  cwe: CWE-639
+  severity: critical
+  description: Any logged-in user can read any invoice by id; no owner_id check.
+context:
+  related:
+  - app/models.py
+known_issues: []

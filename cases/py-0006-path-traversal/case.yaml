@@ -1,0 +1,23 @@
+id: py-0006-path-traversal
+title: User-supplied filename joined to upload dir
+language: python
+difficulty: easy
+tags:
+- security
+- path-traversal
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/06_path_traversal
+  license: MIT
+bugs:
+- file: app/files.py
+  lines:
+  - 7
+  - 8
+  class: path_traversal
+  cwe: CWE-22
+  severity: critical
+  description: filename like ../../etc/passwd escapes UPLOAD_DIR.
+context:
+  related: []
+known_issues: []

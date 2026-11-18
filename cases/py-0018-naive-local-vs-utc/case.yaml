@@ -1,0 +1,24 @@
+id: py-0018-naive-local-vs-utc
+title: Expiry compares local time with UTC
+language: python
+difficulty: hard
+tags:
+- correctness
+- time
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/25_naive_utc_expiry
+  license: MIT
+bugs:
+- file: app/tokens.py
+  lines:
+  - 6
+  - 7
+  class: naive_utc_expiry
+  cwe: null
+  severity: high
+  description: datetime.now() is local time, expires_at is UTC; tokens expire hours early or late.
+context:
+  related:
+  - app/token_store.py
+known_issues: []

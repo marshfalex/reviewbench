@@ -1,0 +1,8 @@
+__pycache__/
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+# Private held-out cases: never commit (contamination control).
+heldout/
+results/raw/

@@ -1,0 +1,27 @@
+id: py-0017-cursor-pagination-skips
+title: Keyset pagination on a non-unique column
+language: python
+difficulty: hard
+tags:
+- correctness
+- pagination
+- data-dependent
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/24_cursor_pagination_skips
+  license: MIT
+bugs:
+- file: app/feed.py
+  lines:
+  - 4
+  - 7
+  class: cursor_pagination_skips
+  cwe: null
+  severity: medium
+  description: created_at is not unique, so rows sharing the boundary timestamp are skipped; needs (created_at,
+    id) tiebreak.
+context:
+  related:
+  - app/schema.sql
+  - app/importer.py
+known_issues: []

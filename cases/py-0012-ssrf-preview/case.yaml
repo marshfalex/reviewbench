@@ -1,0 +1,26 @@
+id: py-0012-ssrf-preview
+title: Server fetches arbitrary user URLs
+language: python
+difficulty: easy
+tags:
+- security
+- ssrf
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/12_ssrf
+  license: MIT
+bugs:
+- file: app/preview.py
+  lines:
+  - 5
+  - 6
+  class: ssrf
+  cwe: CWE-918
+  severity: high
+  description: Fetching a user-supplied URL reaches internal services and metadata endpoints.
+context:
+  related: []
+known_issues:
+- match: network exceptions
+  file: app/preview.py
+  note: minor, but real

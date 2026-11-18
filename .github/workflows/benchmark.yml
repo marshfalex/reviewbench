@@ -1,0 +1,70 @@
+name: benchmark
+# Manual only. Runs the benchmark against one model and commits the results
+# and the regenerated leaderboard to the branch it was started on.
+on:
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: "groq (free tier) or anthropic (PAID)"
+        type: choice
+        options: [groq, anthropic]
+        default: groq
+      model:
+        description: "model id; empty = the adapter's default"
+        type: string
+        default: ""
+      k:
+        description: "runs per case and context level"
+        type: string
+        default: "3"
+      levels:
+        description: "context levels"
+        type: string
+        default: "L0,L1,L2"
+      max_usd:
+        description: "paid providers only: the most you approve spending. The run aborts if the estimate is higher."
+        type: string
+        default: "0"
+permissions:
+  contents: write
+concurrency:
+  group: benchmark
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    env:  # inputs reach the shell only as env vars, never interpolated into scripts
+      PROVIDER: ${{ inputs.provider }}
+      MODEL: ${{ inputs.model }}
+      K: ${{ inputs.k }}
+      LEVELS: ${{ inputs.levels }}
+      MAX_USD: ${{ inputs.max_usd }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e '.[anthropic]'
+      - name: Estimate cost (no API calls)
+        run: python -m reviewbench estimate --provider "$PROVIDER" ${MODEL:+--model "$MODEL"} -k "$K" --levels "$LEVELS"
+      - name: Run benchmark
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: >
+          python -m reviewbench run --provider "$PROVIDER" ${MODEL:+--model "$MODEL"}
+          -k "$K" --levels "$LEVELS" --max-usd "$MAX_USD"
+      - name: Leaderboard
+        run: |
+          for f in results/*.json; do
+            case "$f" in *.adjudications.json) ;; *) python -m reviewbench adjudicate "$f" --rules-only ;; esac
+          done
+          python -m reviewbench leaderboard
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/
+          git commit -m "results: $PROVIDER $MODEL k=$K" || exit 0
+          git push

@@ -1,0 +1,24 @@
+id: py-0016-float-money
+title: Money computed in float dollars
+language: python
+difficulty: hard
+tags:
+- correctness
+- money
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/23_float_money
+  license: MIT
+bugs:
+- file: app/cart.py
+  lines:
+  - 3
+  - 5
+  class: float_money
+  cwe: CWE-1339
+  severity: medium
+  description: float sum and round() produce cent errors in totals charged to customers.
+context:
+  related:
+  - app/checkout.py
+known_issues: []

@@ -1,0 +1,23 @@
+id: py-0009-swallowed-exception
+title: Config loader swallows errors and leaks the file
+language: python
+difficulty: easy
+tags:
+- correctness
+- error-handling
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/09_resource_leak_exception_swallow
+  license: MIT
+bugs:
+- file: app/config_loader.py
+  lines:
+  - 7
+  - 10
+  class: resource_leak_exception_swallow
+  cwe: CWE-755
+  severity: medium
+  description: except Exception returns {} despite the docstring promising to raise; file never closed.
+context:
+  related: []
+known_issues: []

@@ -1,0 +1,14 @@
+id: py-0019-clean-parameterized-query
+title: 'Clean control: parameterized query'
+language: python
+difficulty: easy
+tags:
+- control
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/90_clean_parameterized_query
+  license: MIT
+bugs: []
+context:
+  related: []
+known_issues: []

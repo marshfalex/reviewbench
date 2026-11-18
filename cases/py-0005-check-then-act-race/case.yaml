@@ -1,0 +1,26 @@
+id: py-0005-check-then-act-race
+title: Unlocked check-then-act on shared stock
+language: python
+difficulty: easy
+tags:
+- correctness
+- concurrency
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/05_race_condition
+  license: MIT
+bugs:
+- file: app/inventory.py
+  lines:
+  - 9
+  - 11
+  class: race_condition
+  cwe: CWE-362
+  severity: high
+  description: reserve() reads and writes shared stock without holding the lock.
+context:
+  related: []
+known_issues:
+- match: negative quantity
+  file: app/inventory.py
+  note: reserve(item, -5) increases stock (found by the model; not planted)

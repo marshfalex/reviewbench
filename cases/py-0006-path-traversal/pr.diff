@@ -1,0 +1,13 @@
+diff --git a/app/files.py b/app/files.py
+new file mode 100644
+--- /dev/null
++++ b/app/files.py
+@@ -0,0 +1,8 @@
++from pathlib import Path
++
++UPLOAD_DIR = Path("/srv/uploads")
++
++
++def read_upload(filename: str) -> bytes:
++    path = UPLOAD_DIR / filename
++    return path.read_bytes()

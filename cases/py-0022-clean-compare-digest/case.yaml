@@ -1,0 +1,15 @@
+id: py-0022-clean-compare-digest
+title: 'Clean control: constant-time HMAC compare'
+language: python
+difficulty: easy
+tags:
+- control
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/93_clean_compare_digest
+  license: MIT
+bugs: []
+context:
+  related:
+  - docs/DEPLOY.md
+known_issues: []

@@ -1,0 +1,18 @@
+diff --git a/app/inventory.py b/app/inventory.py
+new file mode 100644
+--- /dev/null
++++ b/app/inventory.py
+@@ -0,0 +1,13 @@
++import threading
++
++stock = {"widget": 10}
++_lock = threading.Lock()
++
++
++def reserve(item: str, qty: int) -> bool:
++    """Called concurrently from many request threads."""
++    available = stock.get(item, 0)
++    if available >= qty:
++        stock[item] = available - qty
++        return True
++    return False

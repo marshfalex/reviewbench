@@ -1,0 +1,23 @@
+id: py-0003-off-by-one-page
+title: 1-indexed pagination skips the first page
+language: python
+difficulty: easy
+tags:
+- correctness
+- off-by-one
+source:
+  kind: synthetic
+  ref: marshfalex/fda-device-rag@2bf9313409df eval/ai_review/cases/03_off_by_one
+  license: MIT
+bugs:
+- file: app/pagination.py
+  lines:
+  - 5
+  - 5
+  class: off_by_one
+  cwe: CWE-193
+  severity: high
+  description: start = page * per_page skips the first page for a 1-indexed page.
+context:
+  related: []
+known_issues: []

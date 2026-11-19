@@ -13,7 +13,7 @@ models:
     model: openai/gpt-oss-120b
     heldout_ok: true
   - provider: gemini
-    model: auto:flash
+    model: gemini-3-flash-preview  # auto:flash picked a model outside the free tier; this one answers
     heldout_ok: false
   - provider: openrouter
     model: nvidia/nemotron-3-ultra-550b-a55b:free

@@ -12,7 +12,7 @@ from reviewbench.adapters import ADAPTERS, get_adapter
 from reviewbench.adjudicate import apply_rules, interactive, load_rules, load_verdicts, save_verdicts
 from reviewbench.cases import discover, validate_case
 from reviewbench.context import LEVELS
-from reviewbench.heldout import attach_summary, heldout_dir, leaks, raw_path, redacting_log
+from reviewbench.heldout import attach_summary, heldout_allowed, heldout_dir, leaks, raw_path, redacting_log
 from reviewbench.report import leaderboard, run_report
 from reviewbench.runner import estimate_cost, find_resumable, results_path, run
 
@@ -58,14 +58,26 @@ def _estimate(args, reviewer, cases, levels) -> dict:
     return est
 
 
+def _guard_heldout(args, reviewer, cases):
+    """Drops held-out cases unless lineup.yaml marks this provider/model heldout_ok: true
+    (or --allow-heldout is given). They are never sent to an unapproved endpoint."""
+    held = [c for c in cases if c.split != "public"]
+    if not held or args.allow_heldout or heldout_allowed(reviewer.provider, reviewer.model, Path(args.lineup)):
+        return cases
+    print(f"skipping {len(held)} held-out case(s): {reviewer.provider}/{reviewer.model} is not marked "
+          f"heldout_ok: true in {args.lineup}; held-out cases are never sent to it", file=sys.stderr)
+    return [c for c in cases if c.split == "public"]
+
+
 def cmd_estimate(args) -> int:
-    _estimate(args, get_adapter(args.provider, args.model), _cases(args), _levels(args.levels))
+    reviewer = get_adapter(args.provider, args.model)
+    _estimate(args, reviewer, _guard_heldout(args, reviewer, _cases(args)), _levels(args.levels))
     return 0
 
 
 def cmd_run(args) -> int:
     reviewer = get_adapter(args.provider, args.model)
-    cases, levels = _cases(args), _levels(args.levels)
+    cases, levels = _guard_heldout(args, reviewer, _cases(args)), _levels(args.levels)
     est = _estimate(args, reviewer, cases, levels)
     approved = args.yes or (args.max_usd is not None and est["usd"] <= args.max_usd)
     if reviewer.is_paid and not approved:
@@ -165,6 +177,11 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("--model", help="defaults to the adapter's default model")
         p.add_argument("--levels", default="L0,L1,L2")
         p.add_argument("-k", type=int, default=3, help="runs per case and level")
+        p.add_argument("--lineup", default="lineup.yaml",
+                       help="held-out cases go only to provider/models marked heldout_ok: true here")
+        p.add_argument("--allow-heldout", action="store_true",
+                       help="send held-out cases even if the lineup does not approve this model "
+                            "(only for endpoints that neither log nor train, e.g. a local ollama)")
 
     p = sub.add_parser("validate", help="check every case's format and that pr.diff applies")
     case_args(p)

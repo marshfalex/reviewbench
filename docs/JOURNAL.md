@@ -73,3 +73,15 @@ Append-only. One short entry per working session: what was done, what was learne
 - Merged main (with #10) into this branch: the ROADMAP conflict was resolved by keeping #10's new
   items and ticking batch 1.
 - Next: CVE batch 2.
+
+## 2026-11-19 — held-out never goes to logging providers
+- The owner asked for the held-out set to be protected. `run` and `estimate` now send held-out
+  cases only to a provider/model that `lineup.yaml` marks `heldout_ok: true` (today: groq's
+  gpt-oss-120b). Anything else skips them with a log line that names no case. An `auto:<text>`
+  entry covers that provider's matching models. `--allow-heldout` is the explicit override for
+  local endpoints.
+- Decision: default to refuse. A missing lineup, a missing entry, or `heldout_ok: 'true'` (a
+  string) all count as "no", so a typo can't leak the set.
+- Tests: refusal cases record every prompt sent and assert the held-out code never appears in
+  one. With the guard disabled, 6 of them fail.
+- Next: CVE batch 2 (batch 1 merged in #9).

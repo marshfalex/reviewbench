@@ -78,3 +78,19 @@ def test_leaderboard_groups_by_version(tmp_path):
     md = leaderboard(tmp_path)
     assert "## v0.1 — public cases" in md and "## v0.0 — public cases" in md
     assert md.index("v0.1") < md.index("v0.0")
+
+
+def test_groq_long_retry_after_is_recorded_not_slept(monkeypatch):
+    import requests
+
+    from reviewbench.adapters import openai_compat
+
+    class Resp:
+        status_code, headers = 429, {"retry-after": "3600"}
+
+    slept = []
+    monkeypatch.setattr(openai_compat.time, "sleep", lambda s: slept.append(s))
+    monkeypatch.setattr(requests, "post", lambda *a, **k: Resp())
+    monkeypatch.setenv("GROQ_API_KEY", "gsk_test")
+    result = openai_compat.GroqReviewer()._review("prompt")
+    assert slept == [] and result.error.startswith("rate_limited")

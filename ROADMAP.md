@@ -29,6 +29,19 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
          contents.
       Sessions may draft the workflow change as a PR once the owner has added the secret. The
       owner decides whether it merges, because it is a workflow change.
+- [ ] [owner] **Free API keys for parallel model runs** (all free, no card needed). Create each key
+      and add it as a repo secret (Settings → Secrets and variables → Actions):
+      `GEMINI_API_KEY` (aistudio.google.com → Get API key), `OPENROUTER_API_KEY` (openrouter.ai →
+      Keys; use models ending in `:free`), `CEREBRAS_API_KEY` (cloud.cerebras.ai),
+      `MISTRAL_API_KEY` (console.mistral.ai → Experiment plan). Each provider has its own rate limit,
+      so models run in parallel.
+- [x] **Run the free-model lineup in parallel**, automated: the `benchmark` workflow runs every 6 h
+      and works through `lineup.yaml`, running each model whose key secret is set until its result is
+      complete. Add or change models by editing `lineup.yaml`.
+- [ ] **Findings report v0.1, first cut**, as soon as ONE full run completes (don't wait for the CVE
+      cases): `docs/findings/v0.1.md`. Headline numbers with n and CIs, recall by difficulty and
+      context level, any-of-k vs all-of-k, the L0→L2 effect on the cursor case, and every miss with a
+      one-line explanation. Update it as more models finish.
 - [ ] **Import public CVE cases, batch 1** (reverse the fix commit; pin it; verify license):
       CVE-2018-18074 requests, CVE-2023-43804 urllib3, CVE-2024-22195 Jinja2,
       CVE-2024-23334 aiohttp, CVE-2022-24439 GitPython.
@@ -36,11 +49,7 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
       CVE-2022-29217 PyJWT, CVE-2023-32681 requests.
 - [ ] **Import public CVE cases, batch 3:** CVE-2024-35195 requests, CVE-2023-45803 urllib3,
       CVE-2024-34064 Jinja2, CVE-2019-10906 Jinja2.
-- [ ] [owner] Run the `benchmark` workflow on Groq (k=3, L0/L1/L2) with the full public set, and
-      adjudicate pending findings.
-- [ ] **Findings report v0.1** (needs results committed): `docs/findings/v0.1.md` — headline
-      numbers, recall by difficulty and context level, any-of-k vs all-of-k, the L0→L2 effect on
-      the cursor case, every miss with a one-line explanation. Honest about n.
+- [ ] [owner] Adjudicate pending findings after each completed run (`python -m reviewbench adjudicate`).
 - [ ] **Leaderboard charts:** generate SVG charts (recall by category/level with Wilson error bars)
       from results; embed in README and the findings report.
 - [ ] **Launch post draft:** `docs/posts/v0.1.md` — a short thread-style write-up (headline

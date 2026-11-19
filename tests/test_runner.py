@@ -177,3 +177,80 @@ def test_quota_stops_run_as_partial(tmp_path):
     cases = discover((CASES, "public"))[:3]
     doc = run(cases, Quota(), ["L0"], 2, tmp_path / "r.json", log=lambda m: None)
     assert doc["status"] == "partial" and Quota.calls == 1
+
+
+def test_free_providers_registered_and_require_a_model():
+    import pytest
+
+    for name in ("openrouter", "gemini", "cerebras", "mistral"):
+        with pytest.raises(ValueError, match="pass --model"):
+            get_adapter(name)
+        r = get_adapter(name, "some-model")
+        assert r.model == "some-model" and not r.is_paid and r.url.startswith("https://")
+
+
+def test_json_mode_rejected_falls_back_to_plain(monkeypatch):
+    import requests
+
+
+    body = {"choices": [{"message": {"content": '{"summary": "s", "findings": []}'}}], "usage": {}}
+    sent = []
+
+    class Bad:
+        status_code, headers, text = 400, {}, "response_format is not supported"
+
+    class Ok:
+        status_code, headers, text = 200, {}, ""
+
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return body
+
+    responses = [Bad(), Ok()]
+
+    def post(url, headers, json, timeout):
+        sent.append(dict(json))
+        return responses.pop(0)
+
+    monkeypatch.setattr(requests, "post", post)
+    monkeypatch.setenv("MISTRAL_API_KEY", "k")
+    result = get_adapter("mistral", "m")._review("prompt")
+    assert result.error is None
+    assert "response_format" in sent[0] and "response_format" not in sent[1]
+
+
+def test_pick_auto_prefers_newest_stable():
+    from reviewbench.lineup import pick_auto
+
+    ids = ["models/gemini-2.5-flash", "models/gemini-3.0-flash", "models/gemini-3.0-flash-preview",
+           "models/gemini-3.0-flash-lite", "models/gemini-3.0-pro"]
+    assert pick_auto(ids, "flash") == "gemini-3.0-flash"
+    assert pick_auto(ids, "nothing") is None
+
+
+def test_lineup_plan_skips_missing_keys_and_complete(tmp_path, monkeypatch):
+    import json as _json
+
+    from reviewbench import BENCH_VERSION
+    from reviewbench.lineup import plan
+
+    (tmp_path / "lineup.yaml").write_text(
+        "k: 3\n"
+        "levels: L0,L1,L2\n"
+        "models:\n"
+        "  - {provider: groq, model: openai/gpt-oss-120b}\n"
+        "  - {provider: gemini, model: 'auto:flash'}\n"
+        "  - {provider: mistral, model: m}\n"
+        "  - {provider: anthropic, model: claude}\n")
+    res = tmp_path / "results"
+    res.mkdir()
+    (res / "a.json").write_text(_json.dumps({"status": "complete", "bench_version": BENCH_VERSION,
+        "provider": "mistral", "model": "m", "k": 3, "levels": ["L0", "L1", "L2"]}))
+    for key in ("GROQ_API_KEY", "GEMINI_API_KEY", "MISTRAL_API_KEY", "OPENROUTER_API_KEY", "CEREBRAS_API_KEY"):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("GEMINI_API_KEY", "g")
+    monkeypatch.setenv("MISTRAL_API_KEY", "m")
+    entries = plan(tmp_path / "lineup.yaml", res, lister=lambda p: ["models/gemini-3.0-flash"], log=lambda m: None)
+    assert entries == [{"provider": "gemini", "model": "gemini-3.0-flash", "k": "3", "levels": "L0,L1,L2"}]

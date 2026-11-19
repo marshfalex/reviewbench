@@ -29,11 +29,12 @@ only reviews and merges. Read this file, `ROADMAP.md`, the last entries of
 - Write new **synthetic** cases (follow `docs/SPEC.md`; validate them; keep `repo/` minimal).
 - Import public CVE cases **already approved** in `ROADMAP.md`, after pinning the exact fix
   commit and verifying a permissive license; record provenance in `case.yaml`.
-- Trigger the `benchmark` workflow with **provider `groq` only** (free), at most once per session.
-  Free-tier runs are slow (~7 min per review), so a full run takes several workflow runs: each one
-  stops cleanly after ~4.5 h with `"status": "partial"` and the next resumes it (`--resume`). If
-  `results/` on main has a partial file and no benchmark run is in progress, start one with the
-  same provider/model/k/levels to continue it.
+- Trigger the `benchmark` workflow with **free providers only** (groq, gemini, openrouter `:free`
+  models, cerebras, mistral), at most one run per provider+model per session; runs for different
+  models may go in parallel.
+  You usually don't need to: the workflow runs itself every 6 h, works through `lineup.yaml`
+  (each model whose key secret is set) and resumes partial results until each is complete.
+  To add a model to the comparison, add it to `lineup.yaml` in a PR.
 - Add items to the bottom of `ROADMAP.md` under "Ideas (unapproved)" when you notice something
   worth doing; the owner promotes them.
 

@@ -1,4 +1,4 @@
-"""reviewbench CLI: validate | estimate | run | adjudicate | report | leaderboard."""
+"""reviewbench CLI: validate | estimate | run | adjudicate | report | leaderboard | lineup."""
 from __future__ import annotations
 
 import argparse
@@ -141,6 +141,14 @@ def cmd_leaderboard(args) -> int:
     return 0
 
 
+def cmd_lineup(args) -> int:
+    from reviewbench.lineup import plan
+
+    entries = plan(Path(args.lineup), Path(args.results_dir), log=lambda m: print(m, file=sys.stderr))
+    print(json.dumps(entries))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="reviewbench", description=f"ReviewBench v{BENCH_VERSION}")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -184,6 +192,10 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("report", help="print the markdown report for one results file")
     p.add_argument("results")
     p.set_defaults(fn=cmd_report)
+    p = sub.add_parser("lineup", help="print (JSON) the lineup entries to run now: key set, not complete")
+    p.add_argument("--lineup", default="lineup.yaml")
+    p.add_argument("--results-dir", default="results")
+    p.set_defaults(fn=cmd_lineup)
     p = sub.add_parser("leaderboard", help="regenerate results/LEADERBOARD.md")
     p.add_argument("--results-dir", default="results")
     p.set_defaults(fn=cmd_leaderboard)

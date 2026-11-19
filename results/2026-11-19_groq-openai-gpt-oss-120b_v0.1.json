@@ -1,0 +1,1696 @@
+{
+ "bench_version": "0.1",
+ "created": "2026-11-19T07:36:57+00:00",
+ "provider": "groq",
+ "model": "openai/gpt-oss-120b",
+ "k": 3,
+ "levels": [
+  "L0",
+  "L1",
+  "L2"
+ ],
+ "status": "partial",
+ "cases": {
+  "py-0001-sql-injection": {
+   "title": "SQL query built with an f-string",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "injection"
+   ],
+   "bugs": [
+    {
+     "file": "app/users.py",
+     "lines": [
+      6,
+      6
+     ],
+     "class": "sql_injection",
+     "cwe": "CWE-89",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0002-hardcoded-secret": {
+   "title": "Payment API key hard-coded in source",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "secrets"
+   ],
+   "bugs": [
+    {
+     "file": "app/payments.py",
+     "lines": [
+      3,
+      3
+     ],
+     "class": "leaked_secret",
+     "cwe": "CWE-798",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "http error handling",
+     "file": "app/payments.py",
+     "note": ""
+    },
+    {
+     "match": "api response",
+     "file": "app/payments.py",
+     "note": ""
+    },
+    {
+     "match": "http request failures",
+     "file": "app/payments.py",
+     "note": ""
+    },
+    {
+     "match": "raise_for_status",
+     "file": "app/payments.py",
+     "note": "r.json() on a 4xx/5xx hides the failure"
+    }
+   ]
+  },
+  "py-0003-off-by-one-page": {
+   "title": "1-indexed pagination skips the first page",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "off-by-one"
+   ],
+   "bugs": [
+    {
+     "file": "app/pagination.py",
+     "lines": [
+      5,
+      5
+     ],
+     "class": "off_by_one",
+     "cwe": "CWE-193",
+     "severity": "high"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0004-missing-admin-check": {
+   "title": "Admin delete route without auth",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "authz"
+   ],
+   "bugs": [
+    {
+     "file": "app/admin_routes.py",
+     "lines": [
+      18,
+      21
+     ],
+     "class": "missing_auth",
+     "cwe": "CWE-862",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0005-check-then-act-race": {
+   "title": "Unlocked check-then-act on shared stock",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "concurrency"
+   ],
+   "bugs": [
+    {
+     "file": "app/inventory.py",
+     "lines": [
+      9,
+      11
+     ],
+     "class": "race_condition",
+     "cwe": "CWE-362",
+     "severity": "high"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "negative quantity",
+     "file": "app/inventory.py",
+     "note": "reserve(item, -5) increases stock (found by the model; not planted)"
+    }
+   ]
+  },
+  "py-0006-path-traversal": {
+   "title": "User-supplied filename joined to upload dir",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "path-traversal"
+   ],
+   "bugs": [
+    {
+     "file": "app/files.py",
+     "lines": [
+      7,
+      8
+     ],
+     "class": "path_traversal",
+     "cwe": "CWE-22",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0007-pickle-cookie": {
+   "title": "pickle.loads on a cookie",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "deserialization"
+   ],
+   "bugs": [
+    {
+     "file": "app/session.py",
+     "lines": [
+      7,
+      7
+     ],
+     "class": "unsafe_deserialization",
+     "cwe": "CWE-502",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0008-mutable-default": {
+   "title": "Mutable default argument",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "python-gotcha"
+   ],
+   "bugs": [
+    {
+     "file": "app/tags.py",
+     "lines": [
+      1,
+      4
+     ],
+     "class": "mutable_default",
+     "cwe": null,
+     "severity": "high"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "mutates input list",
+     "file": "app/tags.py",
+     "note": "same root cause as the planted bug, still true"
+    }
+   ]
+  },
+  "py-0009-swallowed-exception": {
+   "title": "Config loader swallows errors and leaks the file",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "error-handling"
+   ],
+   "bugs": [
+    {
+     "file": "app/config_loader.py",
+     "lines": [
+      7,
+      10
+     ],
+     "class": "resource_leak_exception_swallow",
+     "cwe": "CWE-755",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0010-timing-unsafe-compare": {
+   "title": "HMAC signature compared with ==",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "crypto"
+   ],
+   "bugs": [
+    {
+     "file": "app/webhooks.py",
+     "lines": [
+      9,
+      9
+     ],
+     "class": "timing_unsafe_compare",
+     "cwe": "CWE-208",
+     "severity": "high"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "empty webhook secret",
+     "file": "app/webhooks.py",
+     "note": ""
+    },
+    {
+     "match": "hard-coded to empty",
+     "file": "app/webhooks.py",
+     "note": ""
+    },
+    {
+     "match": "empty key",
+     "file": "app/webhooks.py",
+     "note": ""
+    },
+    {
+     "match": "empty secret",
+     "file": "app/webhooks.py",
+     "note": ""
+    }
+   ]
+  },
+  "py-0011-trial-boundary": {
+   "title": "Trial length off by one day",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "dates"
+   ],
+   "bugs": [
+    {
+     "file": "app/billing.py",
+     "lines": [
+      6,
+      6
+     ],
+     "class": "wrong_boundary_dates",
+     "cwe": "CWE-193",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0012-ssrf-preview": {
+   "title": "Server fetches arbitrary user URLs",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "ssrf"
+   ],
+   "bugs": [
+    {
+     "file": "app/preview.py",
+     "lines": [
+      5,
+      6
+     ],
+     "class": "ssrf",
+     "cwe": "CWE-918",
+     "severity": "high"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "network exceptions",
+     "file": "app/preview.py",
+     "note": "minor, but real"
+    }
+   ]
+  },
+  "py-0013-idor-invoice": {
+   "title": "Invoice lookup without ownership check",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "security",
+    "authz",
+    "idor"
+   ],
+   "bugs": [
+    {
+     "file": "app/invoices.py",
+     "lines": [
+      9,
+      12
+     ],
+     "class": "idor_invoice",
+     "cwe": "CWE-639",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0014-cache-leaks-across-users": {
+   "title": "lru_cache keyed without the current user",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "security",
+    "caching"
+   ],
+   "bugs": [
+    {
+     "file": "app/profile.py",
+     "lines": [
+      6,
+      9
+     ],
+     "class": "cache_leaks_across_users",
+     "cwe": "CWE-524",
+     "severity": "high"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0015-retry-double-charge": {
+   "title": "Non-idempotent charge retried on timeout",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "payments",
+    "idempotency"
+   ],
+   "bugs": [
+    {
+     "file": "app/billing_client.py",
+     "lines": [
+      8,
+      14
+     ],
+     "class": "retry_double_charge",
+     "cwe": null,
+     "severity": "high"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0016-float-money": {
+   "title": "Money computed in float dollars",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "money"
+   ],
+   "bugs": [
+    {
+     "file": "app/cart.py",
+     "lines": [
+      3,
+      5
+     ],
+     "class": "float_money",
+     "cwe": "CWE-1339",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0017-cursor-pagination-skips": {
+   "title": "Keyset pagination on a non-unique column",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "pagination",
+    "data-dependent"
+   ],
+   "bugs": [
+    {
+     "file": "app/feed.py",
+     "lines": [
+      4,
+      7
+     ],
+     "class": "cursor_pagination_skips",
+     "cwe": null,
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0018-naive-local-vs-utc": {
+   "title": "Expiry compares local time with UTC",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "time"
+   ],
+   "bugs": [
+    {
+     "file": "app/tokens.py",
+     "lines": [
+      6,
+      7
+     ],
+     "class": "naive_utc_expiry",
+     "cwe": null,
+     "severity": "high"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0019-clean-parameterized-query": {
+   "title": "Clean control: parameterized query",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "control"
+   ],
+   "bugs": [],
+   "known_issues": []
+  },
+  "py-0020-clean-pagination": {
+   "title": "Clean control: correct 1-indexed pagination",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "control"
+   ],
+   "bugs": [],
+   "known_issues": []
+  },
+  "py-0021-clean-locked-reserve": {
+   "title": "Clean control: locked reserve",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "control"
+   ],
+   "bugs": [],
+   "known_issues": [
+    {
+     "match": "negative quantity",
+     "file": "app/inventory_safe.py",
+     "note": "reserve(item, -5) increases stock (found by the model; not planted)"
+    }
+   ]
+  },
+  "py-0022-clean-compare-digest": {
+   "title": "Clean control: constant-time HMAC compare",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "control"
+   ],
+   "bugs": [],
+   "known_issues": []
+  }
+ },
+ "records": [
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The new users module introduces a SQL injection vulnerability by interpolating user input directly into the query string.",
+   "usage": {
+    "input_tokens": 599,
+    "output_tokens": 325,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L0/r0/f0",
+     "path": "app/users.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "SQL injection via unsanitized username",
+     "explanation": "The function builds the SQL statement with an f\u2011string, embedding the `username` argument directly. An attacker can supply a crafted username to execute arbitrary SQL. Use a parameterized query instead, e.g. `cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))`."
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "SQL injection vulnerability in user lookup",
+   "usage": {
+    "input_tokens": 599,
+    "output_tokens": 268,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L0/r1/f0",
+     "path": "app/users.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "SQL injection via unsanitized username",
+     "explanation": "The function builds the SQL query using an f-string with the raw `username` value, allowing an attacker to inject arbitrary SQL. Use a parameterized query to let the DB driver safely escape the input."
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new users module introduces a SQL injection risk by interpolating user input directly into the query.",
+   "usage": {
+    "input_tokens": 599,
+    "output_tokens": 328,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L0/r2/f0",
+     "path": "app/users.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "SQL injection via f-string interpolation",
+     "explanation": "The function builds the SQL statement with an f-string, inserting the raw `username` value. An attacker can craft a username containing malicious SQL, leading to injection. Use a parameterized query instead, e.g., `cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))`."
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "SQL injection vulnerability in user lookup function",
+   "usage": {
+    "input_tokens": 660,
+    "output_tokens": 414,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L1/r0/f0",
+     "path": "app/users.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsanitized user input in SQL query",
+     "explanation": "The function builds the SQL statement using an f-string with the raw `username` argument, allowing an attacker to inject arbitrary SQL. Use a parameterized query instead, e.g., `cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))`."
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "SQL injection vulnerability in user lookup function.",
+   "usage": {
+    "input_tokens": 660,
+    "output_tokens": 459,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L1/r1/f0",
+     "path": "app/users.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "SQL injection via unsanitized username",
+     "explanation": "The function builds an SQL query using an f-string with the raw `username` argument, allowing an attacker to inject arbitrary SQL. Use a parameterized query instead, e.g., `cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))`."
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The new users module introduces a SQL injection vulnerability by interpolating user input directly into the query string.",
+   "usage": {
+    "input_tokens": 660,
+    "output_tokens": 401,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L1/r2/f0",
+     "path": "app/users.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "SQL injection risk in find_user",
+     "explanation": "The function builds the SQL statement with an f\u2011string that inserts the unescaped `username` value, allowing an attacker to inject arbitrary SQL. Replace the interpolated query with a parameterized statement, e.g. `cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))`."
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "SQL injection vulnerability in user lookup function",
+   "usage": {
+    "input_tokens": 660,
+    "output_tokens": 259,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L2/r0/f0",
+     "path": "app/users.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsanitized user input in SQL query",
+     "explanation": "The function builds the SQL statement using f-string interpolation with the `username` argument, allowing an attacker to inject arbitrary SQL. Use a parameterized query instead, e.g., `cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))`."
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The new users module introduces a SQL injection vulnerability by interpolating user input directly into the query string.",
+   "usage": {
+    "input_tokens": 660,
+    "output_tokens": 270,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L2/r1/f0",
+     "path": "app/users.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "SQL injection via unsanitized username",
+     "explanation": "The function builds the SQL statement with an f-string that inserts the raw `username` value, allowing an attacker to inject arbitrary SQL. Use a parameterized query instead, e.g., `cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))`."
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The new users module introduces a SQL injection vulnerability by interpolating user input directly into the query string.",
+   "usage": {
+    "input_tokens": 660,
+    "output_tokens": 255,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L2/r2/f0",
+     "path": "app/users.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "SQL injection via string interpolation",
+     "explanation": "The function builds the SQL statement with f-string interpolation of the `username` argument, allowing an attacker to inject arbitrary SQL. Replace the interpolated query with a parameterized query, e.g., `cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))`."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The new payments module introduces a hard\u2011coded Stripe secret key and lacks error handling for the external request.",
+   "usage": {
+    "input_tokens": 680,
+    "output_tokens": 514,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L0/r0/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "critical",
+     "title": "Hardcoded Stripe secret key",
+     "explanation": "The Stripe secret is embedded directly in source code, exposing credentials in version control. Move the key to a secure location such as an environment variable (e.g., os.getenv('STRIPE_KEY')) or a secret manager and load it at runtime."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L0/r0/f1",
+     "path": "app/payments.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No error handling for Stripe request",
+     "explanation": "requests.post can raise network exceptions or return non\u2011200 responses; the function blindly returns r.json(), which may raise or return error payloads. Wrap the call in try/except, check r.status_code, and raise or return a clear error object."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new payments module introduces security and robustness concerns.",
+   "usage": {
+    "input_tokens": 680,
+    "output_tokens": 471,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L0/r1/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "high",
+     "title": "Hardcoded Stripe secret key",
+     "explanation": "The Stripe secret key is embedded directly in source code, exposing credentials if the repository is leaked or shared. Move the key to an environment variable or secure secret manager and load it at runtime (e.g., `STRIPE_KEY = os.getenv('STRIPE_KEY')`)."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L0/r1/f1",
+     "path": "app/payments.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No error handling for Stripe API request",
+     "explanation": "`requests.post` may raise exceptions (network errors, timeouts) or return non\u20112xx responses. The function currently returns `r.json()` unconditionally, which can raise further errors or hide failed charges. Add try/except for `requests.RequestException` and check `r.status_code` before returning, raising a clear exception on failure."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new payments module introduces hard\u2011coded secret credentials and lacks error handling for external API calls.",
+   "usage": {
+    "input_tokens": 680,
+    "output_tokens": 443,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L0/r2/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "critical",
+     "title": "Hard\u2011coded Stripe secret key",
+     "explanation": "The Stripe secret key is stored directly in source code, which can be exposed via version control, logs, or binary distribution. Move the key to a secure configuration source (e.g., environment variable or secret manager) and load it at runtime."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L0/r2/f1",
+     "path": "app/payments.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No HTTP error handling",
+     "explanation": "The function returns r.json() unconditionally, even when the Stripe API responds with an error status (e.g., 4xx/5xx). This can cause downstream code to misinterpret error payloads as successful charges. Check r.status_code and raise or return a structured error for non\u2011200 responses."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The new payments module introduces a hard\u2011coded Stripe secret key and lacks error handling for the external API call.",
+   "usage": {
+    "input_tokens": 814,
+    "output_tokens": 455,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L1/r0/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "high",
+     "title": "Hard\u2011coded Stripe secret key",
+     "explanation": "Embedding the Stripe secret key directly in source code risks credential leakage (e.g., via repository exposure). Move the key to a secure configuration source such as an environment variable or secret manager and read it at runtime (e.g., `STRIPE_KEY = os.getenv('STRIPE_KEY')`)."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L1/r0/f1",
+     "path": "app/payments.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No error handling for Stripe request",
+     "explanation": "If the HTTP request fails (network error, non\u20112xx response, or invalid JSON), `r.json()` will raise an exception and crash the caller. Wrap the request in a try/except block, check `r.status_code`, and handle error cases gracefully, returning a consistent error structure."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The new payments module introduces a hard\u2011coded Stripe secret key and lacks error handling for the external API call.",
+   "usage": {
+    "input_tokens": 814,
+    "output_tokens": 507,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L1/r1/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "high",
+     "title": "Hard\u2011coded Stripe secret key",
+     "explanation": "Embedding the Stripe secret in source code risks credential leakage if the repository is exposed. Load the key from a secure source such as an environment variable (e.g., os.getenv('STRIPE_KEY')) and ensure it is not committed."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L1/r1/f1",
+     "path": "app/payments.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No error handling for Stripe API request",
+     "explanation": "If the HTTP request fails or returns a non\u2011JSON response, r.json() will raise an exception, potentially crashing the service. Wrap the request in try/except, check r.status_code, and handle error cases gracefully."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The new payments module introduces a hard\u2011coded Stripe secret key and lacks error handling for the external API call.",
+   "usage": {
+    "input_tokens": 814,
+    "output_tokens": 455,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L1/r2/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "high",
+     "title": "Hard\u2011coded Stripe secret key",
+     "explanation": "Embedding the Stripe secret key directly in source code risks credential leakage (e.g., via repository exposure). Move the key to a secure configuration source such as an environment variable or secret manager and read it at runtime (e.g., `STRIPE_KEY = os.getenv('STRIPE_KEY')`)."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L1/r2/f1",
+     "path": "app/payments.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No error handling for Stripe request",
+     "explanation": "If the HTTP request fails (network error, non\u20112xx response, or invalid JSON), `r.json()` will raise an exception and crash the caller. Wrap the request in a try/except block, check `r.status_code`, and handle error cases gracefully, returning a consistent error structure."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The new payments module introduces a hard\u2011coded Stripe secret key and lacks error handling for the external API call.",
+   "usage": {
+    "input_tokens": 814,
+    "output_tokens": 466,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L2/r0/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "high",
+     "title": "Hard\u2011coded Stripe secret key",
+     "explanation": "Embedding the Stripe secret key directly in source code exposes credentials in the repository and can lead to credential leakage. Move the key to an environment variable or a secure secrets manager and read it at runtime, e.g., `STRIPE_KEY = os.getenv('STRIPE_KEY')`."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L2/r0/f1",
+     "path": "app/payments.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No error handling for Stripe API response",
+     "explanation": "The function returns `r.json()` without checking the HTTP status code, so non\u20112xx responses (e.g., network errors, invalid token) will raise exceptions or return unexpected data. Add `r.raise_for_status()` or inspect `r.status_code` and handle error cases appropriately."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The new payments module introduces a hard\u2011coded Stripe secret key and lacks error handling for the external API call.",
+   "usage": {
+    "input_tokens": 814,
+    "output_tokens": 455,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L2/r1/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "high",
+     "title": "Hard\u2011coded Stripe secret key",
+     "explanation": "Embedding the Stripe secret key directly in source code risks credential leakage (e.g., via repository exposure). Move the key to a secure configuration source such as an environment variable or secret manager and read it at runtime (e.g., `STRIPE_KEY = os.getenv('STRIPE_KEY')`)."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L2/r1/f1",
+     "path": "app/payments.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No error handling for Stripe request",
+     "explanation": "If the HTTP request fails (network error, non\u20112xx response, or invalid JSON), `r.json()` will raise an exception and crash the caller. Wrap the request in a try/except block, check `r.status_code`, and handle error cases gracefully, returning a consistent error structure."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The new payments module introduces a hard\u2011coded Stripe secret key and lacks error handling for the external API call.",
+   "usage": {
+    "input_tokens": 814,
+    "output_tokens": 455,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L2/r2/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "high",
+     "title": "Hard\u2011coded Stripe secret key",
+     "explanation": "Embedding the Stripe secret key directly in source code risks credential leakage (e.g., via repository exposure). Move the key to a secure configuration source such as an environment variable or secret manager and read it at runtime (e.g., `STRIPE_KEY = os.getenv('STRIPE_KEY')`)."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L2/r2/f1",
+     "path": "app/payments.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No error handling for Stripe request",
+     "explanation": "If the HTTP request fails (network error, non\u20112xx response, or invalid JSON), `r.json()` will raise an exception and crash the caller. Wrap the request in a try/except block, check `r.status_code`, and handle error cases gracefully, returning a consistent error structure."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Pagination function has an off\u2011by\u2011one error causing the first page to be skipped and lacks validation for per_page.",
+   "usage": {
+    "input_tokens": 625,
+    "output_tokens": 440,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L0/r0/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Off\u2011by\u2011one error in page start calculation",
+     "explanation": "The function claims to be 1\u2011indexed, but computes `start = page * per_page`, which for page\u202f1 skips the first `per_page` items. It should use `start = (page - 1) * per_page`. Additionally, `per_page` should be validated to be >\u202f0 to avoid returning empty slices or unexpected behavior. Fix by changing the start calculation and adding a check for `per_page`."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Added pagination utility with off\u2011by\u2011one error in page offset calculation.",
+   "usage": {
+    "input_tokens": 625,
+    "output_tokens": 381,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L0/r1/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Incorrect start index calculation",
+     "explanation": "The start index is computed as `page * per_page`, which skips the first page (e.g., page 1 starts at index `per_page` instead of 0). This off\u2011by\u2011one error returns wrong slices for all pages. Fix by using `start = (page - 1) * per_page` and optionally validate that `per_page` is positive."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Off\u2011by\u2011one error in pagination start index and missing per_page validation.",
+   "usage": {
+    "input_tokens": 625,
+    "output_tokens": 425,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L0/r2/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Incorrect start index calculation",
+     "explanation": "The start offset is computed as `page * per_page`, which skips the first page (page 1 starts at index `per_page` instead of 0). It should be `(page - 1) * per_page`. Fix by changing the line to `start = (page - 1) * per_page` and optionally validate that `per_page` is a positive integer."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Off-by-one error in pagination calculation leads to missing first page items.",
+   "usage": {
+    "input_tokens": 711,
+    "output_tokens": 388,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L1/r0/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect start index for 1-indexed pagination",
+     "explanation": "The start offset is computed as `page * per_page`, which skips the first `per_page` items for page 1. It should be `(page - 1) * per_page`. Fix by changing the line to `start = (page - 1) * per_page` and optionally validate that `per_page` is positive."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Off-by-one error in pagination start index causing first page to be empty and pages to shift.",
+   "usage": {
+    "input_tokens": 711,
+    "output_tokens": 341,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L1/r1/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect start index calculation for 1-indexed pages",
+     "explanation": "The function uses `start = page * per_page`, which for page=1 skips the first `per_page` items. It should compute `start = (page - 1) * per_page` to correctly return the first page. Fix by adjusting the calculation (and optionally validate `per_page` > 0)."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Off-by-one error in pagination calculation leads to missing first page items.",
+   "usage": {
+    "input_tokens": 711,
+    "output_tokens": 388,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L1/r2/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect start index for 1-indexed pagination",
+     "explanation": "The start offset is computed as `page * per_page`, which skips the first `per_page` items for page 1. It should be `(page - 1) * per_page`. Fix by changing the line to `start = (page - 1) * per_page` and optionally validate that `per_page` is positive."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Off-by-one error in pagination calculation causing first page to be empty.",
+   "usage": {
+    "input_tokens": 711,
+    "output_tokens": 355,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L2/r0/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect start index for 1-indexed pagination",
+     "explanation": "The function uses `start = page * per_page`, which skips the first `per_page` items for page 1. For 1-indexed pages the start should be `(page - 1) * per_page`. Change the line to `start = (page - 1) * per_page` (and optionally validate `per_page > 0`)."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Pagination function has an off\u2011by\u2011one error and lacks validation for per_page.",
+   "usage": {
+    "input_tokens": 711,
+    "output_tokens": 603,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L2/r1/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Off\u2011by\u2011one error in page start calculation",
+     "explanation": "The start index is computed as `page * per_page`, which skips the first page because pages are 1\u2011indexed. It should be `(page - 1) * per_page`. Fix by changing the line to `start = (page - 1) * per_page`."
+    },
+    {
+     "id": "py-0003-off-by-one-page/L2/r1/f1",
+     "path": "app/pagination.py",
+     "line": 3,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Missing validation for per_page argument",
+     "explanation": "`per_page` can be zero or negative, leading to unexpected empty results or slicing errors. Add a check like `if per_page < 1: raise ValueError(\"per_page must be >= 1\")` before computing the slice."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Off-by-one error in pagination calculation leads to missing first page items.",
+   "usage": {
+    "input_tokens": 711,
+    "output_tokens": 388,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L2/r2/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect start index for 1-indexed pagination",
+     "explanation": "The start offset is computed as `page * per_page`, which skips the first `per_page` items for page 1. It should be `(page - 1) * per_page`. Fix by changing the line to `start = (page - 1) * per_page` and optionally validate that `per_page` is positive."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Missing authentication/authorization on delete_user endpoint and lack of self\u2011deletion protection.",
+   "usage": {
+    "input_tokens": 692,
+    "output_tokens": 806,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L0/r0/f0",
+     "path": "app/admin_routes.py",
+     "line": 17,
+     "category": "security",
+     "severity": "high",
+     "title": "Delete endpoint lacks authentication",
+     "explanation": "The @login_required decorator is missing, allowing unauthenticated requests to delete users. Add @login_required (and optionally @admin_required) to the delete_user function."
+    },
+    {
+     "id": "py-0004-missing-admin-check/L0/r0/f1",
+     "path": "app/admin_routes.py",
+     "line": 18,
+     "category": "security",
+     "severity": "high",
+     "title": "Delete endpoint lacks admin authorization",
+     "explanation": "The function does not verify that the caller is an admin (current_user.is_admin). This permits any logged\u2011in user to delete arbitrary accounts. Add a check similar to list_users (e.g., if not current_user.is_admin: abort(403))."
+    },
+    {
+     "id": "py-0004-missing-admin-check/L0/r0/f2",
+     "path": "app/admin_routes.py",
+     "line": 19,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Self\u2011deletion not prevented",
+     "explanation": "An admin could delete their own account, potentially locking themselves out of the system. Add a guard: if user_id == current_user.id: abort(400) or return an error."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Missing authentication and authorization on user deletion endpoint",
+   "usage": {
+    "input_tokens": 692,
+    "output_tokens": 674,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L0/r1/f0",
+     "path": "app/admin_routes.py",
+     "line": 18,
+     "category": "security",
+     "severity": "high",
+     "title": "delete_user route lacks login and admin checks",
+     "explanation": "The @admin.delete endpoint does not have @login_required nor a check for current_user.is_admin, allowing any unauthenticated or non\u2011admin user to delete arbitrary user records. Add @login_required and verify current_user.is_admin (abort(403) if false) before performing the delete."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Missing authentication and authorization on user deletion endpoint",
+   "usage": {
+    "input_tokens": 692,
+    "output_tokens": 649,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L0/r2/f0",
+     "path": "app/admin_routes.py",
+     "line": 18,
+     "category": "security",
+     "severity": "high",
+     "title": "delete_user route lacks login and admin checks",
+     "explanation": "The delete_user endpoint is not protected by @login_required nor does it verify current_user.is_admin, allowing unauthenticated or non\u2011admin users to delete arbitrary user accounts. Add @login_required and an admin check (abort(403) if not current_user.is_admin) before performing the deletion."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Missing authentication and authorization on user deletion endpoint",
+   "usage": {
+    "input_tokens": 830,
+    "output_tokens": 613,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L1/r0/f0",
+     "path": "app/admin_routes.py",
+     "line": 17,
+     "category": "security",
+     "severity": "high",
+     "title": "delete_user route lacks login and admin checks",
+     "explanation": "The @admin.delete endpoint does not have @login_required nor an admin permission check, allowing any unauthenticated or non\u2011admin user to delete arbitrary user accounts. Add @login_required and verify current_user.is_admin (abort 403) before performing the deletion."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Missing authentication and authorization on delete_user endpoint",
+   "usage": {
+    "input_tokens": 830,
+    "output_tokens": 584,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L1/r1/f0",
+     "path": "app/admin_routes.py",
+     "line": 17,
+     "category": "security",
+     "severity": "high",
+     "title": "delete_user route lacks login and admin checks",
+     "explanation": "The @admin.delete route does not have @login_required nor an admin permission check, allowing any user (including unauthenticated) to delete arbitrary user accounts. Add @login_required and verify current_user.is_admin, aborting with 403 if not authorized."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Missing authentication and authorization on user deletion endpoint",
+   "usage": {
+    "input_tokens": 830,
+    "output_tokens": 489,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L1/r2/f0",
+     "path": "app/admin_routes.py",
+     "line": 17,
+     "category": "security",
+     "severity": "high",
+     "title": "Unauthenticated user deletion allowed",
+     "explanation": "The delete_user route lacks @login_required and admin privilege checks, allowing any requester to delete arbitrary users. Add @login_required and verify current_user.is_admin before performing deletion."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Security issue: delete_user endpoint lacks authentication and authorization checks.",
+   "usage": {
+    "input_tokens": 1027,
+    "output_tokens": 511,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L2/r0/f0",
+     "path": "app/admin_routes.py",
+     "line": 17,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing authentication and admin check on delete_user route",
+     "explanation": "The DELETE /admin/users/<int:user_id> endpoint is not protected by @login_required nor does it verify current_user.is_admin. This allows unauthenticated or non\u2011admin users to delete arbitrary user accounts, leading to privilege escalation and data loss. Fix by adding @login_required decorator and an admin check (e.g., abort(403) if not current_user.is_admin) before performing the deletion."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Missing authentication and authorization on user deletion endpoint",
+   "usage": {
+    "input_tokens": 1027,
+    "output_tokens": 525,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L2/r1/f0",
+     "path": "app/admin_routes.py",
+     "line": 18,
+     "category": "security",
+     "severity": "high",
+     "title": "Delete user route lacks login and admin checks",
+     "explanation": "The `delete_user` endpoint is exposed without `@login_required` and without verifying `current_user.is_admin`. This allows unauthenticated or non\u2011admin users to delete arbitrary user accounts, leading to a privilege escalation vulnerability. Add `@login_required` and an admin check (e.g., `if not current_user.is_admin: abort(403)`) before performing the deletion."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The new admin delete endpoint lacks authentication and authorization checks, allowing unauthenticated or non\u2011admin users to delete arbitrary user accounts.",
+   "usage": {
+    "input_tokens": 2051,
+    "output_tokens": 471,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L2/r2/f0",
+     "path": "app/admin_routes.py",
+     "line": 17,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing authentication/authorization on delete_user endpoint",
+     "explanation": "The @login_required decorator and admin check are omitted for the DELETE /admin/users/<id> route, so any client can invoke it and delete users. Add @login_required and verify current_user.is_admin (or similar) before performing the deletion."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Concurrency bug: shared mutable state accessed without synchronization",
+   "usage": {
+    "input_tokens": 634,
+    "output_tokens": 553,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L0/r0/f0",
+     "path": "app/inventory.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition in reserve() due to missing lock",
+     "explanation": "The function reads and updates the global 'stock' dict without acquiring the defined _lock, so concurrent threads can interleave causing over\u2011reservation or negative stock. Acquire the lock around the check\u2011and\u2011update (e.g., with _lock: ...) to make the operation atomic."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Thread safety and input validation issues in inventory reservation logic.",
+   "usage": {
+    "input_tokens": 634,
+    "output_tokens": 613,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L0/r1/f0",
+     "path": "app/inventory.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition when updating shared stock",
+     "explanation": "The function `reserve` accesses and mutates the global `stock` dict without acquiring the `_lock`, even though it is documented to be called concurrently. This can lead to lost updates and over\u2011reservation. Fix by wrapping the read\u2011modify\u2011write sequence in `with _lock:`."
+    },
+    {
+     "id": "py-0005-check-then-act-race/L0/r1/f1",
+     "path": "app/inventory.py",
+     "line": 10,
+     "category": "security",
+     "severity": "medium",
+     "title": "No validation for negative quantity",
+     "explanation": "If `qty` is negative, the condition `available >= qty` is always true and `stock[item] = available - qty` will increase inventory, allowing unintended stock manipulation. Add a check `if qty <= 0: return False` (or raise) before proceeding."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Thread safety issues and missing input validation in inventory reservation logic.",
+   "usage": {
+    "input_tokens": 634,
+    "output_tokens": 607,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L0/r2/f0",
+     "path": "app/inventory.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition when updating shared stock",
+     "explanation": "The function `reserve` is called concurrently but accesses and mutates the global `stock` dict without acquiring the `_lock`. This can lead to inconsistent inventory counts and over\u2011reservation. Fix by wrapping the read\u2011modify\u2011write sequence in `with _lock:`."
+    },
+    {
+     "id": "py-0005-check-then-act-race/L0/r2/f1",
+     "path": "app/inventory.py",
+     "line": 10,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No validation for negative quantity",
+     "explanation": "If `qty` is negative, the condition `available >= qty` is always true and the stock will be increased, potentially allowing inventory inflation. Add a check `if qty <= 0: return False` (or raise) before proceeding."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The new inventory module introduces concurrency bugs and lacks input validation.",
+   "usage": {
+    "input_tokens": 721,
+    "output_tokens": 615,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L1/r0/f0",
+     "path": "app/inventory.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition due to missing lock",
+     "explanation": "The `reserve` function reads and writes the shared `stock` dict without acquiring the `_lock`, so concurrent calls can interleave and cause overselling. Wrap the check\u2011and\u2011update block in `with _lock:` to make it atomic."
+    },
+    {
+     "id": "py-0005-check-then-act-race/L1/r0/f1",
+     "path": "app/inventory.py",
+     "line": 9,
+     "category": "security",
+     "severity": "medium",
+     "title": "Missing validation for quantity allows negative values",
+     "explanation": "A caller can pass a negative `qty`, which will satisfy `available >= qty` and increase the stock (`stock[item] = available - qty`). Validate that `qty` is positive (e.g., `if qty <= 0: return False`) before proceeding."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The new inventory module introduces a race condition by not using the defined lock when updating shared stock data.",
+   "usage": {
+    "input_tokens": 721,
+    "output_tokens": 307,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L1/r1/f0",
+     "path": "app/inventory.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition on shared stock dictionary",
+     "explanation": "The function `reserve` reads and writes the global `stock` dict without acquiring `_lock`. When called concurrently, multiple threads can interleave between the check and the update, allowing overselling of items. Wrap the critical section with `_lock.acquire()` / `_lock.release()` or use a context manager (`with _lock:`) to ensure atomicity."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The new inventory module has a race condition due to missing synchronization when reserving stock.",
+   "usage": {
+    "input_tokens": 721,
+    "output_tokens": 485,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L1/r2/f0",
+     "path": "app/inventory.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition on shared stock dict",
+     "explanation": "The `reserve` function is called concurrently but does not acquire the `_lock` before reading and updating the global `stock` dict. This can lead to lost updates and negative stock values. Wrap the check and update in a `with _lock:` block (or use atomic operations) to ensure thread safety."
+    },
+    {
+     "id": "py-0005-check-then-act-race/L1/r2/f1",
+     "path": "app/inventory.py",
+     "line": 10,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "No validation for negative quantity",
+     "explanation": "Calling `reserve` with a negative `qty` would increase stock unintentionally. Add a guard such as `if qty <= 0: return False` before proceeding."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The new inventory module introduces concurrency bugs and lacks input validation.",
+   "usage": {
+    "input_tokens": 721,
+    "output_tokens": 593,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L2/r0/f0",
+     "path": "app/inventory.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition on shared stock dict",
+     "explanation": "The function `reserve` reads and writes the global `stock` without acquiring the `_lock`, so concurrent calls can interleave and cause overselling. Fix by wrapping the critical section with `_lock.acquire()` / `_lock.release()` or using a context manager: `with _lock:` around lines 9\u201111."
+    },
+    {
+     "id": "py-0005-check-then-act-race/L2/r0/f1",
+     "path": "app/inventory.py",
+     "line": 10,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for negative quantity",
+     "explanation": "If `qty` is negative, the condition `available >= qty` is always true and the stock will be increased, potentially allowing inventory manipulation. Add a check `if qty <= 0: return False` (or raise) before the availability test."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The new inventory module has concurrency and input validation issues.",
+   "usage": {
+    "input_tokens": 721,
+    "output_tokens": 544,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L2/r1/f0",
+     "path": "app/inventory.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition on stock updates",
+     "explanation": "The function reserve accesses and mutates the shared 'stock' dict without acquiring the provided _lock, so concurrent calls can interleave and cause overselling. Fix by wrapping the check and update inside a with _lock: block."
+    },
+    {
+     "id": "py-0005-check-then-act-race/L2/r1/f1",
+     "path": "app/inventory.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for negative quantity",
+     "explanation": "If qty is negative, the logic will increase stock instead of decreasing it, allowing unintended inventory manipulation. Add a check that qty is positive (e.g., if qty <= 0: return False) before proceeding."
+    }
+   ]
+  }
+ ]
+}

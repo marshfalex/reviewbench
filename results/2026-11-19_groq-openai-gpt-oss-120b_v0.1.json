@@ -1691,6 +1691,2441 @@
      "explanation": "If qty is negative, the logic will increase stock instead of decreasing it, allowing unintended inventory manipulation. Add a check that qty is positive (e.g., if qty <= 0: return False) before proceeding."
     }
    ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The new inventory module has concurrency and input validation issues.",
+   "usage": {
+    "input_tokens": 721,
+    "output_tokens": 547,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L2/r2/f0",
+     "path": "app/inventory.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition on stock updates",
+     "explanation": "The function reserve accesses and mutates the shared 'stock' dict without acquiring the provided _lock, so concurrent calls can interleave and cause overselling. Fix by wrapping the check and update inside a with _lock: block."
+    },
+    {
+     "id": "py-0005-check-then-act-race/L2/r2/f1",
+     "path": "app/inventory.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for negative quantity",
+     "explanation": "A caller can pass a negative qty, which will increase the stock instead of decreasing it, potentially allowing inventory manipulation. Add a check that qty is positive (e.g., if qty <= 0: return False) before proceeding."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Security issue: directory traversal vulnerability in file read function.",
+   "usage": {
+    "input_tokens": 592,
+    "output_tokens": 413,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0006-path-traversal/L0/r0/f0",
+     "path": "app/files.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal allows reading arbitrary files",
+     "explanation": "The function concatenates an unvalidated filename to the upload directory and reads the file directly, enabling attackers to supply paths like \"../../etc/passwd\" to read files outside the intended directory. Validate and sanitize the filename (e.g., reject path separators, resolve the path and ensure it is within UPLOAD_DIR) before reading."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new file introduces a directory traversal vulnerability in read_upload.",
+   "usage": {
+    "input_tokens": 592,
+    "output_tokens": 412,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0006-path-traversal/L0/r1/f0",
+     "path": "app/files.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal via unchecked filename",
+     "explanation": "The function concatenates an arbitrary user\u2011supplied filename to the upload directory without validation, allowing access to files outside /srv/uploads (e.g., \"../../etc/passwd\"). Fix by sanitizing the filename: reject absolute paths, disallow \"..\" components, and verify that Path(UPLOAD_DIR / filename).resolve().starts_with(UPLOAD_DIR)."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Security issue: directory traversal vulnerability in file read function.",
+   "usage": {
+    "input_tokens": 592,
+    "output_tokens": 439,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0006-path-traversal/L0/r2/f0",
+     "path": "app/files.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal allows reading arbitrary files",
+     "explanation": "The function concatenates an unvalidated filename to a fixed upload directory and reads the file directly. An attacker can supply \"../\" sequences (e.g., \"../../etc/passwd\") to escape the upload directory and read any file the process can access. Fix by sanitizing the filename: reject path components containing \"..\", ensure the resolved path is within UPLOAD_DIR (e.g., using Path.resolve() and checking startswith), and handle errors gracefully."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Potential path traversal vulnerability in file reading function.",
+   "usage": {
+    "input_tokens": 645,
+    "output_tokens": 424,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0006-path-traversal/L1/r0/f0",
+     "path": "app/files.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Unvalidated filename allows path traversal",
+     "explanation": "The function concatenates the user\u2011provided `filename` directly to `UPLOAD_DIR` without sanitisation. An attacker can supply \"../secret.txt\" to read files outside the intended upload directory, leading to information disclosure. Fix by validating the filename (e.g., reject path separators, resolve the path and ensure it stays within `UPLOAD_DIR`, or use a whitelist of allowed names)."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Path traversal vulnerability in read_upload function",
+   "usage": {
+    "input_tokens": 645,
+    "output_tokens": 392,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0006-path-traversal/L1/r1/f0",
+     "path": "app/files.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Unvalidated filename allows directory traversal",
+     "explanation": "The function concatenates an arbitrary `filename` to a fixed upload directory without sanitisation. Supplying \"../secret.txt\" (or using path separators) can cause the code to read files outside the intended directory, leading to information disclosure. Validate the filename (e.g., reject path separators, resolve the path and ensure it is a child of UPLOAD_DIR) before reading."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Potential path traversal vulnerability in file reading function.",
+   "usage": {
+    "input_tokens": 645,
+    "output_tokens": 320,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0006-path-traversal/L1/r2/f0",
+     "path": "app/files.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Unvalidated filename allows directory traversal",
+     "explanation": "read_upload concatenates the user\u2011provided filename directly to UPLOAD_DIR and reads the file without sanitising the path. An attacker can supply \"../secret.txt\" (or similar) to read files outside the intended upload directory, leading to information disclosure. Fix by validating the filename (e.g., using pathlib's resolve() and ensuring the resolved path is a child of UPLOAD_DIR) or by restricting to a whitelist of allowed characters."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Path traversal vulnerability in read_upload allows reading arbitrary files",
+   "usage": {
+    "input_tokens": 645,
+    "output_tokens": 408,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0006-path-traversal/L2/r0/f0",
+     "path": "app/files.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Unvalidated filename enables directory traversal",
+     "explanation": "The function concatenates the user\u2011provided `filename` directly to `UPLOAD_DIR` without sanitisation. Supplying \"../secret.txt\" (or using path separators) can cause the code to read files outside the intended upload directory, leading to information disclosure. Fix by validating the filename (e.g., reject path separators), resolve the combined path and ensure it is a descendant of `UPLOAD_DIR`, or use a safe whitelist of allowed filenames."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The new file introduces a path traversal vulnerability in read_upload.",
+   "usage": {
+    "input_tokens": 645,
+    "output_tokens": 321,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0006-path-traversal/L2/r1/f0",
+     "path": "app/files.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal via unvalidated filename",
+     "explanation": "read_upload concatenates the user\u2011provided filename directly to UPLOAD_DIR and reads the file without any validation. An attacker can supply \"../secret.txt\" (or similar) to read files outside the intended upload directory, leading to information disclosure. Fix by sanitizing the filename: resolve the combined path and verify it is a descendant of UPLOAD_DIR, or reject filenames containing path separators or \"..\"."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Path traversal vulnerability in read_upload allows reading arbitrary files",
+   "usage": {
+    "input_tokens": 645,
+    "output_tokens": 400,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0006-path-traversal/L2/r2/f0",
+     "path": "app/files.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Unvalidated filename enables directory traversal",
+     "explanation": "The function concatenates the user\u2011provided `filename` directly to `UPLOAD_DIR` without sanitisation. Supplying \"../secret.txt\" (or using path separators) can cause the code to read files outside the intended upload directory, leading to information disclosure. Fix by validating the filename (e.g., reject path separators) and ensuring the resolved path is a child of `UPLOAD_DIR` before reading."
+    }
+   ]
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The new session loading code deserializes untrusted data using pickle, creating a critical security vulnerability.",
+   "usage": {
+    "input_tokens": 588,
+    "output_tokens": 396,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0007-pickle-cookie/L0/r0/f0",
+     "path": "app/session.py",
+     "line": 6,
+     "category": "security",
+     "severity": "critical",
+     "title": "Unsafe deserialization of untrusted cookie data",
+     "explanation": "The function decodes a base64 cookie value and passes it directly to `pickle.loads`. Pickle can execute arbitrary code during deserialization, so an attacker can craft a malicious cookie to achieve remote code execution on the server. Replace pickle with a safe format (e.g., JSON) and add a cryptographic signature or MAC to verify integrity, or use a library like itsdangerous for signed session cookies."
+    }
+   ]
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Insecure deserialization in load_session",
+   "usage": {
+    "input_tokens": 588,
+    "output_tokens": 345,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0007-pickle-cookie/L0/r1/f0",
+     "path": "app/session.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Use of pickle on untrusted cookie data",
+     "explanation": "pickle.loads() deserializes arbitrary objects and can execute malicious code if an attacker controls the cookie value. Replace pickle with a safe format (e.g., JSON) and add integrity protection (e.g., HMAC or signed token) or use a dedicated library for secure session cookies."
+    }
+   ]
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new session loading function deserializes untrusted data using pickle, creating a critical security vulnerability.",
+   "usage": {
+    "input_tokens": 588,
+    "output_tokens": 300,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0007-pickle-cookie/L0/r2/f0",
+     "path": "app/session.py",
+     "line": 6,
+     "category": "security",
+     "severity": "critical",
+     "title": "Unsafe deserialization of cookie data",
+     "explanation": "The function decodes a base64 cookie value and passes the raw bytes to `pickle.loads`. Pickle can execute arbitrary code when loading malicious payloads, allowing an attacker to achieve remote code execution via a crafted cookie. Replace pickle with a safe format (e.g., JSON) and protect the data with a cryptographic signature or encryption (e.g., itsdangerous, JWT, or Fernet)."
+    }
+   ]
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Unsafe deserialization of client-provided data using pickle",
+   "usage": {
+    "input_tokens": 638,
+    "output_tokens": 429,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0007-pickle-cookie/L1/r0/f0",
+     "path": "app/session.py",
+     "line": 7,
+     "category": "security",
+     "severity": "critical",
+     "title": "Arbitrary code execution via pickle.loads on untrusted cookie",
+     "explanation": "The function decodes a base64 cookie value and directly feeds it to pickle.loads, which can execute arbitrary code when deserializing malicious payloads. This creates a remote code execution vulnerability. Replace pickle with a safe format (e.g., JSON) and add a cryptographic signature/HMAC to verify integrity, or use a library like itsdangerous for signed session cookies."
+    }
+   ]
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Unsafe deserialization of client-provided cookie data using pickle.",
+   "usage": {
+    "input_tokens": 638,
+    "output_tokens": 447,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0007-pickle-cookie/L1/r1/f0",
+     "path": "app/session.py",
+     "line": 7,
+     "category": "security",
+     "severity": "critical",
+     "title": "Arbitrary code execution via pickle.loads on untrusted cookie",
+     "explanation": "The function decodes a base64 cookie value and directly feeds it to pickle.loads, which can execute arbitrary code if the attacker crafts a malicious payload. Replace pickle with a safe format (e.g., JSON) and add integrity verification (HMAC or signed token) before deserialization."
+    }
+   ]
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Unsafe deserialization of user-provided cookie data using pickle.",
+   "usage": {
+    "input_tokens": 638,
+    "output_tokens": 385,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0007-pickle-cookie/L1/r2/f0",
+     "path": "app/session.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Arbitrary code execution via pickle.loads on untrusted cookie",
+     "explanation": "The function decodes a base64 cookie and directly feeds it to pickle.loads, which can execute arbitrary code if the attacker crafts a malicious payload. Replace pickle with a safe serialization format (e.g., JSON) and add integrity verification (e.g., HMAC or signed token) before deserialization."
+    }
+   ]
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Unsafe deserialization in load_session",
+   "usage": {
+    "input_tokens": 638,
+    "output_tokens": 324,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0007-pickle-cookie/L2/r0/f0",
+     "path": "app/session.py",
+     "line": 6,
+     "category": "security",
+     "severity": "critical",
+     "title": "Deserializing untrusted cookie with pickle",
+     "explanation": "The function decodes a client\u2011provided cookie and feeds it directly to pickle.loads, which can execute arbitrary code embedded in a malicious pickle payload. This enables remote code execution. Replace pickle with a safe format (e.g., JSON) and add integrity verification (e.g., HMAC\u2011signed token) before deserialization."
+    }
+   ]
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Unsafe deserialization of client-provided data using pickle",
+   "usage": {
+    "input_tokens": 638,
+    "output_tokens": 429,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0007-pickle-cookie/L2/r1/f0",
+     "path": "app/session.py",
+     "line": 7,
+     "category": "security",
+     "severity": "critical",
+     "title": "Arbitrary code execution via pickle.loads on untrusted cookie",
+     "explanation": "The function decodes a base64 cookie value and directly feeds it to pickle.loads, which can execute arbitrary code when deserializing malicious payloads. This creates a remote code execution vulnerability. Replace pickle with a safe format (e.g., JSON) and add a cryptographic signature/HMAC to verify integrity, or use a library like itsdangerous for signed session cookies."
+    }
+   ]
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Unsafe deserialization of session cookie using pickle enables code execution.",
+   "usage": {
+    "input_tokens": 638,
+    "output_tokens": 387,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0007-pickle-cookie/L2/r2/f0",
+     "path": "app/session.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe pickle deserialization of user-provided cookie",
+     "explanation": "The function decodes a base64 string supplied by the client and directly feeds it to pickle.loads, which can execute arbitrary code when deserializing malicious payloads. Replace pickle with a safe, signed format (e.g., JSON with HMAC or itsdangerous) and validate the signature before loading."
+    }
+   ]
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The new add_tag function uses a mutable default argument and mutates the input list, contradicting its documentation and causing shared state bugs.",
+   "usage": {
+    "input_tokens": 590,
+    "output_tokens": 553,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0008-mutable-default/L0/r0/f0",
+     "path": "app/tags.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Mutable default argument creates shared list across calls",
+     "explanation": "The default value `tags: list = []` is evaluated once at import time, so every call that omits the `tags` argument will reuse the same list, causing tags from previous calls to appear unexpectedly. Change the signature to `def add_tag(tag: str, tags: Optional[List[str]] = None) -> List[str]:` and inside the function initialize `tags = [] if tags is None else list(tags)`."
+    },
+    {
+     "id": "py-0008-mutable-default/L0/r0/f1",
+     "path": "app/tags.py",
+     "line": 3,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Function mutates caller-provided list contrary to docstring",
+     "explanation": "The docstring says the function returns a *new* list, but it appends to the passed-in list in place. This can surprise callers. Return a new list instead, e.g., `return tags + [tag]` or copy before appending."
+    }
+   ]
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new add_tag function has bugs related to mutable default argument and unintended mutation of the input list.",
+   "usage": {
+    "input_tokens": 590,
+    "output_tokens": 567,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0008-mutable-default/L0/r1/f0",
+     "path": "app/tags.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Mutable default argument creates shared state",
+     "explanation": "Using `tags: list = []` as a default argument causes the same list object to be reused across calls, leading to unexpected accumulation of tags. Change the default to `None` and create a new list inside the function."
+    },
+    {
+     "id": "py-0008-mutable-default/L0/r1/f1",
+     "path": "app/tags.py",
+     "line": 3,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Function mutates caller-provided list instead of returning a new list",
+     "explanation": "The docstring says the function returns a new list, but it appends to the passed `tags` list, mutating the caller's data. Create a copy (e.g., `new_tags = tags.copy(); new_tags.append(tag)`) and return that copy."
+    }
+   ]
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Review of new tags module",
+   "usage": {
+    "input_tokens": 590,
+    "output_tokens": 515,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0008-mutable-default/L0/r2/f0",
+     "path": "app/tags.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Mutable default argument causes shared state",
+     "explanation": "The default value tags=[] is evaluated once at function definition, so all calls without an explicit tags argument share the same list, leading to unexpected accumulation of tags. Change the signature to tags: Optional[list]=None and create a new list inside the function."
+    },
+    {
+     "id": "py-0008-mutable-default/L0/r2/f1",
+     "path": "app/tags.py",
+     "line": 3,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Function mutates input list contrary to docstring",
+     "explanation": "The function appends to the provided tags list, modifying the caller's list, while the docstring claims it returns a new list. This side\u2011effect can cause bugs. Return a new list instead, e.g., new_tags = tags.copy(); new_tags.append(tag); return new_tags."
+    }
+   ]
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The new function uses a mutable default argument, causing shared state across calls and unexpected behavior.",
+   "usage": {
+    "input_tokens": 643,
+    "output_tokens": 326,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0008-mutable-default/L1/r0/f0",
+     "path": "app/tags.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Mutable default argument leads to shared list",
+     "explanation": "The default value `tags: list = []` is evaluated once at function definition time, so every call without an explicit `tags` argument will reuse the same list. This causes tags to accumulate across unrelated calls, which is a bug. Fix by using `tags: Optional[list] = None` and initializing a new list inside the function."
+    }
+   ]
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Mutable default argument leads to shared state across calls",
+   "usage": {
+    "input_tokens": 643,
+    "output_tokens": 325,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0008-mutable-default/L1/r1/f0",
+     "path": "app/tags.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Mutable default argument causes shared list",
+     "explanation": "The default value for `tags` is a mutable list, so the same list is reused for every call, causing tags to accumulate unintentionally. Change the signature to `def add_tag(tag: str, tags: Optional[list] = None) -> list:` and inside create a new list when `tags` is None."
+    }
+   ]
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The new function uses a mutable default argument, causing shared state across calls.",
+   "usage": {
+    "input_tokens": 643,
+    "output_tokens": 393,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0008-mutable-default/L1/r2/f0",
+     "path": "app/tags.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Mutable default argument creates shared list",
+     "explanation": "The default value `tags: list = []` is evaluated once at function definition time, so every call without an explicit `tags` argument will reuse the same list, leading to unexpected accumulation of tags. Change the signature to `def add_tag(tag: str, tags: Optional[list] = None) -> list:` and inside the function initialize `tags = [] if tags is None else tags` before appending."
+    }
+   ]
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The new file introduces a mutable default argument causing shared state across calls.",
+   "usage": {
+    "input_tokens": 643,
+    "output_tokens": 285,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0008-mutable-default/L2/r0/f0",
+     "path": "app/tags.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Mutable default argument leads to unexpected shared list",
+     "explanation": "Using `tags: list = []` as a default creates a single list object shared by all calls, so successive calls will accumulate tags unintentionally. Change the default to `None` and instantiate a new list inside the function."
+    }
+   ]
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The new file introduces a mutable default argument causing shared state across calls.",
+   "usage": {
+    "input_tokens": 643,
+    "output_tokens": 309,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0008-mutable-default/L2/r1/f0",
+     "path": "app/tags.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Mutable default argument leads to unexpected shared list",
+     "explanation": "Using `tags: list = []` as a default creates a single list object that is reused for every call, so tags accumulate across invocations. Change the default to `None` and initialise a new list inside the function (e.g., `if tags is None: tags = []`)."
+    }
+   ]
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Mutable default argument leads to shared state across calls.",
+   "usage": {
+    "input_tokens": 643,
+    "output_tokens": 266,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0008-mutable-default/L2/r2/f0",
+     "path": "app/tags.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Mutable default argument",
+     "explanation": "Using `tags: list = []` as a default creates a single list shared by all calls, causing tags to accumulate unexpectedly. Change the default to `None` and instantiate a new list inside the function."
+    }
+   ]
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Review of new config_loader reveals resource leak and silent failure handling.",
+   "usage": {
+    "input_tokens": 608,
+    "output_tokens": 563,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0009-swallowed-exception/L0/r0/f0",
+     "path": "app/config_loader.py",
+     "line": 7,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "File opened without context manager",
+     "explanation": "The file is opened with open() but never closed, leading to a resource leak. Use a with statement (e.g., with open(path) as f:) to ensure the file is closed automatically."
+    },
+    {
+     "id": "py-0009-swallowed-exception/L0/r0/f1",
+     "path": "app/config_loader.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Broad exception handling masks errors",
+     "explanation": "Catching all Exception types and returning an empty dict hides missing files, permission errors, and JSON parsing errors, causing silent misconfiguration. Catch specific exceptions (FileNotFoundError, json.JSONDecodeError) and let unexpected errors propagate or log them appropriately."
+    }
+   ]
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new config_loader implementation has resource handling and error\u2011masking problems.",
+   "usage": {
+    "input_tokens": 608,
+    "output_tokens": 551,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0009-swallowed-exception/L0/r1/f0",
+     "path": "app/config_loader.py",
+     "line": 7,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "File handle not closed",
+     "explanation": "The file is opened with `open(path)` but never closed, leading to a resource leak. Use a context manager: `with open(path) as f:`."
+    },
+    {
+     "id": "py-0009-swallowed-exception/L0/r1/f1",
+     "path": "app/config_loader.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Broad exception handling masks configuration errors",
+     "explanation": "Catching `Exception` and returning an empty dict hides missing\u2011file or JSON\u2011parse errors, causing callers to operate with an empty configuration. Catch specific exceptions (e.g., `FileNotFoundError`, `json.JSONDecodeError`) and let other errors propagate or raise a clear custom exception."
+    }
+   ]
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new config_loader implementation has resource handling and error\u2011masking issues.",
+   "usage": {
+    "input_tokens": 608,
+    "output_tokens": 493,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0009-swallowed-exception/L0/r2/f0",
+     "path": "app/config_loader.py",
+     "line": 7,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "File handle not closed",
+     "explanation": "The file is opened with open() without a context manager, so it may remain open if an exception occurs. Use 'with open(path) as f:' to ensure the file is closed."
+    },
+    {
+     "id": "py-0009-swallowed-exception/L0/r2/f1",
+     "path": "app/config_loader.py",
+     "line": 10,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Broad exception handling masks errors",
+     "explanation": "Catching all Exception types and returning an empty dict hides missing\u2011file or JSON\u2011parse errors, leading to silent misconfiguration. Catch specific exceptions (FileNotFoundError, json.JSONDecodeError) and let other errors propagate or raise a clear exception."
+    }
+   ]
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The new config loader silently swallows errors and leaks file handles, contradicting its documentation and potentially hiding configuration problems.",
+   "usage": {
+    "input_tokens": 673,
+    "output_tokens": 598,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0009-swallowed-exception/L1/r0/f0",
+     "path": "app/config_loader.py",
+     "line": 7,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "File opened without context manager",
+     "explanation": "The file is opened with open() but never closed, causing a resource leak. Use a with statement (e.g., with open(path) as f:) to ensure the file is closed automatically."
+    },
+    {
+     "id": "py-0009-swallowed-exception/L1/r0/f1",
+     "path": "app/config_loader.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Broad exception handling hides configuration errors",
+     "explanation": "Catching all Exception types and returning an empty dict masks missing or malformed config files, contradicting the docstring that says errors should be raised. Catch specific exceptions (e.g., FileNotFoundError, json.JSONDecodeError) and re\u2011raise or handle them appropriately instead of silently returning {}."
+    }
+   ]
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Issues in config_loader.py related to error handling and file management.",
+   "usage": {
+    "input_tokens": 673,
+    "output_tokens": 687,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0009-swallowed-exception/L1/r1/f0",
+     "path": "app/config_loader.py",
+     "line": 8,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Overly broad exception handling masks configuration errors",
+     "explanation": "The function catches all Exception types and returns an empty dict, contradicting the docstring that says it should raise on missing or invalid files. This can hide missing/invalid configuration and lead to silent misconfiguration. Catch specific exceptions (e.g., FileNotFoundError, json.JSONDecodeError) and either re\u2011raise or handle them explicitly, returning a clear error."
+    },
+    {
+     "id": "py-0009-swallowed-exception/L1/r1/f1",
+     "path": "app/config_loader.py",
+     "line": 6,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "File opened without a context manager, risking resource leaks",
+     "explanation": "The file is opened with `open(path)` but never closed, which can leak file descriptors. Use a `with open(path, \"r\", encoding=\"utf-8\") as f:` block to ensure proper closure."
+    }
+   ]
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The new config loader silently swallows errors and leaks file handles, contradicting its documentation.",
+   "usage": {
+    "input_tokens": 673,
+    "output_tokens": 661,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0009-swallowed-exception/L1/r2/f0",
+     "path": "app/config_loader.py",
+     "line": 7,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "File opened without context manager",
+     "explanation": "The code uses `open(path)` without a `with` block, so the file descriptor may remain open if an exception occurs before it is closed. Use `with open(path) as f:` to ensure the file is always closed."
+    },
+    {
+     "id": "py-0009-swallowed-exception/L1/r2/f1",
+     "path": "app/config_loader.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Broad exception handling hides configuration errors",
+     "explanation": "Catching `Exception` and returning an empty dict masks missing or malformed config files, contradicting the docstring that says the function should raise. This can lead to silent misconfiguration. Catch specific exceptions (e.g., `FileNotFoundError`, `json.JSONDecodeError`) and re\u2011raise or handle them appropriately, or let them propagate."
+    }
+   ]
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The new config loader silently swallows errors and leaks file handles, contradicting its documentation and potentially hiding configuration problems.",
+   "usage": {
+    "input_tokens": 673,
+    "output_tokens": 598,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0009-swallowed-exception/L2/r0/f0",
+     "path": "app/config_loader.py",
+     "line": 7,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "File opened without context manager",
+     "explanation": "The file is opened with open() but never closed, causing a resource leak. Use a with statement (e.g., with open(path) as f:) to ensure the file is closed automatically."
+    },
+    {
+     "id": "py-0009-swallowed-exception/L2/r0/f1",
+     "path": "app/config_loader.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Broad exception handling hides configuration errors",
+     "explanation": "Catching all Exception types and returning an empty dict masks missing or malformed config files, contradicting the docstring that says errors should be raised. Catch specific exceptions (e.g., FileNotFoundError, json.JSONDecodeError) and re\u2011raise or handle them appropriately instead of silently returning {}."
+    }
+   ]
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The new config_loader implementation deviates from its documentation and mishandles file resources.",
+   "usage": {
+    "input_tokens": 673,
+    "output_tokens": 716,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0009-swallowed-exception/L2/r1/f0",
+     "path": "app/config_loader.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Function does not raise on missing or invalid config as documented",
+     "explanation": "The docstring says the function will raise if the file is missing or invalid, but the code catches all exceptions and returns an empty dict, silently hiding errors. This can cause callers to operate with an empty configuration, leading to incorrect behavior or security issues. Fix by removing the broad except block and letting the exception propagate, or raise a specific ConfigError after logging."
+    },
+    {
+     "id": "py-0009-swallowed-exception/L2/r1/f1",
+     "path": "app/config_loader.py",
+     "line": 7,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "File opened without context manager, may leak descriptor",
+     "explanation": "The file is opened with `open(path)` and never closed, which can leak file descriptors. Use a `with open(path) as f:` block to ensure the file is closed automatically."
+    }
+   ]
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The new config loader silently swallows errors and leaks file handles, contradicting its documentation.",
+   "usage": {
+    "input_tokens": 673,
+    "output_tokens": 627,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0009-swallowed-exception/L2/r2/f0",
+     "path": "app/config_loader.py",
+     "line": 7,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "File opened without context manager",
+     "explanation": "The code uses `open(path)` without a `with` block, so the file descriptor may remain open if an exception occurs before it is closed. Use `with open(path) as f:` to ensure proper cleanup."
+    },
+    {
+     "id": "py-0009-swallowed-exception/L2/r2/f1",
+     "path": "app/config_loader.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Broad exception handling hides configuration errors",
+     "explanation": "Catching `Exception` and returning an empty dict masks missing or malformed config files, contradicting the docstring that says the function should raise. Catch specific errors (e.g., `FileNotFoundError`, `json.JSONDecodeError`) and re\u2011raise or handle them appropriately instead of silently returning `{}`."
+    }
+   ]
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The new webhook verification module contains security issues related to secret handling and insecure comparison.",
+   "usage": {
+    "input_tokens": 618,
+    "output_tokens": 496,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0010-timing-unsafe-compare/L0/r0/f0",
+     "path": "app/webhooks.py",
+     "line": 8,
+     "category": "security",
+     "severity": "medium",
+     "title": "Insecure HMAC comparison using ==",
+     "explanation": "The function compares the expected HMAC with the provided signature using the == operator, which is vulnerable to timing attacks. Use hmac.compare_digest for a constant\u2011time comparison."
+    },
+    {
+     "id": "py-0010-timing-unsafe-compare/L0/r0/f1",
+     "path": "app/webhooks.py",
+     "line": 4,
+     "category": "security",
+     "severity": "high",
+     "title": "Default empty webhook secret",
+     "explanation": "WEBHOOK_SECRET defaults to an empty byte string, so if the environment variable is not set the verification will use an empty key, allowing attackers to forge valid signatures. Initialize the secret from a required environment variable and raise an error if it is missing."
+    }
+   ]
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new webhook verification module contains security and correctness issues.",
+   "usage": {
+    "input_tokens": 618,
+    "output_tokens": 448,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0010-timing-unsafe-compare/L0/r1/f0",
+     "path": "app/webhooks.py",
+     "line": 9,
+     "category": "security",
+     "severity": "medium",
+     "title": "Insecure HMAC comparison using ==",
+     "explanation": "The function compares the expected HMAC with the provided signature using the == operator, which is vulnerable to timing attacks. Use hmac.compare_digest for a constant\u2011time comparison."
+    },
+    {
+     "id": "py-0010-timing-unsafe-compare/L0/r1/f1",
+     "path": "app/webhooks.py",
+     "line": 4,
+     "category": "correctness",
+     "severity": "high",
+     "title": "WEBHOOK_SECRET defaults to empty bytes",
+     "explanation": "The secret is hard\u2011coded as an empty byte string; if the environment variable is not loaded, verification will always fail (or succeed if an attacker knows the secret is empty). Load the secret from the environment at import time and raise an error if it is missing."
+    }
+   ]
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Insecure HMAC verification using a plain equality check",
+   "usage": {
+    "input_tokens": 618,
+    "output_tokens": 522,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0010-timing-unsafe-compare/L0/r2/f0",
+     "path": "app/webhooks.py",
+     "line": 9,
+     "category": "security",
+     "severity": "medium",
+     "title": "Use constant\u2011time comparison for HMAC verification",
+     "explanation": "The function compares the computed HMAC with the provided signature using `==`, which is vulnerable to timing attacks. Replace the equality check with `hmac.compare_digest(expected, signature)` to perform a constant\u2011time comparison and mitigate the risk."
+    }
+   ]
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Issues found in webhook verification implementation",
+   "usage": {
+    "input_tokens": 694,
+    "output_tokens": 627,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0010-timing-unsafe-compare/L1/r0/f0",
+     "path": "app/webhooks.py",
+     "line": 4,
+     "category": "security",
+     "severity": "high",
+     "title": "WEBHOOK_SECRET defaults to empty value",
+     "explanation": "The secret is hard\u2011coded as an empty byte string, so if the environment variable is missing the HMAC verification will use a known secret, allowing attackers to forge valid signatures. Load the secret from a required environment variable and raise an error or abort startup if it is missing."
+    },
+    {
+     "id": "py-0010-timing-unsafe-compare/L1/r0/f1",
+     "path": "app/webhooks.py",
+     "line": 9,
+     "category": "security",
+     "severity": "medium",
+     "title": "Insecure string comparison for HMAC verification",
+     "explanation": "Using the == operator leaks timing information that can be exploited to guess the correct signature. Replace the equality check with hmac.compare_digest(expected, signature) for constant\u2011time comparison."
+    }
+   ]
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Security concerns in webhook verification implementation",
+   "usage": {
+    "input_tokens": 694,
+    "output_tokens": 558,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0010-timing-unsafe-compare/L1/r1/f0",
+     "path": "app/webhooks.py",
+     "line": 5,
+     "category": "security",
+     "severity": "high",
+     "title": "Default empty webhook secret",
+     "explanation": "WEBHOOK_SECRET is initialized to an empty byte string. If the environment variable is not loaded correctly, the HMAC will be computed with an empty key, allowing attackers to forge valid signatures. Ensure the secret is loaded at startup and raise an error if it is missing."
+    },
+    {
+     "id": "py-0010-timing-unsafe-compare/L1/r1/f1",
+     "path": "app/webhooks.py",
+     "line": 11,
+     "category": "security",
+     "severity": "medium",
+     "title": "Insecure string comparison for HMAC verification",
+     "explanation": "The code uses `expected == signature`, which leaks timing information and can be exploited in a timing attack. Replace it with `hmac.compare_digest(expected, signature)` for a constant\u2011time comparison."
+    }
+   ]
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Insecure HMAC verification implementation",
+   "usage": {
+    "input_tokens": 694,
+    "output_tokens": 653,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0010-timing-unsafe-compare/L1/r2/f0",
+     "path": "app/webhooks.py",
+     "line": 9,
+     "category": "security",
+     "severity": "high",
+     "title": "Insecure signature comparison and default empty secret",
+     "explanation": "The function uses a plain `==` to compare the computed HMAC with the provided signature, which is vulnerable to timing attacks. Additionally, `WEBHOOK_SECRET` defaults to an empty byte string, allowing anyone to forge a valid signature. Replace the equality check with `hmac.compare_digest(expected, signature)` and ensure the secret is loaded from a secure source and validated at startup, raising an error if it is missing."
+    }
+   ]
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Security and robustness issues in webhook verification implementation",
+   "usage": {
+    "input_tokens": 694,
+    "output_tokens": 765,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0010-timing-unsafe-compare/L2/r0/f0",
+     "path": "app/webhooks.py",
+     "line": 8,
+     "category": "security",
+     "severity": "medium",
+     "title": "Insecure HMAC comparison",
+     "explanation": "The code uses `expected == signature` which can leak timing information and enable brute\u2011force attacks. Replace with `hmac.compare_digest(expected, signature)` for constant\u2011time comparison."
+    },
+    {
+     "id": "py-0010-timing-unsafe-compare/L2/r0/f1",
+     "path": "app/webhooks.py",
+     "line": 4,
+     "category": "security",
+     "severity": "high",
+     "title": "Empty default webhook secret",
+     "explanation": "`WEBHOOK_SECRET` defaults to an empty byte string. If the environment variable is missing, the verification will use an empty secret, allowing attackers to compute valid signatures. Add a check at startup that aborts or raises if the secret is not set."
+    }
+   ]
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Security issues in webhook verification implementation",
+   "usage": {
+    "input_tokens": 694,
+    "output_tokens": 553,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0010-timing-unsafe-compare/L2/r1/f0",
+     "path": "app/webhooks.py",
+     "line": 4,
+     "category": "security",
+     "severity": "high",
+     "title": "Empty default webhook secret allows trivial forgery",
+     "explanation": "WEBHOOK_SECRET is initialised to an empty byte string. If the environment variable is not loaded correctly, the HMAC will be computed with a known secret (empty), letting an attacker generate a valid signature and bypass verification. Load the secret from a secure source at startup and raise an error if it is missing or empty."
+    },
+    {
+     "id": "py-0010-timing-unsafe-compare/L2/r1/f1",
+     "path": "app/webhooks.py",
+     "line": 8,
+     "category": "security",
+     "severity": "medium",
+     "title": "Insecure string comparison enables timing attacks",
+     "explanation": "The verification uses `expected == signature`, which can leak timing information. Use `hmac.compare_digest(expected, signature)` to perform a constant\u2011time comparison and prevent side\u2011channel attacks."
+    }
+   ]
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Security issue: webhook secret defaults to empty, making verification ineffective.",
+   "usage": {
+    "input_tokens": 694,
+    "output_tokens": 447,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0010-timing-unsafe-compare/L2/r2/f0",
+     "path": "app/webhooks.py",
+     "line": 4,
+     "category": "security",
+     "severity": "high",
+     "title": "WEBHOOK_SECRET defaults to empty value, disabling verification",
+     "explanation": "The module sets WEBHOOK_SECRET to an empty byte string, but the comment says it should be loaded from the environment. With an empty secret, the HMAC is computed using no key, allowing anyone who knows the payload to generate a matching signature and bypass verification. Load the secret from a secure source (e.g., os.getenv) at startup and raise an exception if it is missing or empty."
+    }
+   ]
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Off\u2011by\u2011one and negative\u2011date handling bug in trial calculation.",
+   "usage": {
+    "input_tokens": 618,
+    "output_tokens": 366,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0011-trial-boundary/L0/r0/f0",
+     "path": "app/billing.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Incorrect trial period boundary and negative date handling",
+     "explanation": "The function returns True when (today - signup).days <= trial_days, which includes day trial_days (off\u2011by\u2011one) and also returns True for dates before signup (negative days). Adjust the comparison to < trial_days and guard against negative deltas, e.g., `delta = (today - signup).days; return 0 <= delta < trial_days`."
+    }
+   ]
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Off\u2011by\u2011one error and missing non\u2011negative check in trial period calculation.",
+   "usage": {
+    "input_tokens": 618,
+    "output_tokens": 448,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0011-trial-boundary/L0/r1/f0",
+     "path": "app/billing.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Trial period logic includes extra day and allows negative intervals",
+     "explanation": "The function returns True when (today - signup).days <= trial_days, which makes the trial last trial_days+1 days and also returns True for dates before signup (negative days). Change the condition to check that the interval is non\u2011negative and strictly less than trial_days, e.g. `delta = (today - signup).days; return 0 <= delta < trial_days`."
+    }
+   ]
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Off\u2011by\u2011one and negative\u2011date handling bug in trial calculation.",
+   "usage": {
+    "input_tokens": 618,
+    "output_tokens": 370,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0011-trial-boundary/L0/r2/f0",
+     "path": "app/billing.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Incorrect trial period boundary and negative date handling",
+     "explanation": "The function returns True when (today - signup).days <= trial_days, which includes day trial_days (making the trial one day longer than documented) and also returns True for dates before signup (negative days). Change the comparison to < trial_days and guard against negative deltas, e.g., `delta = (today - signup).days; return 0 <= delta < trial_days`."
+    }
+   ]
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Off-by-one error in trial period calculation and missing validation for dates.",
+   "usage": {
+    "input_tokens": 697,
+    "output_tokens": 312,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0011-trial-boundary/L1/r0/f0",
+     "path": "app/billing.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Trial period calculation includes extra day",
+     "explanation": "The function returns True when (today - signup).days <= trial_days, which makes the trial last trial_days+1 days, contradicting the docstring that specifies days 0..trial_days-1. Change the comparison to < trial_days and optionally guard against today being earlier than signup."
+    }
+   ]
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Off\u2011by\u2011one error in trial period calculation and missing validation for dates.",
+   "usage": {
+    "input_tokens": 697,
+    "output_tokens": 325,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0011-trial-boundary/L1/r1/f0",
+     "path": "app/billing.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Trial period calculation includes extra day",
+     "explanation": "The function returns True when (today - signup).days <= trial_days, which makes the trial last trial_days+1 days (e.g., 15 days for the default 14). The docstring says the trial is days 0..trial_days-1. Change the comparison to < trial_days and optionally guard against today earlier than signup."
+    }
+   ]
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Off-by-one error in trial period calculation and missing validation for dates.",
+   "usage": {
+    "input_tokens": 697,
+    "output_tokens": 312,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0011-trial-boundary/L1/r2/f0",
+     "path": "app/billing.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Trial period calculation includes extra day",
+     "explanation": "The function returns True when (today - signup).days <= trial_days, which makes the trial last trial_days+1 days, contradicting the docstring that specifies days 0..trial_days-1. Change the comparison to < trial_days and optionally guard against today being earlier than signup."
+    }
+   ]
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Off-by-one error in trial period calculation and missing validation for dates.",
+   "usage": {
+    "input_tokens": 697,
+    "output_tokens": 349,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0011-trial-boundary/L2/r0/f0",
+     "path": "app/billing.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Trial period calculation includes extra day",
+     "explanation": "The function returns True when (today - signup).days <= trial_days, which makes the trial last trial_days+1 days, contradicting the docstring that says days 0..trial_days-1. Also, if `today` is before `signup`, a negative delta would incorrectly return True. Fix by using `< trial_days` and optionally guard against negative deltas, e.g., `delta = (today - signup).days; return 0 <= delta < trial_days`."
+    }
+   ]
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Off\u2011by\u2011one and future\u2011date handling bug in trial period calculation.",
+   "usage": {
+    "input_tokens": 697,
+    "output_tokens": 443,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0011-trial-boundary/L2/r1/f0",
+     "path": "app/billing.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Incorrect trial window logic",
+     "explanation": "The function returns true for dates after signup up to and including `trial_days`, contradicting the docstring (which says days 0..trial_days\u20111) and also returns true for dates before signup (negative days). Fix by checking that the difference is non\u2011negative and strictly less than `trial_days`: `delta = (today - signup).days; return 0 <= delta < trial_days`."
+    }
+   ]
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Off\u2011by\u2011one and future\u2011date handling bug in trial period calculation.",
+   "usage": {
+    "input_tokens": 697,
+    "output_tokens": 447,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0011-trial-boundary/L2/r2/f0",
+     "path": "app/billing.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Incorrect trial window logic",
+     "explanation": "The function returns true when (today - signup).days <= trial_days, which includes the day after the trial (off\u2011by\u2011one) and also returns true for dates before signup (negative days). Adjust the condition to ensure the difference is non\u2011negative and strictly less than trial_days, e.g., `delta = (today - signup).days; return 0 <= delta < trial_days`."
+    }
+   ]
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Added preview fetcher introduces SSRF risk and lacks error handling.",
+   "usage": {
+    "input_tokens": 602,
+    "output_tokens": 695,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0012-ssrf-preview/L0/r0/f0",
+     "path": "app/preview.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "Unvalidated URL fetch enables Server\u2011Side Request Forgery",
+     "explanation": "fetch_preview directly calls requests.get on a user\u2011supplied URL without any validation or allow\u2011list, allowing attackers to make the server request internal services or malicious endpoints. Restrict URLs to a safe whitelist, enforce http/https schemes, and consider using a sandboxed fetch method."
+    },
+    {
+     "id": "py-0012-ssrf-preview/L0/r0/f1",
+     "path": "app/preview.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Uncaught request exceptions can crash the service",
+     "explanation": "If requests.get raises (e.g., timeout, connection error, invalid URL), the exception propagates and may cause a 500 error. Wrap the request in try/except, handle errors gracefully, and return a fallback or raise a controlled exception."
+    }
+   ]
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Added preview fetcher introduces SSRF risk and lacks error handling.",
+   "usage": {
+    "input_tokens": 602,
+    "output_tokens": 652,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0012-ssrf-preview/L0/r1/f0",
+     "path": "app/preview.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "Unvalidated URL fetch enables Server-Side Request Forgery (SSRF)",
+     "explanation": "fetch_preview directly calls requests.get on a user\u2011supplied URL without any validation, allow\u2011list, or scheme checks. An attacker can supply internal or malicious URLs (e.g., http://169.254.169.254) causing the server to make unintended network requests, potentially exposing internal services or credentials. Fix by validating the URL against an allow\u2011list of trusted domains, restricting schemes to http/https, and blocking private IP ranges, or by delegating preview generation to a sandboxed external service."
+    },
+    {
+     "id": "py-0012-ssrf-preview/L0/r1/f1",
+     "path": "app/preview.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing error handling for network failures",
+     "explanation": "If requests.get raises an exception (timeout, DNS error, non\u20112xx response), the exception propagates and can crash the application or expose stack traces. Wrap the request in a try/except block, handle HTTP errors, and return a safe fallback or raise a controlled exception."
+    }
+   ]
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new preview module introduces security and robustness concerns.",
+   "usage": {
+    "input_tokens": 602,
+    "output_tokens": 626,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0012-ssrf-preview/L0/r2/f0",
+     "path": "app/preview.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "Server\u2011Side Request Forgery (SSRF) risk",
+     "explanation": "The function fetches an arbitrary user\u2011supplied URL without validation, allowing attackers to force the server to request internal services or protected resources. Validate the URL against an allow\u2011list, restrict schemes to http/https, and consider using a safe HTTP client that enforces network egress controls."
+    },
+    {
+     "id": "py-0012-ssrf-preview/L0/r2/f1",
+     "path": "app/preview.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Uncaught request exceptions",
+     "explanation": "requests.get can raise exceptions (e.g., timeouts, connection errors). Without a try/except block the exception propagates and may crash the application. Wrap the call in a try/except, log the error, and return a safe fallback value."
+    }
+   ]
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The new preview module fetches arbitrary user\u2011supplied URLs without validation, introducing a server\u2011side request forgery risk.",
+   "usage": {
+    "input_tokens": 664,
+    "output_tokens": 494,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0012-ssrf-preview/L1/r0/f0",
+     "path": "app/preview.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "Potential SSRF vulnerability: fetching arbitrary user\u2011supplied URL",
+     "explanation": "fetch_preview directly calls requests.get on any URL supplied by the caller. An attacker could supply internal or protected endpoints (e.g., http://169.254.169.254) causing the server to make unwanted network requests, leading to data leakage or service abuse. Add strict validation (allow only http/https, whitelist allowed domains, reject private IP ranges) or use a proxy that enforces such rules, and handle request errors gracefully."
+    }
+   ]
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Added preview fetching function introduces SSRF risk and lacks error handling.",
+   "usage": {
+    "input_tokens": 664,
+    "output_tokens": 525,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0012-ssrf-preview/L1/r1/f0",
+     "path": "app/preview.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "Potential SSRF vulnerability",
+     "explanation": "fetch_preview directly requests a user\u2011supplied URL without validation, allowing an attacker to make the server request internal services or protected resources. Validate the URL (e.g., allow only http/https, enforce a whitelist of domains) or route requests through a safe proxy before calling requests.get."
+    },
+    {
+     "id": "py-0012-ssrf-preview/L1/r1/f1",
+     "path": "app/preview.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Uncaught request exceptions",
+     "explanation": "If the request fails (timeout, DNS error, non\u20112xx response), requests.get will raise an exception and crash the caller. Add try/except handling for requests.exceptions.RequestException and handle error cases gracefully."
+    }
+   ]
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The new preview module introduces security and robustness concerns when fetching user\u2011supplied URLs.",
+   "usage": {
+    "input_tokens": 664,
+    "output_tokens": 557,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0012-ssrf-preview/L1/r2/f0",
+     "path": "app/preview.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "Potential SSRF vulnerability",
+     "explanation": "fetch_preview directly calls requests.get on an arbitrary URL supplied by the caller, allowing an attacker to make the server request internal services or protected resources. Validate the URL (scheme, hostname) against an allow\u2011list or use a safe proxy before making the request."
+    },
+    {
+     "id": "py-0012-ssrf-preview/L1/r2/f1",
+     "path": "app/preview.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Uncaught request exceptions may crash the service",
+     "explanation": "requests.get can raise network\u2011related exceptions (e.g., Timeout, ConnectionError). The function does not catch these, so an exception will propagate and potentially crash the application. Wrap the request in a try/except block and return a graceful error or fallback value."
+    }
+   ]
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The new preview module introduces unsafe handling of user\u2011supplied URLs, creating a potential SSRF vulnerability and lacking error handling.",
+   "usage": {
+    "input_tokens": 664,
+    "output_tokens": 511,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0012-ssrf-preview/L2/r0/f0",
+     "path": "app/preview.py",
+     "line": 5,
+     "category": "security",
+     "severity": "high",
+     "title": "Potential Server\u2011Side Request Forgery (SSRF)",
+     "explanation": "fetch_preview directly calls requests.get on an arbitrary URL supplied by the caller. An attacker could supply internal or protected URLs (e.g., http://169.254.169.254) causing the server to make unwanted network requests. Validate and whitelist allowed domains or use a safe fetching library, and reject non\u2011HTTP(S) schemes."
+    },
+    {
+     "id": "py-0012-ssrf-preview/L2/r0/f1",
+     "path": "app/preview.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Uncaught request exceptions",
+     "explanation": "If the HTTP request fails (timeout, DNS error, non\u20112xx status), requests.get will raise an exception and crash the caller. Add try/except handling and return a graceful error or raise a controlled exception."
+    }
+   ]
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The new preview module introduces security and robustness issues when fetching user\u2011supplied URLs.",
+   "usage": {
+    "input_tokens": 664,
+    "output_tokens": 617,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0012-ssrf-preview/L2/r1/f0",
+     "path": "app/preview.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "Potential SSRF vulnerability: fetching arbitrary URL",
+     "explanation": "fetch_preview directly calls requests.get on a user\u2011supplied URL without any validation or restriction, allowing an attacker to make the server request internal services or protected resources. Validate the URL (whitelist domains, enforce http/https scheme) or use a safe proxy before fetching."
+    },
+    {
+     "id": "py-0012-ssrf-preview/L2/r1/f1",
+     "path": "app/preview.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Uncaught exception from requests.get",
+     "explanation": "If the request fails (timeout, DNS error, non\u20112xx response), requests.get will raise an exception that propagates and can crash the application. Add try/except handling and return a graceful error or fallback value."
+    }
+   ]
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The new preview module introduces a server\u2011side request forgery risk by fetching arbitrary user\u2011supplied URLs without validation or error handling.",
+   "usage": {
+    "input_tokens": 664,
+    "output_tokens": 547,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0012-ssrf-preview/L2/r2/f0",
+     "path": "app/preview.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "Potential SSRF vulnerability",
+     "explanation": "fetch_preview calls requests.get on a URL supplied by the caller with no validation, allowing an attacker to make the server request internal services or protected resources. Add URL validation (e.g., whitelist allowed domains, enforce http/https scheme), use a safe HTTP client or proxy, and handle exceptions to prevent abuse."
+    },
+    {
+     "id": "py-0012-ssrf-preview/L2/r2/f1",
+     "path": "app/preview.py",
+     "line": 6,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Missing error handling for network request",
+     "explanation": "If the request fails (timeout, DNS error, non\u2011200 response) the function will raise an exception and potentially crash the caller. Wrap the request in try/except, check response status, and return a graceful fallback or raise a controlled error."
+    }
+   ]
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Missing authorization check allows any logged\u2011in user to retrieve any invoice, leading to data leakage.",
+   "usage": {
+    "input_tokens": 623,
+    "output_tokens": 343,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0013-idor-invoice/L0/r0/f0",
+     "path": "app/invoices.py",
+     "line": 9,
+     "category": "security",
+     "severity": "high",
+     "title": "No ownership/permission check on invoice access",
+     "explanation": "The get_invoice endpoint only verifies that the user is logged in but does not ensure the current_user is allowed to view the requested invoice. This lets any authenticated user fetch any invoice by ID, exposing sensitive data. Fix by adding an authorization check, e.g., compare invoice.owner_id (or appropriate field) with current_user.id and abort(403) if they differ."
+    }
+   ]
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new endpoint exposes invoices without verifying the requesting user's authorization, leading to potential data leakage.",
+   "usage": {
+    "input_tokens": 623,
+    "output_tokens": 369,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0013-idor-invoice/L0/r1/f0",
+     "path": "app/invoices.py",
+     "line": 9,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing authorization check for invoice access",
+     "explanation": "The function returns any invoice by ID to any authenticated user, allowing them to view others' invoices. Add a check that the invoice belongs to current_user (or that the user has appropriate permissions) before returning data, e.g., if invoice.user_id != current_user.id: abort(403)."
+    }
+   ]
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new endpoint exposes invoice data without verifying the requesting user's authorization, leading to potential data leakage.",
+   "usage": {
+    "input_tokens": 623,
+    "output_tokens": 417,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0013-idor-invoice/L0/r2/f0",
+     "path": "app/invoices.py",
+     "line": 9,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing authorization check for invoice access",
+     "explanation": "The function returns any invoice identified by `invoice_id` to any authenticated user. This allows a logged\u2011in user to retrieve invoices they do not own, violating confidentiality. Add a check that the invoice belongs to `current_user` (or use a dedicated permission system) before returning the data, e.g., `if invoice.user_id != current_user.id: abort(403)`."
+    }
+   ]
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Missing authorization check allows any authenticated user to retrieve any invoice.",
+   "usage": {
+    "input_tokens": 700,
+    "output_tokens": 402,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0013-idor-invoice/L1/r0/f0",
+     "path": "app/invoices.py",
+     "line": 9,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization bypass for invoice access",
+     "explanation": "The endpoint only verifies that the user is logged in via @login_required but does not ensure the current_user is permitted to view the requested invoice. This can expose other users' financial data. Add an ownership or permission check, e.g., `if invoice.user_id != current_user.id: abort(403)` before returning the data."
+    }
+   ]
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Missing authorization check allows any authenticated user to retrieve any invoice.",
+   "usage": {
+    "input_tokens": 700,
+    "output_tokens": 517,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0013-idor-invoice/L1/r1/f0",
+     "path": "app/invoices.py",
+     "line": 8,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing authorization check for invoice access",
+     "explanation": "The endpoint only requires the user to be logged in but does not verify that the current_user is permitted to view the requested invoice (e.g., ownership or role). This enables any authenticated user to access any invoice by ID, leading to data leakage. Add an authorization check, such as verifying `invoice.owner_id == current_user.id` or using a permission system, and abort with 403 if unauthorized."
+    }
+   ]
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Missing authorization check allows any authenticated user to retrieve any invoice, leading to unauthorized data exposure.",
+   "usage": {
+    "input_tokens": 700,
+    "output_tokens": 422,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0013-idor-invoice/L1/r2/f0",
+     "path": "app/invoices.py",
+     "line": 8,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing authorization check for invoice access",
+     "explanation": "The endpoint only requires login but does not verify that the current_user is permitted to view the requested invoice (e.g., ownership or role). This lets any authenticated user access any invoice by ID, causing data leakage. Add an authorization check, such as verifying invoice.owner_id == current_user.id or using a permission system, and abort with 403 if unauthorized."
+    }
+   ]
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Missing authorization check allows any authenticated user to access any invoice.",
+   "usage": {
+    "input_tokens": 897,
+    "output_tokens": 470,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0013-idor-invoice/L2/r0/f0",
+     "path": "app/invoices.py",
+     "line": 9,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization bypass for invoice retrieval",
+     "explanation": "The endpoint only verifies that the user is logged in but does not ensure the user owns the requested invoice or has admin rights. This lets any authenticated user fetch any invoice, exposing sensitive billing data. Add an ownership/admin check before returning the invoice, e.g., `if invoice.owner_id != current_user.id and not current_user.is_admin: abort(403)`."
+    }
+   ]
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Missing authorization check allows any logged\u2011in user to retrieve any invoice, exposing sensitive data.",
+   "usage": {
+    "input_tokens": 897,
+    "output_tokens": 560,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0013-idor-invoice/L2/r1/f0",
+     "path": "app/invoices.py",
+     "line": 9,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing authorization check for invoice ownership",
+     "explanation": "The endpoint only verifies the user is authenticated (login_required) but does not ensure the invoice belongs to the current user or that the user has admin rights. This lets any logged\u2011in user fetch any invoice, leaking financial and billing information. Fix by checking `if invoice.owner_id != current_user.id and not current_user.is_admin: abort(403)` before returning the data."
+    }
+   ]
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Missing authorization check allows any authenticated user to retrieve any invoice.",
+   "usage": {
+    "input_tokens": 897,
+    "output_tokens": 441,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0013-idor-invoice/L2/r2/f0",
+     "path": "app/invoices.py",
+     "line": 9,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization bypass on invoice retrieval",
+     "explanation": "The endpoint only requires the user to be logged in but does not verify that the invoice belongs to the current user (or that the user is an admin). This lets any authenticated user access any invoice's data, leaking sensitive financial information. Add an ownership check (e.g., `if invoice.owner_id != current_user.id and not current_user.is_admin: abort(403)`) and remove the unused `current_user` import if not needed elsewhere."
+    }
+   ]
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The new dashboard_data function caches per-page results without considering the current user, leading to cross\u2011user data leakage.",
+   "usage": {
+    "input_tokens": 621,
+    "output_tokens": 404,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0014-cache-leaks-across-users/L0/r0/f0",
+     "path": "app/profile.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "LRU cache ignores per\u2011user context",
+     "explanation": "The @lru_cache decorator caches results based only on the 'page' argument. Since the function returns data derived from flask_login.current_user, cached values will be shared across different users, exposing one user's dashboard data to another. Fix by removing the cache or including the user identifier in the cache key (e.g., pass user_id as an argument) and ensure the cache is cleared on logout."
+    }
+   ]
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new dashboard_data function caches per-page results without accounting for the current user, leading to cross\u2011user data leakage and incorrect responses.",
+   "usage": {
+    "input_tokens": 621,
+    "output_tokens": 440,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0014-cache-leaks-across-users/L0/r1/f0",
+     "path": "app/profile.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "LRU cache shares data across users",
+     "explanation": "The @lru_cache decorator caches results based only on the 'page' argument. Because the function reads flask_login.current_user (a request\u2011local proxy), cached data from one user can be returned to another, exposing private information. Remove the cache or include the user identifier in the cache key (e.g., cache per (user_id, page) tuple) or use a request\u2011scoped cache."
+    }
+   ]
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new dashboard_data function caches per-page results without considering the current user, leading to cross\u2011user data leakage.",
+   "usage": {
+    "input_tokens": 621,
+    "output_tokens": 404,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0014-cache-leaks-across-users/L0/r2/f0",
+     "path": "app/profile.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "LRU cache ignores per\u2011user context",
+     "explanation": "The @lru_cache decorator caches results based only on the 'page' argument. Since the function returns data derived from flask_login.current_user, cached values will be shared across different users, exposing one user's dashboard data to another. Fix by removing the cache or including the user identifier in the cache key (e.g., pass user_id as an argument) and ensure the cache is cleared on logout."
+    }
+   ]
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The new dashboard_data function caches per-user data globally, causing cross\u2011user data leakage.",
+   "usage": {
+    "input_tokens": 702,
+    "output_tokens": 363,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0014-cache-leaks-across-users/L1/r0/f0",
+     "path": "app/profile.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Global LRU cache leaks per\u2011user data",
+     "explanation": "The function is decorated with @lru_cache but only takes a page number as argument. The cached result will be shared across all users, so one user could receive another user's dashboard data. Remove the cache or include the user identifier in the cache key (e.g., cache per user ID and page) to avoid leaking data."
+    }
+   ]
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The new dashboard_data function caches per-user data globally, causing cross\u2011user data leakage.",
+   "usage": {
+    "input_tokens": 702,
+    "output_tokens": 363,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0014-cache-leaks-across-users/L1/r1/f0",
+     "path": "app/profile.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Global LRU cache leaks per\u2011user data",
+     "explanation": "The function is decorated with @lru_cache but only takes a page number as argument. The cached result will be shared across all users, so one user could receive another user's dashboard data. Remove the cache or include the user identifier in the cache key (e.g., cache per user ID and page) to avoid leaking data."
+    }
+   ]
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The new dashboard_data function caches per-user data globally, causing cross\u2011user data leakage.",
+   "usage": {
+    "input_tokens": 702,
+    "output_tokens": 363,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0014-cache-leaks-across-users/L1/r2/f0",
+     "path": "app/profile.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Global LRU cache leaks per\u2011user data",
+     "explanation": "The function is decorated with @lru_cache but only takes a page number as argument. The cached result will be shared across all users, so one user could receive another user's dashboard data. Remove the cache or include the user identifier in the cache key (e.g., cache per user ID and page) to avoid leaking data."
+    }
+   ]
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The new dashboard_data function caches per-user data globally, causing cross\u2011user data leakage.",
+   "usage": {
+    "input_tokens": 702,
+    "output_tokens": 363,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0014-cache-leaks-across-users/L2/r0/f0",
+     "path": "app/profile.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Global LRU cache leaks per\u2011user data",
+     "explanation": "The function is decorated with @lru_cache but only takes a page number as argument. The cached result will be shared across all users, so one user could receive another user's dashboard data. Remove the cache or include the user identifier in the cache key (e.g., cache per user ID and page) to avoid leaking data."
+    }
+   ]
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The new profile module caches per\u2011user dashboard data using a global LRU cache, which can leak one user\u2019s data to another and return stale information.",
+   "usage": {
+    "input_tokens": 702,
+    "output_tokens": 612,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0014-cache-leaks-across-users/L2/r1/f0",
+     "path": "app/profile.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "Cross\u2011user data leakage due to global lru_cache",
+     "explanation": "@lru_cache caches results only by the 'page' argument, ignoring the current_user context. A cached result for one user can be returned to a different user requesting the same page, exposing private data. Remove the decorator or include the user identifier in the cache key (e.g., wrap the function to cache per user) or use a request\u2011scoped cache instead."
+    }
+   ]
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The new dashboard_data function caches per-user data globally, causing cross\u2011user data leakage.",
+   "usage": {
+    "input_tokens": 702,
+    "output_tokens": 363,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0014-cache-leaks-across-users/L2/r2/f0",
+     "path": "app/profile.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Global LRU cache leaks per\u2011user data",
+     "explanation": "The function is decorated with @lru_cache but only takes a page number as argument. The cached result will be shared across all users, so one user could receive another user's dashboard data. Remove the cache or include the user identifier in the cache key (e.g., cache per user ID and page) to avoid leaking data."
+    }
+   ]
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The new billing client lacks proper error handling, authentication, and configurability, introducing potential runtime failures and security concerns.",
+   "usage": {
+    "input_tokens": 673,
+    "output_tokens": 990,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0015-retry-double-charge/L0/r0/f0",
+     "path": "app/billing_client.py",
+     "line": 12,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Unverified HTTP response status",
+     "explanation": "The code returns r.json() without checking r.status_code; non\u2011200 responses (e.g., 4xx/5xx) will still be parsed as JSON or cause downstream errors. Fix by verifying r.ok or status_code before returning, and handle error bodies appropriately."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L0/r0/f1",
+     "path": "app/billing_client.py",
+     "line": 13,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Limited exception handling for request failures",
+     "explanation": "Only requests.Timeout is caught; other exceptions like ConnectionError or HTTPError will propagate and crash the caller. Expand the except clause to catch requests.RequestException (or specific needed exceptions) and treat them as transient failures."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L0/r0/f2",
+     "path": "app/billing_client.py",
+     "line": 10,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing authentication when calling payment service",
+     "explanation": "The POST request sends no authentication credentials (e.g., API key or token). If the payment endpoint requires auth, this call will be rejected or could be abused. Add appropriate auth headers or use a secure credential store."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L0/r0/f3",
+     "path": "app/billing_client.py",
+     "line": 10,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Hard\u2011coded payment endpoint URL",
+     "explanation": "Embedding the URL directly makes changes difficult across environments. Move the endpoint to a configuration setting or environment variable and reference it here."
+    }
+   ]
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new billing client lacks proper error handling, authentication, and configurability, introducing correctness and security risks.",
+   "usage": {
+    "input_tokens": 673,
+    "output_tokens": 986,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0015-retry-double-charge/L0/r1/f0",
+     "path": "app/billing_client.py",
+     "line": 12,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Response status not verified before parsing JSON",
+     "explanation": "The code returns r.json() regardless of HTTP status. Non\u20112xx responses may contain error bodies or no JSON, causing a JSONDecodeError or silently treating failures as successful charges. Fix by checking r.raise_for_status() or r.status_code before calling r.json()."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L0/r1/f1",
+     "path": "app/billing_client.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Only Timeout exceptions are caught",
+     "explanation": "Network errors such as ConnectionError, HTTPError, or other RequestException types will propagate and crash the caller. Expand the except clause to catch requests.RequestException (or specific needed exceptions) and treat them as retryable or raise a clear error."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L0/r1/f2",
+     "path": "app/billing_client.py",
+     "line": 10,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing authentication when calling payment service",
+     "explanation": "The request is sent without any auth headers or tokens. If the internal payment API requires authentication, this call could be rejected or, worse, expose the endpoint to unauthorized use. Add appropriate authentication (e.g., API key, OAuth token) via headers or a session object."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L0/r1/f3",
+     "path": "app/billing_client.py",
+     "line": 10,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Hard\u2011coded payment endpoint URL",
+     "explanation": "Embedding the URL directly makes it difficult to change environments (dev, staging, prod). Move the endpoint to a configuration setting or environment variable and reference that variable here."
+    }
+   ]
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new billing client introduces several robustness and security concerns.",
+   "usage": {
+    "input_tokens": 673,
+    "output_tokens": 776,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0015-retry-double-charge/L0/r2/f0",
+     "path": "app/billing_client.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "HTTP error responses are not checked",
+     "explanation": "The code returns r.json() regardless of the HTTP status code. Non\u2011200 responses (e.g., 4xx or 5xx) will be treated as successful charges and may raise a JSON decode error. Fix by checking r.raise_for_status() or inspecting r.status_code before returning the payload."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L0/r2/f1",
+     "path": "app/billing_client.py",
+     "line": 7,
+     "category": "correctness",
+     "severity": "low",
+     "title": "Only Timeout exceptions are caught",
+     "explanation": "Network\u2011related errors such as ConnectionError, HTTPError, or RequestException are not handled, causing the function to crash on the first such failure. Expand the except clause to catch requests.RequestException and apply the same retry logic."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L0/r2/f2",
+     "path": "app/billing_client.py",
+     "line": 5,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing authentication when calling payment service",
+     "explanation": "The request is sent without any auth headers or tokens. If the internal payment endpoint relies on authentication, this could allow unauthorized charge attempts. Add appropriate authentication (e.g., API key, OAuth token) to the request headers."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L0/r2/f3",
+     "path": "app/billing_client.py",
+     "line": 5,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Hard\u2011coded payment endpoint URL",
+     "explanation": "Embedding the URL directly makes it difficult to change environments (dev, staging, prod). Move the URL to a configuration setting or environment variable."
+    }
+   ]
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Potential correctness issue due to missing HTTP error handling",
+   "usage": {
+    "input_tokens": 796,
+    "output_tokens": 464,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0015-retry-double-charge/L1/r0/f0",
+     "path": "app/billing_client.py",
+     "line": 10,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No HTTP error handling for non\u2011200 responses",
+     "explanation": "The function calls r.json() without checking the HTTP status code; if the payment service returns an error (e.g., 4xx/5xx) r.json() may raise or return unexpected data, causing downstream failures. Add r.raise_for_status() or inspect r.status_code before parsing JSON, and handle error cases appropriately."
+    }
+   ]
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Missing HTTP error handling in billing client",
+   "usage": {
+    "input_tokens": 796,
+    "output_tokens": 637,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0015-retry-double-charge/L1/r1/f0",
+     "path": "app/billing_client.py",
+     "line": 12,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No check for non\u2011200 or non\u2011JSON responses",
+     "explanation": "The function returns r.json() without verifying that the HTTP request succeeded (status 2xx) or that the body is valid JSON. A non\u2011200 response or malformed JSON will raise an exception, breaking the retry logic and bubbling up unexpected errors. Add r.raise_for_status() after the request and handle JSONDecodeError, returning a clear error structure or raising a custom exception."
+    }
+   ]
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The new billing client lacks proper response handling, authentication, and configurability, which can cause incorrect behavior and security concerns.",
+   "usage": {
+    "input_tokens": 796,
+    "output_tokens": 679,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0015-retry-double-charge/L1/r2/f0",
+     "path": "app/billing_client.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "HTTP error responses are not checked",
+     "explanation": "The function returns r.json() without verifying r.status_code, so 4xx/5xx responses will be treated as successful charges. Add a check for r.raise_for_status() or inspect the status code before returning."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L1/r2/f1",
+     "path": "app/billing_client.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing authentication for payment service",
+     "explanation": "The request is sent without any auth credentials, exposing the internal payment endpoint to unauthenticated calls if this function is used elsewhere. Include required authentication (e.g., API key or token) in the request headers."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L1/r2/f2",
+     "path": "app/billing_client.py",
+     "line": 6,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Hard\u2011coded payment endpoint URL",
+     "explanation": "The URL \"https://payments.internal/charges\" is embedded directly in the code, making it difficult to change per environment. Move the endpoint to a configuration setting or environment variable."
+    }
+   ]
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Missing handling of HTTP error responses and JSON decoding errors in payment request.",
+   "usage": {
+    "input_tokens": 796,
+    "output_tokens": 658,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0015-retry-double-charge/L2/r0/f0",
+     "path": "app/billing_client.py",
+     "line": 12,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No HTTP error handling for payment request",
+     "explanation": "The function returns r.json() without checking the HTTP status code or handling JSON decode errors. If the payments service returns a non\u2011200 response or a non\u2011JSON body, r.json() will raise an exception that is not caught, breaking the retry logic. Add a check like r.raise_for_status() and catch requests.exceptions.JSONDecodeError (or ValueError) to return a controlled error or retry."
+    }
+   ]
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Missing handling of HTTP error responses and JSON decoding errors in payment request.",
+   "usage": {
+    "input_tokens": 796,
+    "output_tokens": 658,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0015-retry-double-charge/L2/r1/f0",
+     "path": "app/billing_client.py",
+     "line": 12,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No HTTP error handling for payment request",
+     "explanation": "The function returns r.json() without checking the HTTP status code or handling JSON decode errors. If the payments service returns a non\u2011200 response or a non\u2011JSON body, r.json() will raise an exception that is not caught, breaking the retry logic. Add a check like r.raise_for_status() and catch requests.exceptions.JSONDecodeError (or ValueError) to return a controlled error or retry."
+    }
+   ]
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Missing handling of HTTP error responses and JSON decoding errors in payment request.",
+   "usage": {
+    "input_tokens": 796,
+    "output_tokens": 658,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0015-retry-double-charge/L2/r2/f0",
+     "path": "app/billing_client.py",
+     "line": 12,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No HTTP error handling for payment request",
+     "explanation": "The function returns r.json() without checking the HTTP status code or handling JSON decode errors. If the payments service returns a non\u2011200 response or a non\u2011JSON body, r.json() will raise an exception that is not caught, breaking the retry logic. Add a check like r.raise_for_status() and catch requests.exceptions.JSONDecodeError (or ValueError) to return a controlled error or retry."
+    }
+   ]
   }
  ]
 }

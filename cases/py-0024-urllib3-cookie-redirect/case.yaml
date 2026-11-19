@@ -1,0 +1,33 @@
+id: py-0024-urllib3-cookie-redirect
+title: Cookie header is forwarded on cross-origin redirects
+language: python
+difficulty: easy
+tags:
+- security
+- credentials
+- http
+- redirect
+- cve
+source:
+  kind: cve
+  ref: https://github.com/urllib3/urllib3/commit/644124ecd0b6e417c527191f866daa05a5a2056d
+  license: MIT
+  cve: CVE-2023-43804
+  advisory: GHSA-v845-jxx5-vc9f
+  fixed_in: urllib3 2.0.6 / 1.26.17
+  notes: pr.diff is the fix's change to src/urllib3/util/retry.py, reversed. src/urllib3/poolmanager.py is excerpted
+    (PoolManager.urlopen only) as related context.
+bugs:
+- file: src/urllib3/util/retry.py
+  lines:
+  - 190
+  - 190
+  class: credential_leak_on_redirect
+  cwe: CWE-200
+  severity: medium
+  description: Cookie is no longer in the headers stripped on cross-origin redirects, so a manually set Cookie header
+    (session token) is sent to whatever host a redirect points to.
+context:
+  related:
+  - src/urllib3/poolmanager.py
+known_issues: []

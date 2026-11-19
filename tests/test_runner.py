@@ -60,7 +60,7 @@ def test_cost_estimate_free_vs_paid():
     cases = discover((CASES, "public"))
     assert estimate_cost(cases, ["L0"], 1, get_adapter("groq"))["usd"] == 0
     est = estimate_cost(cases, ["L0", "L1", "L2"], 3, get_adapter("anthropic", "claude-haiku-5-5"))
-    assert est["requests"] == 22 * 3 * 3 and est["usd"] > 0
+    assert est["requests"] == len(cases) * 3 * 3 and est["usd"] > 0
 
 
 def test_paid_run_refused_without_yes(tmp_path, monkeypatch):

@@ -1,0 +1,38 @@
+id: py-0027-gitpython-clone-ext-protocol-rce
+title: 'Repo.clone/clone_from no longer refuse ext:: URLs and protocol/upload-pack options'
+language: python
+difficulty: easy
+tags:
+- security
+- command-injection
+- rce
+- cve
+source:
+  kind: cve
+  ref: https://github.com/gitpython-developers/GitPython/commit/2625ed9fc074091c531c27ffcba7902771130261
+  license: BSD-3-Clause
+  cve: CVE-2022-24439
+  advisory: GHSA-hcpj-qp55-gfph
+  fixed_in: GitPython 3.1.30
+  notes: pr.diff is the fix's source change (git/repo/base.py, git/exc.py), reversed. git/exc.py is whole; git/repo/base.py
+    holds lines 1-70, 106-142 and 1147-1310 of the file at the fix commit. The fix's sibling commits in the same
+    PR (e.g. adding '--' before URLs) are not part of this case.
+bugs:
+- file: git/repo/base.py
+  lines:
+  - 236
+  - 239
+  class: command_injection
+  cwe: CWE-94
+  severity: critical
+  description: clone_from passes an untrusted URL and multi_options straight to git clone. An 'ext::sh -c ...' URL
+    (with '-c protocol.ext.allow=always') or '--upload-pack' runs arbitrary commands.
+context:
+  related: []
+known_issues:
+- match: 'ext::'
+  file: git/repo/base.py
+  note: the same unchecked URL in Repo.clone (line ~202)
+- match: upload-pack
+  file: git/repo/base.py
+  note: the same unchecked options in Repo.clone (line ~202)

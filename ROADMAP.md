@@ -42,7 +42,7 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
       cases): `docs/findings/v0.1.md`. Headline numbers with n and CIs, recall by difficulty and
       context level, any-of-k vs all-of-k, the L0→L2 effect on the cursor case, and every miss with a
       one-line explanation. Update it as more models finish.
-- [ ] **Import public CVE cases, batch 1** (reverse the fix commit; pin it; verify license):
+- [x] **Import public CVE cases, batch 1** (reverse the fix commit; pin it; verify license):
       CVE-2018-18074 requests, CVE-2023-43804 urllib3, CVE-2024-22195 Jinja2,
       CVE-2024-23334 aiohttp, CVE-2022-24439 GitPython.
 - [ ] **Import public CVE cases, batch 2:** CVE-2023-41040 GitPython, CVE-2021-33203 Django,
@@ -72,3 +72,8 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
 
 ## Ideas (unapproved)
 <!-- Sessions add ideas here; the owner promotes them above. -->
+- Public case py-0024 (urllib3 Cookie on redirect, CVE-2023-43804) is almost the same diff as the
+  held-out urllib3 case: the same file, line and fix shape. A reviewer that has seen one has
+  effectively seen the other, which weakens that held-out case as a contamination check.
+  Recommendation: replace the held-out urllib3 case with a different CVE, since the public case
+  effectively leaks it.

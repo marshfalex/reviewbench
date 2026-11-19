@@ -22,9 +22,10 @@ Append-only. One short entry per working session: what was done, what was learne
   `heldout-NN` because CI logs of a public repo are public. `adjudicate` handles the raw file
   and refreshes the aggregate; `leaderboard` refuses files with held-out cases or records.
 - Decision: wrapped `runner.run()` (called once for public, once for held-out) instead of changing
-  it, because the owner's open PR #3 rewrites `run()` for resumability; the two should merge
-  without conflicts, and `--resume` will resume the raw file too since its path derives from the
-  public one.
+  it. PR #3 (resumable runs) merged mid-session; after rebasing, held-out cases start only once the
+  public part is complete, share the `--max-minutes` budget, and resume with `--resume` (the raw
+  path derives from the public one; `find_resumable` also picks a file whose held-out part is
+  partial). Fixed in passing: a resumed `run` overwrote existing verdict files with rules-only ones.
 - Learned: earlier sessions' version of this was never pushed (no repo access); rebuilt from
   scratch. Tests use a renamed copy of py-0001 as a fake held-out case and assert its id, title,
   path and finding text appear in no committed file and not in stderr.

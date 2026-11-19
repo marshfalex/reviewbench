@@ -1,12 +1,23 @@
 from reviewbench.adapters.anthropic import AnthropicReviewer
 from reviewbench.adapters.base import Finding, Reviewer, ReviewResult
-from reviewbench.adapters.openai_compat import GroqReviewer, OllamaReviewer
+from reviewbench.adapters.openai_compat import (
+    CerebrasReviewer,
+    GeminiReviewer,
+    GroqReviewer,
+    MistralReviewer,
+    OllamaReviewer,
+    OpenRouterReviewer,
+)
 from reviewbench.adapters.replay import ReplayReviewer
 
 ADAPTERS: dict[str, type[Reviewer]] = {
     "groq": GroqReviewer,
     "anthropic": AnthropicReviewer,
     "ollama": OllamaReviewer,
+    "openrouter": OpenRouterReviewer,
+    "gemini": GeminiReviewer,
+    "cerebras": CerebrasReviewer,
+    "mistral": MistralReviewer,
     "replay": ReplayReviewer,
 }
 

@@ -64,9 +64,12 @@ Append-only. One short entry per working session: what was done, what was learne
     Those are `known_issues`, not extra planted bugs.
   - Difficulty: requests, urllib3 and GitPython are `easy` (the diff visibly removes a security
     check); Jinja2 and aiohttp are `hard`.
-- BENCH_VERSION stays 0.1, although SPEC says a case-set change needs a bump. The roadmap puts the
-  CVE imports inside v0.1 and no v0.1 run has completed. The partial Groq file resumes with the new
-  cases added, so it stays internally consistent. Owner: bump to 0.2 instead if you prefer.
+- BENCH_VERSION stays 0.1 (confirmed), although SPEC says a case-set change needs a bump. The
+  roadmap puts the CVE imports inside v0.1 and no v0.1 run has completed. The partial Groq file
+  resumes with the new cases added, so it stays internally consistent.
 - Couldn't restart the partial Groq run: workflow dispatch returned 403 "Resource not accessible by
-  integration" (this session's GitHub access can't run Actions). The owner needs to trigger it.
+  integration" (this session's GitHub access can't run Actions). Since then #10 added a 6-hourly
+  scheduled lineup run, which continues partial results without a session triggering it.
+- Merged main (with #10) into this branch: the ROADMAP conflict was resolved by keeping #10's new
+  items and ticking batch 1.
 - Next: CVE batch 2.

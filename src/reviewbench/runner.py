@@ -118,6 +118,10 @@ def run(cases: list[Case], reviewer: Reviewer, levels: list[str], k: int, out_pa
                 log(f"{case.id} {level} run{r}: {len(findings)} findings"
                     + (f" ERROR {result.error}" if result.error else ""))
                 out_path.write_text(json.dumps(doc, indent=1))  # checkpoint after every review
+                if (result.error or "").startswith("rate_limited"):
+                    # Every later call would hit the same quota; stop and let --resume retry it.
+                    log("rate limited (quota); stopping with status partial. Resume later.")
+                    return doc
     doc["status"] = "complete"
     out_path.write_text(json.dumps(doc, indent=1))
     return doc

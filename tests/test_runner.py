@@ -86,7 +86,7 @@ def test_groq_long_retry_after_is_recorded_not_slept(monkeypatch):
     from reviewbench.adapters import openai_compat
 
     class Resp:
-        status_code, headers = 429, {"retry-after": "3600"}
+        status_code, headers = 429, {"retry-after": "7200"}
 
     slept = []
     monkeypatch.setattr(openai_compat.time, "sleep", lambda s: slept.append(s))
@@ -134,3 +134,46 @@ def test_resume_retries_rate_limited_records(tmp_path):
     run(cases, Limited(), ["L0"], 1, out, log=lambda m: None)
     doc = run(cases, ReplayReviewer(fn=_oracle), ["L0"], 1, out, log=lambda m: None)
     assert [r["error"] for r in doc["records"]] == [None]
+
+
+def test_groq_per_minute_waits_are_slept(monkeypatch):
+    import requests
+
+    from reviewbench.adapters import openai_compat
+
+    body = {"choices": [{"message": {"content": '{"summary": "s", "findings": []}'}}], "usage": {}}
+
+    class Limited:
+        status_code, headers = 429, {"retry-after": "300"}
+
+    class Ok:
+        status_code, headers = 200, {}
+
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return body
+
+    responses = [Limited(), Ok()]
+    slept = []
+    monkeypatch.setattr(openai_compat.time, "sleep", lambda s: slept.append(s))
+    monkeypatch.setattr(requests, "post", lambda *a, **k: responses.pop(0))
+    monkeypatch.setenv("GROQ_API_KEY", "gsk_test")
+    result = openai_compat.GroqReviewer()._review("prompt")
+    assert slept == [300.0] and result.error is None
+
+
+def test_quota_stops_run_as_partial(tmp_path):
+    from reviewbench.adapters.base import ReviewResult
+
+    class Quota(ReplayReviewer):
+        calls = 0
+
+        def _review(self, prompt):
+            Quota.calls += 1
+            return ReviewResult("", [], error="rate_limited: retry-after 7200s (quota)")
+
+    cases = discover((CASES, "public"))[:3]
+    doc = run(cases, Quota(), ["L0"], 2, tmp_path / "r.json", log=lambda m: None)
+    assert doc["status"] == "partial" and Quota.calls == 1

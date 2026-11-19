@@ -7,12 +7,9 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
 - [x] **Held-out loader.** Load extra cases from the directory in `REVIEWBENCH_HELDOUT` (if set),
       tag them `split: heldout`, report them separately, and make sure nothing about them is ever
       written into committed results (only aggregate numbers). Tests with a temp dir.
-- [ ] [owner] Create private repo `marshfalex/reviewbench-heldout` and add the 5 held-out CVE cases
+- [x] [owner] Create private repo `marshfalex/reviewbench-heldout` and add the 5 held-out CVE cases
       (PyJWT iss CVE-2024-53861, urllib3 Proxy-Authorization CVE-2024-37891, Flask Vary: Cookie
       CVE-2023-30861, Django Trunc/Extract CVE-2022-34265, python-multipart ReDoS CVE-2024-24762).
-      _Partial (2026-11-19): the owner created the empty repo. The 5 cases still need to be built
-      there. A Claude session can build them once it is allowed to attach that repo with push
-      access; this session's attempt was denied._
 - [ ] [owner] **Let the `benchmark` workflow read held-out cases** (no cost; prerequisite: the
       held-out cases exist). The owner needs to:
       1. Create a fine-grained personal access token scoped to `marshfalex/reviewbench-heldout`

@@ -13,3 +13,19 @@ Append-only. One short entry per working session: what was done, what was learne
   missed 0/3; float-money caught 1/3 on identical input.
 - Added CLAUDE.md (session rules), ROADMAP.md, this journal. Sessions now run on a schedule.
 - Next: held-out loader, then CVE batch 1.
+
+## 2026-11-19 — held-out loader
+- Held-out cases load from `$REVIEWBENCH_HELDOUT` (or `--heldout`, else `heldout/` if present); a
+  configured dir that doesn't exist is an error rather than a silently public-only run.
+- `run` reviews held-out cases into git-ignored `results/raw/<stem>.heldout.json`; the committed
+  results file gets only a `heldout` aggregate (slices of hits/n/rate/CI). Logs alias ids to
+  `heldout-NN` because CI logs of a public repo are public. `adjudicate` handles the raw file
+  and refreshes the aggregate; `leaderboard` refuses files with held-out cases or records.
+- Decision: wrapped `runner.run()` (called once for public, once for held-out) instead of changing
+  it, because the owner's open PR #3 rewrites `run()` for resumability; the two should merge
+  without conflicts, and `--resume` will resume the raw file too since its path derives from the
+  public one.
+- Learned: earlier sessions' version of this was never pushed (no repo access); rebuilt from
+  scratch. Tests use a renamed copy of py-0001 as a fake held-out case and assert its id, title,
+  path and finding text appear in no committed file and not in stderr.
+- Next: CVE batch 1 (the private held-out repo is `[owner]`).

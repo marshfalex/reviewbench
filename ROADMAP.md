@@ -4,7 +4,7 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
 `[owner]` items need the owner; skip them. Tick items in the PR that completes them.
 
 ## v0.1 — finish and publish
-- [ ] **Held-out loader.** Load extra cases from the directory in `REVIEWBENCH_HELDOUT` (if set),
+- [x] **Held-out loader.** Load extra cases from the directory in `REVIEWBENCH_HELDOUT` (if set),
       tag them `split: heldout`, report them separately, and make sure nothing about them is ever
       written into committed results (only aggregate numbers). Tests with a temp dir.
 - [ ] [owner] Create private repo `marshfalex/reviewbench-heldout` and add the 5 held-out CVE cases
@@ -44,3 +44,6 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
 
 ## Ideas (unapproved)
 <!-- Sessions add ideas here; the owner promotes them above. -->
+- Held-out results can only reach the leaderboard from a local run (the `benchmark` workflow has
+  no access to the private repo). A workflow input that checks out `reviewbench-heldout` with a
+  read-only deploy key would let CI run them; needs an owner-created secret.

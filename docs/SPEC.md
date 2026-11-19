@@ -44,9 +44,19 @@ every bug range and related file exists in the post-PR tree.
 ### Splits
 
 * **public** — `cases/`, committed.
-* **held-out** — `heldout/` (same format), git-ignored and never committed,
+* **held-out** — same format, kept outside this repository (the directory in
+  `$REVIEWBENCH_HELDOUT`, else a git-ignored `heldout/`) and never committed,
   to limit training-set contamination. Reported in its own table. A large
   public-vs-held-out gap is a contamination signal.
+
+Nothing that identifies a held-out case is ever committed or logged. A run
+reviews held-out cases into `results/raw/<stem>.heldout.json` (git-ignored,
+with its own `.adjudications.json`); the committed results file gets only a
+`heldout` object of aggregate numbers (`cases`, `status`, and the
+`heldout/<level>/<difficulty>` metric slices). Run logs replace held-out case
+ids with `heldout-NN`. `reviewbench adjudicate` also adjudicates the raw file
+when it exists locally and refreshes the aggregate; `reviewbench leaderboard`
+refuses any results file that contains held-out cases or records.
 
 ## 2. Reviewer interface
 

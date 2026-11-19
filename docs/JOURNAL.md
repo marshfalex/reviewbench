@@ -47,3 +47,15 @@ Append-only. One short entry per working session: what was done, what was learne
 - Learned: an empty GitHub repo has no base branch for a PR. The owner chose to seed `main` with a
   README-only commit.
 - Next: CVE batch 1 in the public repo. The same build method should work.
+
+## 2026-11-19 — held-out never goes to logging providers
+- The owner asked for the held-out set to be protected. `run` and `estimate` now send held-out
+  cases only to a provider/model that `lineup.yaml` marks `heldout_ok: true` (today: groq's
+  gpt-oss-120b). Anything else skips them with a log line that names no case. An `auto:<text>`
+  entry covers that provider's matching models. `--allow-heldout` is the explicit override for
+  local endpoints.
+- Decision: default to refuse. A missing lineup, a missing entry, or `heldout_ok: 'true'` (a
+  string) all count as "no", so a typo can't leak the set.
+- Tests: refusal cases record every prompt sent and assert the held-out code never appears in
+  one. With the guard disabled, 6 of them fail.
+- Next: CVE batch 2 once #9 merges.

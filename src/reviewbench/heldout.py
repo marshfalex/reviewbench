@@ -11,6 +11,8 @@ import json
 import os
 from pathlib import Path
 
+import yaml
+
 from reviewbench.adjudicate import load_verdicts
 from reviewbench.cases import Case
 from reviewbench.scoring import score
@@ -31,6 +33,27 @@ def heldout_dir(cli_value: str | None) -> Path | None:
     if not d.is_dir():
         raise SystemExit(f"held-out directory {d} does not exist (set by --heldout or ${ENV_VAR})")
     return d
+
+
+def heldout_allowed(provider: str, model: str, lineup_path: Path) -> bool:
+    """True only if lineup.yaml marks this provider/model `heldout_ok: true`.
+
+    Free endpoints may log or train on prompts, so held-out cases are refused by default:
+    a provider or model missing from the lineup, a missing or unreadable lineup file, or any
+    value other than literal true all mean "no". An `auto:<text>` entry covers models of that
+    provider whose id contains <text>."""
+    try:
+        cfg = yaml.safe_load(lineup_path.read_text()) or {}
+        entries = list(cfg.get("models") or [])
+    except (OSError, yaml.YAMLError, AttributeError, TypeError):
+        return False
+    for e in entries:
+        if not isinstance(e, dict) or e.get("provider") != provider or e.get("heldout_ok") is not True:
+            continue
+        want = str(e.get("model") or "")
+        if want == model or (want.startswith("auto:") and want[5:].lower() in model.lower()):
+            return True
+    return False
 
 
 def raw_path(public_path: Path) -> Path:

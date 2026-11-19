@@ -58,6 +58,12 @@ ids with `heldout-NN`. `reviewbench adjudicate` also adjudicates the raw file
 when it exists locally and refreshes the aggregate; `reviewbench leaderboard`
 refuses any results file that contains held-out cases or records.
 
+Held-out cases are only sent to endpoints trusted not to log or train on
+prompts: `run` and `estimate` skip them (with a log line) unless `lineup.yaml`
+marks that provider/model `heldout_ok: true`. A model missing from the
+lineup, an unreadable lineup, or any value but `true` means refuse.
+`--allow-heldout` overrides this for endpoints such as a local Ollama.
+
 ## 2. Reviewer interface
 
 Every adapter implements one function: `ReviewRequest -> ReviewResult`.

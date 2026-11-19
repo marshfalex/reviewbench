@@ -66,7 +66,7 @@ def test_no_heldout_configured_is_fine(tmp_path, monkeypatch):
 def test_run_keeps_heldout_details_out_of_committed_results(heldout, monkeypatch, capsys):
     monkeypatch.setattr(cli, "get_adapter", _reviewer)
     out = heldout / "results" / "r.json"
-    assert cli.main(["run", "--provider", "replay", "-k", "2", "--levels", "L0,L1",
+    assert cli.main(["run", "--provider", "replay", "--allow-heldout", "-k", "2", "--levels", "L0,L1",
                      "--out", str(out), "--rules", "none.yaml"]) == 0
 
     committed = [p for p in (heldout / "results").glob("*") if p.is_file()]
@@ -96,7 +96,7 @@ def test_run_keeps_heldout_details_out_of_committed_results(heldout, monkeypatch
 def test_adjudicating_heldout_updates_only_the_aggregate(heldout, monkeypatch):
     monkeypatch.setattr(cli, "get_adapter", _reviewer)
     out = heldout / "results" / "r.json"
-    cli.main(["run", "--provider", "replay", "-k", "1", "--levels", "L0", "--out", str(out),
+    cli.main(["run", "--provider", "replay", "--allow-heldout", "-k", "1", "--levels", "L0", "--out", str(out),
               "--rules", "none.yaml"])
     rules = heldout / "rules.yaml"
     rules.write_text(yaml.safe_dump({SECRET_ID: [{"match": "spurious", "verdict": "invalid"}]}))
@@ -127,7 +127,7 @@ def test_raw_dir_is_gitignored():
 
 def test_resume_finishes_heldout_and_keeps_verdicts(heldout, monkeypatch):
     monkeypatch.setattr(cli, "get_adapter", _reviewer)
-    args = ["run", "--provider", "replay", "-k", "1", "--levels", "L0", "--rules", "none.yaml",
+    args = ["run", "--provider", "replay", "--allow-heldout", "-k", "1", "--levels", "L0", "--rules", "none.yaml",
             "--results-dir", "results"]
     assert cli.main(args + ["--max-minutes", "0"]) == 0  # budget used up before any review
     (out,) = [p for p in (heldout / "results").glob("*.json")]
@@ -140,3 +140,77 @@ def test_resume_finishes_heldout_and_keeps_verdicts(heldout, monkeypatch):
     assert doc["heldout"]["slices"]["heldout/L0/all"]["any_of_k"]["hits"] == 1
     assert "x" in json.loads(out.with_name(out.stem + ".adjudications.json").read_text())["verdicts"]
     assert len(list((heldout / "results").glob("*.json"))) == 2  # resumed in place: r + adjudications
+
+
+def _recording_reviewer(sent):
+    def factory(provider, model=None):
+        def fn(prompt):
+            sent.append(prompt)
+            return []
+        return ReplayReviewer(fn=fn)
+    return factory
+
+
+@pytest.mark.parametrize("lineup", [
+    None,  # no lineup file: refuse
+    "models:\n  - {provider: replay, model: none, heldout_ok: false}\n",
+    "models:\n  - {provider: replay, model: none}\n",  # unmarked: refuse
+    "models:\n  - {provider: replay, model: none, heldout_ok: 'true'}\n",  # only literal true counts
+    "models:\n  - {provider: replay, model: other, heldout_ok: true}\n",  # different model
+])
+def test_heldout_never_sent_to_unapproved_model(heldout, monkeypatch, capsys, lineup):
+    if lineup is not None:
+        (heldout / "lineup.yaml").write_text(lineup)
+    sent = []
+    monkeypatch.setattr(cli, "get_adapter", _recording_reviewer(sent))
+    out = heldout / "results" / "r.json"
+    assert cli.main(["run", "--provider", "replay", "-k", "1", "--levels", "L0,L1", "--out", str(out),
+                     "--rules", "none.yaml"]) == 0
+    assert sent and not any("SELECT id, email FROM users WHERE name" in p for p in sent)
+    assert not raw_path(out).exists() and "heldout" not in json.loads(out.read_text())
+    err = capsys.readouterr().err
+    assert "skipping 1 held-out case(s)" in err and SECRET_ID not in err
+
+
+def test_heldout_sent_only_when_lineup_approves(heldout, monkeypatch):
+    (heldout / "lineup.yaml").write_text("models:\n  - {provider: replay, model: none, heldout_ok: true}\n")
+    sent = []
+    monkeypatch.setattr(cli, "get_adapter", _recording_reviewer(sent))
+    out = heldout / "results" / "r.json"
+    assert cli.main(["run", "--provider", "replay", "-k", "1", "--levels", "L0", "--out", str(out),
+                     "--rules", "none.yaml"]) == 0
+    assert any("SELECT id, email FROM users WHERE name" in p for p in sent)
+    assert json.loads(out.read_text())["heldout"]["cases"] == 1
+
+
+def test_estimate_skips_heldout_for_unapproved_model(heldout, capsys):
+    assert cli.main(["estimate", "--provider", "replay", "-k", "1", "--levels", "L0"]) == 0
+    err = capsys.readouterr().err
+    assert "skipping 1 held-out case(s)" in err and ": 1 requests" in err
+
+
+def test_heldout_allowed_rules(tmp_path):
+    from reviewbench.heldout import heldout_allowed
+    p = tmp_path / "lineup.yaml"
+    assert not heldout_allowed("groq", "x", p)  # missing file
+    p.write_text("models:\n"
+                 "  - {provider: groq, model: openai/gpt-oss-120b, heldout_ok: true}\n"
+                 "  - {provider: cerebras, model: 'auto:qwen', heldout_ok: true}\n"
+                 "  - {provider: gemini, model: gemini-3-flash-preview, heldout_ok: false}\n")
+    assert heldout_allowed("groq", "openai/gpt-oss-120b", p)
+    assert not heldout_allowed("groq", "llama-3.3-70b", p)
+    assert heldout_allowed("cerebras", "qwen-3-coder-480b", p)
+    assert not heldout_allowed("cerebras", "llama-4", p)
+    assert not heldout_allowed("gemini", "gemini-3-flash-preview", p)
+    assert not heldout_allowed("mistral", "codestral-latest", p)
+    p.write_text(": not yaml [")
+    assert not heldout_allowed("groq", "openai/gpt-oss-120b", p)
+
+
+def test_repo_lineup_approves_only_groq():
+    from reviewbench.heldout import heldout_allowed
+    cfg = yaml.safe_load((ROOT / "lineup.yaml").read_text())
+    lineup = ROOT / "lineup.yaml"
+    approved = [e["provider"] for e in cfg["models"]
+                if heldout_allowed(e["provider"], str(e["model"]).replace("auto:", ""), lineup)]
+    assert approved == ["groq"]

@@ -47,3 +47,26 @@ Append-only. One short entry per working session: what was done, what was learne
 - Learned: an empty GitHub repo has no base branch for a PR. The owner chose to seed `main` with a
   README-only commit.
 - Next: CVE batch 1 in the public repo. The same build method should work.
+
+## 2026-11-19 (evening) — CVE batch 1
+- Added py-0023..py-0027: requests CVE-2018-18074, urllib3 CVE-2023-43804, Jinja2 CVE-2024-22195,
+  aiohttp CVE-2024-23334, GitPython CVE-2022-24439. Each `source.ref` pins the fix commit found
+  with `git log` between release tags, the license was checked at that commit, and `pr.diff` is the
+  fix's source hunks reversed. Big files are excerpted with `# [... omitted ...]` markers; the
+  largest prompt is urllib3 at L2, with 22,285 chars.
+- Decisions:
+  - requests: pinned 3331e2a (scheme/port/host check), not the later 857e9b7 rework that allows
+    http->https upgrades.
+  - GitPython: pinned 2625ed9, whose message names the CVE (block `ext::` and unsafe clone
+    options). The sibling commits in that PR (`--` separators, broader option blocking) are out
+    of scope.
+  - aiohttp and GitPython also have the same bug at a second call site (url_for; Repo.clone).
+    Those are `known_issues`, not extra planted bugs.
+  - Difficulty: requests, urllib3 and GitPython are `easy` (the diff visibly removes a security
+    check); Jinja2 and aiohttp are `hard`.
+- BENCH_VERSION stays 0.1, although SPEC says a case-set change needs a bump. The roadmap puts the
+  CVE imports inside v0.1 and no v0.1 run has completed. The partial Groq file resumes with the new
+  cases added, so it stays internally consistent. Owner: bump to 0.2 instead if you prefer.
+- Couldn't restart the partial Groq run: workflow dispatch returned 403 "Resource not accessible by
+  integration" (this session's GitHub access can't run Actions). The owner needs to trigger it.
+- Next: CVE batch 2.

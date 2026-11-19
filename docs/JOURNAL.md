@@ -30,3 +30,14 @@ Append-only. One short entry per working session: what was done, what was learne
   scratch. Tests use a renamed copy of py-0001 as a fake held-out case and assert its id, title,
   path and finding text appear in no committed file and not in stderr.
 - Next: CVE batch 1 (the private held-out repo is `[owner]`).
+
+## 2026-11-19 — held-out repo follow-up (same session)
+- PR #4 merged. The owner created the empty private repo `marshfalex/reviewbench-heldout` and asked
+  for the 5 held-out CVE cases to be built there. Attaching that repo to this session was denied
+  by the session's permission check, so no cases were built. I did not try any workaround.
+- Roadmap: marked the `[owner]` private-repo item as partial (repo exists, cases pending). Added an
+  `[owner]` item for CI access to held-out cases: a read-only fine-grained token, an opt-in
+  checkout step, and the limit that raw held-out results don't survive an ephemeral runner. It
+  replaces the matching unapproved idea.
+- Next: a session that is allowed to attach `reviewbench-heldout` builds the 5 held-out cases
+  there. Otherwise, start CVE batch 1 in the public repo.

@@ -10,6 +10,28 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
 - [ ] [owner] Create private repo `marshfalex/reviewbench-heldout` and add the 5 held-out CVE cases
       (PyJWT iss CVE-2024-53861, urllib3 Proxy-Authorization CVE-2024-37891, Flask Vary: Cookie
       CVE-2023-30861, Django Trunc/Extract CVE-2022-34265, python-multipart ReDoS CVE-2024-24762).
+      _Partial (2026-11-19): the owner created the empty repo. The 5 cases still need to be built
+      there. A Claude session can build them once it is allowed to attach that repo with push
+      access; this session's attempt was denied._
+- [ ] [owner] **Let the `benchmark` workflow read held-out cases** (no cost; prerequisite: the
+      held-out cases exist). The owner needs to:
+      1. Create a fine-grained personal access token scoped to `marshfalex/reviewbench-heldout`
+         only, with *Contents: read-only* and an expiry. Add it to `reviewbench` as the Actions
+         secret `HELDOUT_READ_TOKEN`.
+      2. Add an opt-in `heldout` boolean input to `benchmark.yml`, plus a step guarded by it:
+         `actions/checkout` with `repository: marshfalex/reviewbench-heldout`,
+         `token: ${{ secrets.HELDOUT_READ_TOKEN }}` and `path: .heldout`. Then set
+         `REVIEWBENCH_HELDOUT: .heldout` on the run step. Add `.heldout/` to `.gitignore`.
+         The workflow's own `permissions:` don't change: the token is used only by that checkout.
+      3. Know the limits. Held-out raw results stay in the git-ignored `results/raw/` on the
+         ephemeral runner, so only the aggregate in the committed results file survives the job.
+         That means held-out findings can't be adjudicated later, and `--resume` can't continue a
+         held-out part that ran out of time. Keeping the raw file would need a private store, such
+         as pushing it to `reviewbench-heldout`, which would need a write token. Run logs alias
+         held-out ids (`heldout-NN`), but they are public, so never add a step that prints case
+         contents.
+      Sessions may draft the workflow change as a PR once the owner has added the secret. The
+      owner decides whether it merges, because it is a workflow change.
 - [ ] **Import public CVE cases, batch 1** (reverse the fix commit; pin it; verify license):
       CVE-2018-18074 requests, CVE-2023-43804 urllib3, CVE-2024-22195 Jinja2,
       CVE-2024-23334 aiohttp, CVE-2022-24439 GitPython.
@@ -44,6 +66,3 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
 
 ## Ideas (unapproved)
 <!-- Sessions add ideas here; the owner promotes them above. -->
-- Held-out results can only reach the leaderboard from a local run (the `benchmark` workflow has
-  no access to the private repo). A workflow input that checks out `reviewbench-heldout` with a
-  read-only deploy key would let CI run them; needs an owner-created secret.

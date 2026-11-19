@@ -12,7 +12,7 @@ from reviewbench.adjudicate import apply_rules, interactive, load_rules, load_ve
 from reviewbench.cases import discover, validate_case
 from reviewbench.context import LEVELS
 from reviewbench.report import leaderboard, run_report
-from reviewbench.runner import estimate_cost, results_path, run
+from reviewbench.runner import estimate_cost, find_resumable, results_path, run
 
 ROOT = Path.cwd()
 
@@ -69,8 +69,12 @@ def cmd_run(args) -> int:
         print(f"Refusing to spend money: estimated ${est['usd']:.2f}. Pass --yes, or --max-usd at or above "
               "the estimate.", file=sys.stderr)
         return 2
-    out = Path(args.out) if args.out else results_path(Path(args.results_dir), reviewer.provider, reviewer.model)
-    doc = run(cases, reviewer, levels, args.k, out)
+    out = Path(args.out) if args.out else None
+    if out is None and args.resume:
+        out = find_resumable(Path(args.results_dir), reviewer.provider, reviewer.model, args.k, levels)
+    if out is None:
+        out = results_path(Path(args.results_dir), reviewer.provider, reviewer.model)
+    doc = run(cases, reviewer, levels, args.k, out, max_minutes=args.max_minutes)
     rules = load_rules(Path(args.rules))
     verdicts = {}
     added = apply_rules(doc, verdicts, rules)
@@ -134,6 +138,10 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--max-usd", type=float, help="confirm a paid run only if the estimate is at most this")
     p.add_argument("--results-dir", default="results")
     p.add_argument("--out")
+    p.add_argument("--resume", action="store_true",
+                   help="continue the newest partial results file for this reviewer and settings")
+    p.add_argument("--max-minutes", type=float,
+                   help="stop cleanly (status partial) after this long; resume later with --resume")
     p.add_argument("--rules", default="adjudications/rules.yaml")
     p.set_defaults(fn=cmd_run)
     p = sub.add_parser("adjudicate", help="judge unadjudicated findings in a results file")

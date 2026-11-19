@@ -7,6 +7,8 @@ import time
 
 from reviewbench.adapters.base import OUTPUT_SCHEMA, SYSTEM_PROMPT, Reviewer, ReviewResult, parse_review
 
+MAX_RETRY_WAIT_S = 120  # longer waits signal a daily quota; see review loop
+
 
 class OpenAICompatReviewer(Reviewer):
     url: str = ""
@@ -39,9 +41,15 @@ class OpenAICompatReviewer(Reviewer):
         headers = self._headers()
         for attempt in range(self.retries):
             r = requests.post(self.url, headers=headers, json=payload, timeout=300)
-            if r.status_code == 429 and attempt < self.retries - 1:  # free-tier rate limit
-                time.sleep(float(r.headers.get("retry-after", 10 * (attempt + 1))))
-                continue
+            if r.status_code == 429:  # free-tier rate limit
+                wait = float(r.headers.get("retry-after", 10 * (attempt + 1)))
+                # A long retry-after means a daily quota, not a per-minute burst: waiting it out
+                # would burn the job's time limit and lose the run. Record it and move on.
+                if wait > MAX_RETRY_WAIT_S:
+                    return ReviewResult("", [], error=f"rate_limited: retry-after {wait:.0f}s (quota)")
+                if attempt < self.retries - 1:
+                    time.sleep(wait)
+                    continue
             if r.status_code == 413:  # bigger than this tier allows, despite our budget
                 return ReviewResult("", [], error="too_large: HTTP 413")
             r.raise_for_status()

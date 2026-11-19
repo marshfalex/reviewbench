@@ -34,7 +34,7 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 300
+    timeout-minutes: 330
     env:  # inputs reach the shell only as env vars, never interpolated into scripts
       PROVIDER: ${{ inputs.provider }}
       MODEL: ${{ inputs.model }}
@@ -50,19 +50,24 @@ jobs:
       - name: Estimate cost (no API calls)
         run: python -m reviewbench estimate --provider "$PROVIDER" ${MODEL:+--model "$MODEL"} -k "$K" --levels "$LEVELS"
       - name: Run benchmark
+        timeout-minutes: 300  # step-level, so the always() steps below still get time to commit
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: >
           python -m reviewbench run --provider "$PROVIDER" ${MODEL:+--model "$MODEL"}
-          -k "$K" --levels "$LEVELS" --max-usd "$MAX_USD"
+          -k "$K" --levels "$LEVELS" --max-usd "$MAX_USD" --resume --max-minutes 270
+      # always(): a run that times out or errors still commits its per-case checkpoint
+      # (status "partial"), so a quota stall never loses hours of results.
       - name: Leaderboard
+        if: always()
         run: |
           for f in results/*.json; do
             case "$f" in *.adjudications.json) ;; *) python -m reviewbench adjudicate "$f" --rules-only ;; esac
           done
           python -m reviewbench leaderboard
       - name: Commit results
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

@@ -30,6 +30,10 @@ only reviews and merges. Read this file, `ROADMAP.md`, the last entries of
 - Import public CVE cases **already approved** in `ROADMAP.md`, after pinning the exact fix
   commit and verifying a permissive license; record provenance in `case.yaml`.
 - Trigger the `benchmark` workflow with **provider `groq` only** (free), at most once per session.
+  Free-tier runs are slow (~7 min per review), so a full run takes several workflow runs: each one
+  stops cleanly after ~4.5 h with `"status": "partial"` and the next resumes it (`--resume`). If
+  `results/` on main has a partial file and no benchmark run is in progress, start one with the
+  same provider/model/k/levels to continue it.
 - Add items to the bottom of `ROADMAP.md` under "Ideas (unapproved)" when you notice something
   worth doing; the owner promotes them.
 

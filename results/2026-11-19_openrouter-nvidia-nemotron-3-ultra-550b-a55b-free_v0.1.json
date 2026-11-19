@@ -1,0 +1,2938 @@
+{
+ "bench_version": "0.1",
+ "created": "2026-11-19T17:36:19+00:00",
+ "provider": "openrouter",
+ "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+ "k": 3,
+ "levels": [
+  "L0",
+  "L1",
+  "L2"
+ ],
+ "status": "partial",
+ "cases": {
+  "py-0001-sql-injection": {
+   "title": "SQL query built with an f-string",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "injection"
+   ],
+   "bugs": [
+    {
+     "file": "app/users.py",
+     "lines": [
+      6,
+      6
+     ],
+     "class": "sql_injection",
+     "cwe": "CWE-89",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0002-hardcoded-secret": {
+   "title": "Payment API key hard-coded in source",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "secrets"
+   ],
+   "bugs": [
+    {
+     "file": "app/payments.py",
+     "lines": [
+      3,
+      3
+     ],
+     "class": "leaked_secret",
+     "cwe": "CWE-798",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "http error handling",
+     "file": "app/payments.py",
+     "note": ""
+    },
+    {
+     "match": "api response",
+     "file": "app/payments.py",
+     "note": ""
+    },
+    {
+     "match": "http request failures",
+     "file": "app/payments.py",
+     "note": ""
+    },
+    {
+     "match": "raise_for_status",
+     "file": "app/payments.py",
+     "note": "r.json() on a 4xx/5xx hides the failure"
+    }
+   ]
+  },
+  "py-0003-off-by-one-page": {
+   "title": "1-indexed pagination skips the first page",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "off-by-one"
+   ],
+   "bugs": [
+    {
+     "file": "app/pagination.py",
+     "lines": [
+      5,
+      5
+     ],
+     "class": "off_by_one",
+     "cwe": "CWE-193",
+     "severity": "high"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0004-missing-admin-check": {
+   "title": "Admin delete route without auth",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "authz"
+   ],
+   "bugs": [
+    {
+     "file": "app/admin_routes.py",
+     "lines": [
+      18,
+      21
+     ],
+     "class": "missing_auth",
+     "cwe": "CWE-862",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0005-check-then-act-race": {
+   "title": "Unlocked check-then-act on shared stock",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "concurrency"
+   ],
+   "bugs": [
+    {
+     "file": "app/inventory.py",
+     "lines": [
+      9,
+      11
+     ],
+     "class": "race_condition",
+     "cwe": "CWE-362",
+     "severity": "high"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "negative quantity",
+     "file": "app/inventory.py",
+     "note": "reserve(item, -5) increases stock (found by the model; not planted)"
+    }
+   ]
+  },
+  "py-0006-path-traversal": {
+   "title": "User-supplied filename joined to upload dir",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "path-traversal"
+   ],
+   "bugs": [
+    {
+     "file": "app/files.py",
+     "lines": [
+      7,
+      8
+     ],
+     "class": "path_traversal",
+     "cwe": "CWE-22",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0007-pickle-cookie": {
+   "title": "pickle.loads on a cookie",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "deserialization"
+   ],
+   "bugs": [
+    {
+     "file": "app/session.py",
+     "lines": [
+      7,
+      7
+     ],
+     "class": "unsafe_deserialization",
+     "cwe": "CWE-502",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0008-mutable-default": {
+   "title": "Mutable default argument",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "python-gotcha"
+   ],
+   "bugs": [
+    {
+     "file": "app/tags.py",
+     "lines": [
+      1,
+      4
+     ],
+     "class": "mutable_default",
+     "cwe": null,
+     "severity": "high"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "mutates input list",
+     "file": "app/tags.py",
+     "note": "same root cause as the planted bug, still true"
+    }
+   ]
+  },
+  "py-0009-swallowed-exception": {
+   "title": "Config loader swallows errors and leaks the file",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "error-handling"
+   ],
+   "bugs": [
+    {
+     "file": "app/config_loader.py",
+     "lines": [
+      7,
+      10
+     ],
+     "class": "resource_leak_exception_swallow",
+     "cwe": "CWE-755",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0010-timing-unsafe-compare": {
+   "title": "HMAC signature compared with ==",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "crypto"
+   ],
+   "bugs": [
+    {
+     "file": "app/webhooks.py",
+     "lines": [
+      9,
+      9
+     ],
+     "class": "timing_unsafe_compare",
+     "cwe": "CWE-208",
+     "severity": "high"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "empty webhook secret",
+     "file": "app/webhooks.py",
+     "note": ""
+    },
+    {
+     "match": "hard-coded to empty",
+     "file": "app/webhooks.py",
+     "note": ""
+    },
+    {
+     "match": "empty key",
+     "file": "app/webhooks.py",
+     "note": ""
+    },
+    {
+     "match": "empty secret",
+     "file": "app/webhooks.py",
+     "note": ""
+    }
+   ]
+  },
+  "py-0011-trial-boundary": {
+   "title": "Trial length off by one day",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "dates"
+   ],
+   "bugs": [
+    {
+     "file": "app/billing.py",
+     "lines": [
+      6,
+      6
+     ],
+     "class": "wrong_boundary_dates",
+     "cwe": "CWE-193",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0012-ssrf-preview": {
+   "title": "Server fetches arbitrary user URLs",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "ssrf"
+   ],
+   "bugs": [
+    {
+     "file": "app/preview.py",
+     "lines": [
+      5,
+      6
+     ],
+     "class": "ssrf",
+     "cwe": "CWE-918",
+     "severity": "high"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "network exceptions",
+     "file": "app/preview.py",
+     "note": "minor, but real"
+    }
+   ]
+  },
+  "py-0013-idor-invoice": {
+   "title": "Invoice lookup without ownership check",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "security",
+    "authz",
+    "idor"
+   ],
+   "bugs": [
+    {
+     "file": "app/invoices.py",
+     "lines": [
+      9,
+      12
+     ],
+     "class": "idor_invoice",
+     "cwe": "CWE-639",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0014-cache-leaks-across-users": {
+   "title": "lru_cache keyed without the current user",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "security",
+    "caching"
+   ],
+   "bugs": [
+    {
+     "file": "app/profile.py",
+     "lines": [
+      6,
+      9
+     ],
+     "class": "cache_leaks_across_users",
+     "cwe": "CWE-524",
+     "severity": "high"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0015-retry-double-charge": {
+   "title": "Non-idempotent charge retried on timeout",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "payments",
+    "idempotency"
+   ],
+   "bugs": [
+    {
+     "file": "app/billing_client.py",
+     "lines": [
+      8,
+      14
+     ],
+     "class": "retry_double_charge",
+     "cwe": null,
+     "severity": "high"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0016-float-money": {
+   "title": "Money computed in float dollars",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "money"
+   ],
+   "bugs": [
+    {
+     "file": "app/cart.py",
+     "lines": [
+      3,
+      5
+     ],
+     "class": "float_money",
+     "cwe": "CWE-1339",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0017-cursor-pagination-skips": {
+   "title": "Keyset pagination on a non-unique column",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "pagination",
+    "data-dependent"
+   ],
+   "bugs": [
+    {
+     "file": "app/feed.py",
+     "lines": [
+      4,
+      7
+     ],
+     "class": "cursor_pagination_skips",
+     "cwe": null,
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0018-naive-local-vs-utc": {
+   "title": "Expiry compares local time with UTC",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "time"
+   ],
+   "bugs": [
+    {
+     "file": "app/tokens.py",
+     "lines": [
+      6,
+      7
+     ],
+     "class": "naive_utc_expiry",
+     "cwe": null,
+     "severity": "high"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0019-clean-parameterized-query": {
+   "title": "Clean control: parameterized query",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "control"
+   ],
+   "bugs": [],
+   "known_issues": []
+  },
+  "py-0020-clean-pagination": {
+   "title": "Clean control: correct 1-indexed pagination",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "control"
+   ],
+   "bugs": [],
+   "known_issues": []
+  },
+  "py-0021-clean-locked-reserve": {
+   "title": "Clean control: locked reserve",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "control"
+   ],
+   "bugs": [],
+   "known_issues": [
+    {
+     "match": "negative quantity",
+     "file": "app/inventory_safe.py",
+     "note": "reserve(item, -5) increases stock (found by the model; not planted)"
+    }
+   ]
+  },
+  "py-0022-clean-compare-digest": {
+   "title": "Clean control: constant-time HMAC compare",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "control"
+   ],
+   "bugs": [],
+   "known_issues": []
+  }
+ },
+ "records": [
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The new file app/users.py introduces a critical SQL injection vulnerability by using string interpolation to build a SQL query.",
+   "usage": {
+    "input_tokens": 525,
+    "output_tokens": 327,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L0/r0/f0",
+     "path": "app/users.py",
+     "line": 5,
+     "category": "security",
+     "severity": "critical",
+     "title": "SQL injection via string interpolation in find_user",
+     "explanation": "The function interpolates the username directly into the SQL query using an f-string, allowing an attacker to inject arbitrary SQL by providing a malicious username (e.g., \"' OR '1'='1\"). Use parameterized queries with placeholders instead: cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))."
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new file app/users.py introduces a SQL injection vulnerability by using string interpolation to build a SQL query.",
+   "usage": {
+    "input_tokens": 525,
+    "output_tokens": 357,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L0/r1/f0",
+     "path": "app/users.py",
+     "line": 5,
+     "category": "security",
+     "severity": "critical",
+     "title": "SQL injection via string interpolation",
+     "explanation": "The username parameter is directly interpolated into the SQL query using an f-string, allowing an attacker to inject arbitrary SQL. For example, a username like `admin' --` would bypass authentication. Use parameterized queries with placeholders instead."
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new file app/users.py introduces a SQL injection vulnerability by using string interpolation to build a SQL query.",
+   "usage": {
+    "input_tokens": 525,
+    "output_tokens": 347,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L0/r2/f0",
+     "path": "app/users.py",
+     "line": 5,
+     "category": "security",
+     "severity": "critical",
+     "title": "SQL injection via string interpolation",
+     "explanation": "The query uses an f-string to interpolate `username` directly into the SQL statement, allowing an attacker to inject arbitrary SQL (e.g., `username = \"' OR '1'='1\"`). Use parameterized queries instead: `cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))`."
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The new file app/users.py introduces a critical SQL injection vulnerability by using string interpolation to build a SQL query.",
+   "usage": {
+    "input_tokens": 587,
+    "output_tokens": 387,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L1/r0/f0",
+     "path": "app/users.py",
+     "line": 5,
+     "category": "security",
+     "severity": "critical",
+     "title": "SQL injection via string interpolation",
+     "explanation": "The function find_user directly interpolates the username parameter into the SQL query string using an f-string, allowing an attacker to inject arbitrary SQL. For example, a username like \"' OR '1'='1\" would return all users. Fix: use parameterized queries with placeholders, e.g., cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))."
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The new file app/users.py introduces a critical SQL injection vulnerability by using string interpolation in a SQL query.",
+   "usage": {
+    "input_tokens": 587,
+    "output_tokens": 298,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L1/r1/f0",
+     "path": "app/users.py",
+     "line": 5,
+     "category": "security",
+     "severity": "critical",
+     "title": "SQL injection via string interpolation",
+     "explanation": "The query uses an f-string to embed the username directly into SQL, allowing an attacker to inject arbitrary SQL by supplying a username like `admin' --`. Use parameterized queries: `cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))`."
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The new file app/users.py introduces a critical SQL injection vulnerability by using string interpolation to build a SQL query with user-controlled input.",
+   "usage": {
+    "input_tokens": 587,
+    "output_tokens": 468,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L1/r2/f0",
+     "path": "app/users.py",
+     "line": 5,
+     "category": "security",
+     "severity": "critical",
+     "title": "SQL injection via string interpolation in find_user",
+     "explanation": "The username parameter is directly interpolated into the SQL query string using an f-string, allowing attackers to inject arbitrary SQL (e.g., username = \"' OR '1'='1\"). Fix: use parameterized queries with placeholders: `cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))`."
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The new file app/users.py introduces a critical SQL injection vulnerability by using string interpolation to build a SQL query.",
+   "usage": {
+    "input_tokens": 587,
+    "output_tokens": 335,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L2/r0/f0",
+     "path": "app/users.py",
+     "line": 5,
+     "category": "security",
+     "severity": "critical",
+     "title": "SQL injection via string interpolation",
+     "explanation": "The function find_user directly interpolates the username parameter into the SQL query using an f-string, allowing an attacker to inject arbitrary SQL. Use parameterized queries instead: cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))."
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The new file app/users.py introduces a critical SQL injection vulnerability by using string interpolation to build a SQL query.",
+   "usage": {
+    "input_tokens": 587,
+    "output_tokens": 341,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L2/r1/f0",
+     "path": "app/users.py",
+     "line": 5,
+     "category": "security",
+     "severity": "critical",
+     "title": "SQL injection via string interpolation in find_user",
+     "explanation": "The function interpolates the username directly into the SQL query using an f-string, allowing an attacker to inject arbitrary SQL by supplying a username like \"' OR '1'='1\". Use parameterized queries instead: cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))."
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The new file app/users.py introduces a critical SQL injection vulnerability by using string interpolation to build a SQL query.",
+   "usage": {
+    "input_tokens": 587,
+    "output_tokens": 353,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L2/r2/f0",
+     "path": "app/users.py",
+     "line": 5,
+     "category": "security",
+     "severity": "critical",
+     "title": "SQL injection via string interpolation in find_user",
+     "explanation": "The function interpolates the `username` parameter directly into the SQL query using an f-string, allowing an attacker to inject arbitrary SQL by supplying a malicious username (e.g., `\" OR '1'='1`). Use parameterized queries with placeholders instead: `cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))`."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The new payments.py file introduces a critical security vulnerability by hardcoding a Stripe secret key in source code, and has correctness issues due to missing error handling and input validation.",
+   "usage": {
+    "input_tokens": 614,
+    "output_tokens": 822,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L0/r0/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "critical",
+     "title": "Hardcoded Stripe secret key in source code",
+     "explanation": "The STRIPE_KEY constant contains a live secret key (pay_secret_9f8a7c6e5d4b3a2f1e0d9c8b7a6f5e4d) committed directly in the source file. This exposes the key to anyone with access to the repository, allowing unauthorized charges, refunds, and access to payment data. Fix: Remove the key from source code and load it from environment variables or a secure secret manager (e.g., os.environ['STRIPE_SECRET_KEY'])."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L0/r0/f1",
+     "path": "app/payments.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Missing HTTP error handling for Stripe API calls",
+     "explanation": "The charge() function does not check r.status_code or call r.raise_for_status(). Failed requests (4xx, 5xx) will return error JSON but the caller cannot distinguish success from failure without inspecting the response structure. Fix: Add r.raise_for_status() before returning r.json(), or explicitly check status and raise an exception on non-2xx responses."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L0/r0/f2",
+     "path": "app/payments.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No input validation for amount_cents and token",
+     "explanation": "The function accepts amount_cents and token without validation. Negative or zero amounts, non-integer amounts, or empty tokens will be sent to Stripe, causing avoidable API errors. Fix: Validate that amount_cents is a positive integer and token is a non-empty string; raise ValueError otherwise."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new payments.py file introduces a hardcoded Stripe secret key and lacks error handling and input validation.",
+   "usage": {
+    "input_tokens": 614,
+    "output_tokens": 693,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L0/r1/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "critical",
+     "title": "Hardcoded Stripe secret key in source code",
+     "explanation": "The STRIPE_KEY is committed directly in the source file. Secrets must never be stored in version control. Use environment variables or a secret manager (e.g., os.getenv('STRIPE_SECRET_KEY')) and ensure the key is rotated."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L0/r1/f1",
+     "path": "app/payments.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Missing HTTP error handling for Stripe API response",
+     "explanation": "The function returns r.json() without checking r.status_code. On 4xx/5xx responses, Stripe returns an error object, but callers cannot distinguish success from failure. Add r.raise_for_status() or check status before parsing."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L0/r1/f2",
+     "path": "app/payments.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No input validation for amount_cents and token",
+     "explanation": "The function accepts any int and str without validation. Negative amounts, zero, or empty tokens will cause confusing Stripe errors. Validate that amount_cents > 0 and token is a non-empty string before making the request."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new payments.py file introduces a hardcoded Stripe secret key and lacks error handling for API responses.",
+   "usage": {
+    "input_tokens": 614,
+    "output_tokens": 656,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L0/r2/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "critical",
+     "title": "Hardcoded Stripe secret key in source code",
+     "explanation": "The STRIPE_KEY constant contains a live secret key (pay_secret_...). Secrets must never be committed to source control. Use environment variables or a secret manager instead. Fix: remove the key from code and load it from os.environ['STRIPE_SECRET_KEY']."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L0/r2/f1",
+     "path": "app/payments.py",
+     "line": 12,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Missing HTTP error handling for Stripe API call",
+     "explanation": "The charge() function does not check r.status_code or call r.raise_for_status(). Failed requests (4xx, 5xx) will return error JSON but the caller cannot distinguish success from failure. Fix: add r.raise_for_status() before returning r.json()."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L0/r2/f2",
+     "path": "app/payments.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No input validation for amount_cents and token",
+     "explanation": "The function accepts any int for amount_cents (including negative/zero) and any string for token. Stripe will reject invalid values but the error surfaces only at the API layer. Fix: validate amount_cents > 0 and token is a non-empty string, raising ValueError early."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The new payments.py file introduces a critical security vulnerability by hardcoding a Stripe secret key in source code, and has a correctness issue due to missing HTTP error handling.",
+   "usage": {
+    "input_tokens": 754,
+    "output_tokens": 640,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L1/r0/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "critical",
+     "title": "Hardcoded Stripe secret key in source code",
+     "explanation": "The STRIPE_KEY constant contains a live secret key (pay_secret_...). This key is now exposed in version control and accessible to anyone with repo access. Secret keys must never be committed. Fix: Remove the hardcoded key and load it from an environment variable (e.g., os.environ['STRIPE_SECRET_KEY']) or a secrets manager."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L1/r0/f1",
+     "path": "app/payments.py",
+     "line": 12,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Missing HTTP error handling for Stripe API response",
+     "explanation": "The charge() function returns r.json() without checking r.status_code. On 4xx/5xx errors, Stripe returns an error object, not a charge object, causing callers to misinterpret failures as successes. Fix: Add r.raise_for_status() before returning, or explicitly check status and raise an exception with error details."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The new payments module introduces a critical security vulnerability by hardcoding a Stripe secret key, and a high-severity correctness issue by not handling HTTP error responses from the Stripe API.",
+   "usage": {
+    "input_tokens": 754,
+    "output_tokens": 1167,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L1/r1/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "critical",
+     "title": "Hardcoded Stripe secret key",
+     "explanation": "The Stripe secret key is hardcoded in the source code. This exposes the secret if the code is committed to a repository. Use environment variables or a secret manager to store sensitive credentials."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L1/r1/f1",
+     "path": "app/payments.py",
+     "line": 12,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Missing HTTP error handling",
+     "explanation": "The function returns r.json() without checking r.status_code or raising for errors. Stripe API returns error responses with non-2xx status codes; the caller may incorrectly treat an error as a successful charge. Add r.raise_for_status() or check status code before returning."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The new payments.py file introduces a critical security vulnerability by hardcoding a Stripe secret key in source code, and a correctness issue by not handling HTTP error responses from the Stripe API.",
+   "usage": {
+    "input_tokens": 754,
+    "output_tokens": 980,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L1/r2/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "critical",
+     "title": "Hardcoded Stripe secret key in source code",
+     "explanation": "The Stripe secret key is embedded directly in the code. This exposes the key to anyone with access to the repository, allowing unauthorized charges and account compromise. The key must be removed from source control and loaded from environment variables or a secure secret manager at runtime."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L1/r2/f1",
+     "path": "app/payments.py",
+     "line": 12,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Missing HTTP error handling for Stripe API calls",
+     "explanation": "The charge function returns r.json() without checking r.raise_for_status() or the HTTP status code. Stripe returns error responses (e.g., 400, 401, 500) as JSON with an 'error' field, but the caller may treat the response as a successful charge. Add r.raise_for_status() before parsing JSON, or explicitly handle non-2xx responses."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a hardcoded Stripe secret key and lacks proper error handling for external API calls.",
+   "usage": {
+    "input_tokens": 754,
+    "output_tokens": 1482,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L2/r0/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "critical",
+     "title": "Hardcoded Stripe secret key in source code",
+     "explanation": "The Stripe secret key is hardcoded in the source file. This exposes the secret if the code is committed to version control. Use environment variables or a secret manager to store sensitive credentials."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L2/r0/f1",
+     "path": "app/payments.py",
+     "line": 12,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Missing HTTP error handling for Stripe API response",
+     "explanation": "The function returns `r.json()` without checking `r.raise_for_status()` or handling non-2xx responses. Stripe returns error details in JSON but with 4xx/5xx status codes, causing callers to treat errors as successful responses. Add `r.raise_for_status()` before parsing JSON."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L2/r0/f2",
+     "path": "app/payments.py",
+     "line": 12,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Unhandled exception if response is not valid JSON",
+     "explanation": "If the Stripe API returns a non-JSON response (e.g., HTML error page), `r.json()` will raise a `requests.exceptions.JSONDecodeError`. Wrap in try/except or check content-type."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The new payments module contains a hardcoded Stripe secret key and lacks proper error handling for API responses.",
+   "usage": {
+    "input_tokens": 754,
+    "output_tokens": 913,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L2/r1/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "critical",
+     "title": "Hardcoded Stripe secret key in source code",
+     "explanation": "The secret key `pay_secret_9f8a7c6e5d4b3a2f1e0d9c8b7a6f5e4d` is committed directly in the code. This exposes the key to anyone with access to the repository and violates secrets management best practices. The key should be loaded from an environment variable or a secure secret store at runtime."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L2/r1/f1",
+     "path": "app/payments.py",
+     "line": 12,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Missing HTTP error handling for Stripe API response",
+     "explanation": "The function returns `r.json()` without checking `r.status_code`. Stripe returns error responses (e.g., 400, 401, 402) with JSON bodies; callers will receive an error object instead of a successful charge, likely causing downstream bugs. Add `r.raise_for_status()` or explicitly handle non-2xx responses."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The new payments.py file introduces a critical security vulnerability by hardcoding a Stripe secret key in source code, and has correctness issues due to missing error handling and input validation.",
+   "usage": {
+    "input_tokens": 754,
+    "output_tokens": 757,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L2/r2/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "critical",
+     "title": "Hardcoded Stripe secret key in source code",
+     "explanation": "The STRIPE_KEY constant contains a live secret key (pay_secret_9f8a7c6e5d4b3a2f1e0d9c8b7a6f5e4d) committed directly in the source file. This exposes the key to anyone with repository access and risks unauthorized charges if the code is deployed or leaked. Fix: Remove the hardcoded key and load it from environment variables or a secure secrets manager (e.g., os.environ['STRIPE_SECRET_KEY'])."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L2/r2/f1",
+     "path": "app/payments.py",
+     "line": 13,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Missing HTTP error handling for Stripe API response",
+     "explanation": "The charge() function returns r.json() without checking r.status_code. On API errors (4xx, 5xx), Stripe returns error JSON but the function treats it as success. Callers cannot distinguish between successful charges and API errors. Fix: Add r.raise_for_status() before returning, or check status code and raise/handle errors appropriately."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L2/r2/f2",
+     "path": "app/payments.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "No input validation for amount_cents and token",
+     "explanation": "The function accepts any int for amount_cents (including negative/zero) and any string for token (including empty). Stripe will reject invalid values, but the function should validate early and raise clear errors (e.g., ValueError for amount_cents <= 0, token not provided)."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The new pagination function contains an off-by-one error that breaks 1-indexed paging, and lacks validation for the per_page parameter.",
+   "usage": {
+    "input_tokens": 552,
+    "output_tokens": 891,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L0/r0/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Off-by-one error in start index calculation",
+     "explanation": "For 1-indexed pages, the start index should be `(page - 1) * per_page`. The current code uses `page * per_page`, causing page 1 to skip the first `per_page` items and return the second page's data. Fix: change `start = page * per_page` to `start = (page - 1) * per_page`."
+    },
+    {
+     "id": "py-0003-off-by-one-page/L0/r0/f1",
+     "path": "app/pagination.py",
+     "line": 3,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for per_page parameter",
+     "explanation": "The function does not validate that `per_page` is a positive integer. If `per_page` is zero or negative, slicing behavior is undefined (e.g., zero returns empty list, negative returns reversed items). Add a check: `if per_page < 1: raise ValueError('per_page must be >= 1')`."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new pagination function contains an off-by-one error in the start index calculation and lacks validation for the per_page parameter.",
+   "usage": {
+    "input_tokens": 552,
+    "output_tokens": 1454,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L0/r1/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect start index calculation for 1-indexed pagination",
+     "explanation": "The start index is calculated as `page * per_page`, but for 1-indexed pages it should be `(page - 1) * per_page`. This causes the first page to skip the first `per_page` items."
+    },
+    {
+     "id": "py-0003-off-by-one-page/L0/r1/f1",
+     "path": "app/pagination.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for `per_page` parameter",
+     "explanation": "The function does not validate that `per_page` is a positive integer. If `per_page` is zero or negative, the function will raise an exception or return incorrect results. Add a check `if per_page <= 0: raise ValueError('per_page must be > 0')`."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new pagination function contains an off-by-one error that breaks the first page and shifts all subsequent pages.",
+   "usage": {
+    "input_tokens": 552,
+    "output_tokens": 998,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L0/r2/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Off-by-one error in pagination start index",
+     "explanation": "The start index is calculated as `page * per_page`, but for 1-indexed pages it should be `(page - 1) * per_page`. With the current code, page 1 starts at index `per_page` (skipping the first `per_page` items), page 2 starts at `2*per_page`, etc. Fix: change `start = page * per_page` to `start = (page - 1) * per_page`."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The new pagination function has an off-by-one error in the start index calculation and lacks validation for the per_page parameter.",
+   "usage": {
+    "input_tokens": 640,
+    "output_tokens": 1190,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L1/r0/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect start index for 1-indexed pagination",
+     "explanation": "The start index is calculated as `page * per_page`, but for 1-indexed pages it should be `(page - 1) * per_page`. This causes the first page to be skipped (e.g., page=1 returns items[per_page:2*per_page] instead of items[0:per_page])."
+    },
+    {
+     "id": "py-0003-off-by-one-page/L1/r0/f1",
+     "path": "app/pagination.py",
+     "line": 4,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for per_page parameter",
+     "explanation": "The function validates that `page >= 1` but does not validate `per_page`. A non-positive `per_page` would cause unexpected slicing behavior (e.g., zero or negative per_page returns empty list or raises). Add a check like `if per_page <= 0: raise ValueError('per_page must be > 0')`."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The pagination function has an off-by-one error that skips the first page, and lacks validation for the per_page parameter.",
+   "usage": {
+    "input_tokens": 640,
+    "output_tokens": 1785,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L1/r1/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Off-by-one error in pagination start index",
+     "explanation": "The start index is calculated as `page * per_page`, but for 1-indexed pages it should be `(page - 1) * per_page`. This causes page 1 to return the second page of items, page 2 to return the third, etc."
+    },
+    {
+     "id": "py-0003-off-by-one-page/L1/r1/f1",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for per_page parameter",
+     "explanation": "The function does not validate that `per_page` is a positive integer. If `per_page` is zero or negative, the slicing behavior may be unexpected (e.g., returning an empty list or items from the end). Add a check `if per_page <= 0: raise ValueError('per_page must be > 0')`."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The pagination function has an off-by-one error in the start index calculation, causing it to skip the first page and return incorrect results for all pages.",
+   "usage": {
+    "input_tokens": 640,
+    "output_tokens": 772,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L1/r2/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Off-by-one error in pagination start index",
+     "explanation": "The start index is calculated as `page * per_page`, but for 1-indexed pages it should be `(page - 1) * per_page`. This causes page 1 to start at index `per_page` instead of 0, returning the second page's data. Fix: change `start = page * per_page` to `start = (page - 1) * per_page`."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The pagination function has an off-by-one error in start index calculation and lacks validation for per_page.",
+   "usage": {
+    "input_tokens": 640,
+    "output_tokens": 1563,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L2/r0/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect start index calculation for 1-indexed pagination",
+     "explanation": "The start index is calculated as `page * per_page`, but for 1-indexed pages it should be `(page - 1) * per_page`. This causes the first page to be skipped and every subsequent page to be off by one page. Fix: change line 5 to `start = (page - 1) * per_page`."
+    },
+    {
+     "id": "py-0003-off-by-one-page/L2/r0/f1",
+     "path": "app/pagination.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for per_page parameter",
+     "explanation": "The function does not validate that `per_page` is a positive integer. If `per_page` is zero or negative, the function will return an empty list or behave unexpectedly. Add a check at the beginning: `if per_page <= 0: raise ValueError('per_page must be > 0')`."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The new pagination function has an off-by-one error in the start index calculation and lacks validation for the per_page parameter.",
+   "usage": {
+    "input_tokens": 640,
+    "output_tokens": 816,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L2/r1/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Off-by-one error in start index for 1-indexed pagination",
+     "explanation": "The function calculates `start = page * per_page`, but for a 1-indexed page the first page should start at index 0. For page=1 this yields `start = per_page`, skipping the first page entirely. Fix: change to `start = (page - 1) * per_page`."
+    },
+    {
+     "id": "py-0003-off-by-one-page/L2/r1/f1",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for per_page parameter",
+     "explanation": "The function does not validate that `per_page` is a positive integer. If `per_page <= 0`, the slice may return an empty list or unexpected results. Add a check: `if per_page < 1: raise ValueError('per_page must be >= 1')`."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The pagination function has an off-by-one error in the start index calculation for 1-indexed pages and lacks validation for the per_page parameter.",
+   "usage": {
+    "input_tokens": 640,
+    "output_tokens": 1186,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L2/r2/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect start index calculation for 1-indexed pagination",
+     "explanation": "The start index is calculated as `page * per_page`, but for 1-indexed pages it should be `(page - 1) * per_page`. This causes the first page to be skipped (e.g., page=1 returns items[per_page:2*per_page] instead of items[0:per_page])."
+    },
+    {
+     "id": "py-0003-off-by-one-page/L2/r2/f1",
+     "path": "app/pagination.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for per_page parameter",
+     "explanation": "The function does not validate that `per_page` is a positive integer. If `per_page` is zero or negative, the slice behavior is undefined (returns empty list or raises no error but yields unexpected results). Add a check like `if per_page <= 0: raise ValueError('per_page must be > 0')`."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The new admin_routes.py introduces a critical security vulnerability by missing authentication and authorization on the delete user endpoint.",
+   "usage": {
+    "input_tokens": 630,
+    "output_tokens": 1636,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L0/r0/f0",
+     "path": "app/admin_routes.py",
+     "line": 18,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication and authorization on user deletion endpoint",
+     "explanation": "The delete_user route does not require the user to be logged in or have admin privileges, allowing any unauthenticated request to delete any user by ID. Add @login_required and an admin check similar to list_users."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new admin_routes.py file introduces a critical security vulnerability: the delete_user endpoint lacks authentication and authorization, allowing any unauthenticated user to delete any user. Additionally, the list_users endpoint returns all users without pagination, which may cause performance issues at scale.",
+   "usage": {
+    "input_tokens": 630,
+    "output_tokens": 1753,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L0/r1/f0",
+     "path": "app/admin_routes.py",
+     "line": 18,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication and authorization on delete_user endpoint",
+     "explanation": "The delete_user function has no @login_required decorator and does not check current_user.is_admin. This allows any unauthenticated request to delete any user by ID. Fix: add @login_required and an admin check similar to list_users."
+    },
+    {
+     "id": "py-0004-missing-admin-check/L0/r1/f1",
+     "path": "app/admin_routes.py",
+     "line": 14,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "list_users returns all users without pagination",
+     "explanation": "User.query.all() loads every user into memory, which can cause performance problems as the user base grows. Consider adding pagination (e.g., using Flask-SQLAlchemy's paginate) or limiting the result set."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new admin_routes.py file introduces a critical security vulnerability: the DELETE /admin/users/<user_id> endpoint lacks any authentication or authorization checks, allowing unauthenticated users to delete any user. Additionally, the list_users endpoint lacks pagination which may cause performance issues at scale.",
+   "usage": {
+    "input_tokens": 630,
+    "output_tokens": 1516,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L0/r2/f0",
+     "path": "app/admin_routes.py",
+     "line": 18,
+     "category": "security",
+     "severity": "critical",
+     "title": "DELETE /admin/users/<user_id> endpoint missing authentication and authorization",
+     "explanation": "The delete_user function has no @login_required decorator and does not check current_user.is_admin. Any caller can delete any user by ID. Fix: add @login_required and an admin check (abort(403) if not current_user.is_admin) before deletion."
+    },
+    {
+     "id": "py-0004-missing-admin-check/L0/r2/f1",
+     "path": "app/admin_routes.py",
+     "line": 14,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "list_users returns all users without pagination",
+     "explanation": "User.query.all() loads every user into memory. For large user bases this can cause high memory usage and slow responses. Fix: implement pagination (e.g., using Flask-SQLAlchemy's paginate) and return a paginated response."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The new admin_routes.py file introduces a critical security vulnerability: the delete_user endpoint lacks authentication and authorization, allowing unauthenticated users to delete any user. Additionally, the list_users endpoint loads all users without pagination, which may cause performance issues at scale.",
+   "usage": {
+    "input_tokens": 779,
+    "output_tokens": 1362,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L1/r0/f0",
+     "path": "app/admin_routes.py",
+     "line": 18,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication and authorization on user deletion endpoint",
+     "explanation": "The delete_user endpoint lacks @login_required and does not verify that the current user is an admin, allowing unauthenticated users to delete any user. Fix: Add @login_required and an admin check similar to list_users."
+    },
+    {
+     "id": "py-0004-missing-admin-check/L1/r0/f1",
+     "path": "app/admin_routes.py",
+     "line": 14,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Unpaginated user list may cause performance issues",
+     "explanation": "User.query.all() loads all users into memory at once. For large datasets, this can cause high memory usage and slow responses. Fix: Implement pagination using limit/offset or Flask-SQLAlchemy's paginate."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The new admin_routes.py file introduces two endpoints. The delete_user endpoint is missing authentication and authorization, allowing unauthenticated users to delete any user. The list_users endpoint lacks pagination, which could cause performance issues with large datasets.",
+   "usage": {
+    "input_tokens": 779,
+    "output_tokens": 1325,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L1/r1/f0",
+     "path": "app/admin_routes.py",
+     "line": 20,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication and authorization on delete_user endpoint",
+     "explanation": "The delete_user route does not have @login_required nor an admin check. Any unauthenticated request can delete any user by ID. Fix: add @login_required and verify current_user.is_admin before deletion."
+    },
+    {
+     "id": "py-0004-missing-admin-check/L1/r1/f1",
+     "path": "app/admin_routes.py",
+     "line": 11,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "list_users endpoint lacks pagination",
+     "explanation": "The endpoint returns all users via User.query.all(). With many users this can cause excessive memory usage and large response payloads. Fix: implement pagination using query parameters (e.g., page, per_page) and return a paginated response."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Critical security vulnerability in delete_user endpoint due to missing authentication and authorization; also list_users endpoint lacks pagination which may cause performance issues.",
+   "usage": {
+    "input_tokens": 779,
+    "output_tokens": 1526,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L1/r2/f0",
+     "path": "app/admin_routes.py",
+     "line": 18,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication and authorization on delete user endpoint",
+     "explanation": "The delete_user endpoint lacks @login_required and does not verify that the current user is an admin, allowing unauthenticated users to delete any user. Fix: Add @login_required decorator and check current_user.is_admin, aborting with 403 if not."
+    },
+    {
+     "id": "py-0004-missing-admin-check/L1/r2/f1",
+     "path": "app/admin_routes.py",
+     "line": 14,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "List users endpoint lacks pagination",
+     "explanation": "The endpoint returns all users without pagination, which can cause performance issues (memory, response size) with large user bases. Fix: Implement pagination using query parameters (e.g., page, per_page) and use User.query.paginate."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The new admin_routes.py introduces a critical security vulnerability: the delete_user endpoint lacks authentication and authorization checks, allowing any unauthenticated user to delete any user. Additionally, deleting a user with associated invoices will cause a foreign key constraint violation because the relationship lacks cascade delete.",
+   "usage": {
+    "input_tokens": 980,
+    "output_tokens": 1240,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L2/r0/f0",
+     "path": "app/admin_routes.py",
+     "line": 16,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication and authorization on delete_user endpoint",
+     "explanation": "The delete_user route has no @login_required decorator and no admin check. Any unauthenticated caller can delete any user by ID. Fix: add @login_required and verify current_user.is_admin before deletion."
+    },
+    {
+     "id": "py-0004-missing-admin-check/L2/r0/f1",
+     "path": "app/admin_routes.py",
+     "line": 18,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Deleting a user with invoices violates foreign key constraint",
+     "explanation": "The User model has a one-to-many relationship with Invoice (owner_id foreign key) but no cascade delete. Deleting a user that owns invoices will raise an integrity error. Fix: either add cascade='all, delete-orphan' to the relationship in models.py, or check for existing invoices and handle appropriately (e.g., abort or reassign) before deletion."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The new admin_routes.py introduces two critical issues: (1) the delete_user endpoint lacks authentication and authorization, allowing any unauthenticated user to delete any user; (2) deleting a user who owns invoices will violate a foreign key constraint because the relationship is not configured with cascade delete.",
+   "usage": {
+    "input_tokens": 980,
+    "output_tokens": 1256,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L2/r1/f0",
+     "path": "app/admin_routes.py",
+     "line": 15,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication and authorization on delete_user endpoint",
+     "explanation": "The delete_user route has no @login_required decorator and no admin check. Any unauthenticated caller can delete any user by ID. Fix: add @login_required and verify current_user.is_admin before deletion."
+    },
+    {
+     "id": "py-0004-missing-admin-check/L2/r1/f1",
+     "path": "app/admin_routes.py",
+     "line": 16,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Deleting a user with invoices causes foreign key constraint violation",
+     "explanation": "The User model has a one-to-many relationship with Invoice (owner_id foreign key). Deleting a user that still has invoices will raise an integrity error unless the database cascades deletes (it does not). Fix: either delete associated invoices first, configure cascade='all, delete-orphan' on the relationship, or prevent deletion when invoices exist."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The new admin_routes.py introduces critical security flaws (missing authentication/authorization on delete endpoint), a data integrity bug (deleting a user with invoices causes a 500 error), and a maintainability concern (unpaginated user list).",
+   "usage": {
+    "input_tokens": 980,
+    "output_tokens": 1464,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L2/r2/f0",
+     "path": "app/admin_routes.py",
+     "line": 15,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication and authorization on delete_user endpoint",
+     "explanation": "The delete_user route lacks @login_required and an admin check, allowing any unauthenticated user to delete any user by ID. Fix: add @login_required and verify current_user.is_admin before deletion."
+    },
+    {
+     "id": "py-0004-missing-admin-check/L2/r2/f1",
+     "path": "app/admin_routes.py",
+     "line": 17,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Deleting a user with associated invoices raises integrity error",
+     "explanation": "The User model has a foreign key from Invoice.owner_id with no ON DELETE CASCADE. Deleting a user that owns invoices will cause a database integrity error (500). Fix: either add cascade='all, delete-orphan' to the relationship, or check for existing invoices and abort/handle before deletion."
+    },
+    {
+     "id": "py-0004-missing-admin-check/L2/r2/f2",
+     "path": "app/admin_routes.py",
+     "line": 11,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Unpaginated user list may cause performance issues",
+     "explanation": "list_users returns all users via User.query.all(). For large datasets this can exhaust memory and cause slow responses. Fix: implement pagination (e.g., using Flask-SQLAlchemy's paginate) and return a paginated response."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The new inventory module defines a lock but fails to use it in the reserve function, creating a race condition that can cause incorrect stock counts under concurrent access.",
+   "usage": {
+    "input_tokens": 562,
+    "output_tokens": 706,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L0/r0/f0",
+     "path": "app/inventory.py",
+     "line": 7,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Missing lock in reserve function causes race condition",
+     "explanation": "The reserve function reads and writes the global stock dictionary without holding _lock. Concurrent calls can read the same available value and both succeed, overselling inventory. Wrap the check-and-update in a with _lock: block."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new inventory module defines a lock but fails to use it in the reserve function, causing a race condition when multiple threads concurrently check and update stock levels.",
+   "usage": {
+    "input_tokens": 562,
+    "output_tokens": 628,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L0/r1/f0",
+     "path": "app/inventory.py",
+     "line": 7,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Missing lock in reserve function leads to race condition",
+     "explanation": "The reserve function reads stock[item], checks availability, and writes back without holding _lock. Concurrent calls can both see the same available count and both succeed, overselling inventory. Fix: wrap the check-and-update in a with _lock: block."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new inventory module defines a lock but fails to use it in the reserve function, creating a race condition when multiple threads concurrently update stock.",
+   "usage": {
+    "input_tokens": 562,
+    "output_tokens": 839,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L0/r2/f0",
+     "path": "app/inventory.py",
+     "line": 7,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition in reserve due to missing lock",
+     "explanation": "The reserve function reads and writes the global stock dictionary without holding the _lock, causing a race condition when called concurrently. Wrap the critical section (lines 9-12) with `with _lock:` to ensure atomic check-and-update."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The inventory module defines a threading lock but never uses it, creating a race condition in the reserve function that allows overselling when called concurrently.",
+   "usage": {
+    "input_tokens": 651,
+    "output_tokens": 367,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L1/r0/f0",
+     "path": "app/inventory.py",
+     "line": 10,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition in reserve() due to unused lock",
+     "explanation": "The function reads stock[item], checks availability, and writes back without holding _lock. Concurrent calls can read the same available value and both succeed, causing overselling (negative stock). Fix: wrap the check-and-update in `with _lock:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The reserve() function has a race condition because it reads stock, checks availability, and updates stock without holding the defined lock, allowing overselling under concurrent access.",
+   "usage": {
+    "input_tokens": 651,
+    "output_tokens": 636,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L1/r1/f0",
+     "path": "app/inventory.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition in reserve() allows overselling",
+     "explanation": "The check-then-update sequence (lines 9-10) is not atomic. Multiple threads can read the same available count, all pass the check, and then all decrement stock, resulting in negative inventory or more items reserved than exist. The _lock is defined but never used. Fix: wrap the critical section with `with _lock:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The reserve function has a race condition because it reads and writes the shared stock dictionary without using the defined lock, allowing concurrent threads to oversell inventory.",
+   "usage": {
+    "input_tokens": 651,
+    "output_tokens": 529,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L1/r2/f0",
+     "path": "app/inventory.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition in reserve function due to missing lock",
+     "explanation": "The function reads stock[item] and writes back stock[item] = available - qty without holding _lock. Concurrent threads can both see the same available count and both succeed, causing overselling. Fix: wrap the check-and-update in `with _lock:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The reserve() function has a race condition: it reads stock, checks availability, and writes back without holding the defined lock, allowing overselling under concurrent access.",
+   "usage": {
+    "input_tokens": 651,
+    "output_tokens": 428,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L2/r0/f0",
+     "path": "app/inventory.py",
+     "line": 10,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition in reserve() due to unused lock",
+     "explanation": "The function reads stock[item], checks availability, and writes back without atomicity. Multiple threads can read the same available count, all pass the check, and all decrement, causing negative stock or overselling. The _lock is defined but never used. Fix: wrap the check-and-update in `with _lock:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The new inventory module defines a threading lock but fails to use it, creating a race condition where concurrent calls to reserve() can oversell stock.",
+   "usage": {
+    "input_tokens": 651,
+    "output_tokens": 867,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L2/r1/f0",
+     "path": "app/inventory.py",
+     "line": 7,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition: lock defined but not used in reserve()",
+     "explanation": "The `_lock` is created at module level but never acquired in `reserve()`. Multiple threads can simultaneously read `available`, both see sufficient quantity, and both decrement stock, leading to negative inventory or overselling. Fix: wrap the check-and-update block in `with _lock:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The reserve() function has a race condition because it reads and writes the shared stock dictionary without using the defined lock, allowing concurrent threads to oversell inventory.",
+   "usage": {
+    "input_tokens": 651,
+    "output_tokens": 614,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L2/r2/f0",
+     "path": "app/inventory.py",
+     "line": 8,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition in reserve() due to unused lock",
+     "explanation": "The function reads stock.get(item, 0), checks availability, and updates stock[item] without holding _lock. Multiple threads can read the same available value and all succeed, causing overselling. Fix: wrap the check-and-update in `with _lock:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The new file introduces a path traversal vulnerability because user-supplied filenames are not validated before being joined with the upload directory.",
+   "usage": {
+    "input_tokens": 520,
+    "output_tokens": 720,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0006-path-traversal/L0/r0/f0",
+     "path": "app/files.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal vulnerability in read_upload",
+     "explanation": "The `filename` parameter is directly concatenated with `UPLOAD_DIR` using `Path / filename`. An attacker can supply a filename like `../../etc/passwd` to read arbitrary files outside the upload directory. Fix: resolve the path and verify it is within `UPLOAD_DIR` (e.g., `path = (UPLOAD_DIR / filename).resolve(); if not path.is_relative_to(UPLOAD_DIR): raise ValueError('Invalid filename')`)."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new file introduces a path traversal vulnerability in read_upload() that allows reading arbitrary files on the server.",
+   "usage": {
+    "input_tokens": 520,
+    "output_tokens": 436,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0006-path-traversal/L0/r1/f0",
+     "path": "app/files.py",
+     "line": 7,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal in read_upload allows arbitrary file read",
+     "explanation": "The function joins user-controlled filename directly with UPLOAD_DIR without validating that the resulting path stays within the upload directory. An attacker can pass filenames like '../../../etc/passwd' to read sensitive files. Fix: resolve the path and verify it's within UPLOAD_DIR, e.g., `path = (UPLOAD_DIR / filename).resolve(); if not path.is_relative_to(UPLOAD_DIR.resolve()): raise ValueError('Invalid filename')`."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new file introduces a path traversal vulnerability allowing arbitrary file read.",
+   "usage": {
+    "input_tokens": 520,
+    "output_tokens": 739,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0006-path-traversal/L0/r2/f0",
+     "path": "app/files.py",
+     "line": 7,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal in read_upload",
+     "explanation": "The filename parameter is concatenated directly with UPLOAD_DIR using pathlib's / operator, but no validation ensures the resulting path stays within the upload directory. An attacker can supply a filename like '../../etc/passwd' to read arbitrary files on the server. Fix: resolve the path and verify it is within UPLOAD_DIR, e.g., `path = (UPLOAD_DIR / filename).resolve(); if not path.is_relative_to(UPLOAD_DIR.resolve()): raise ValueError('Invalid filename')`."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The new file introduces a path traversal vulnerability allowing arbitrary file read.",
+   "usage": {
+    "input_tokens": 576,
+    "output_tokens": 535,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0006-path-traversal/L1/r0/f0",
+     "path": "app/files.py",
+     "line": 7,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal in read_upload allows arbitrary file read",
+     "explanation": "The filename parameter is user-controlled and joined directly to UPLOAD_DIR using pathlib's / operator. An attacker can supply a filename like '../../etc/passwd' to escape the upload directory and read arbitrary files on the server. Fix: validate the filename (e.g., reject paths containing '..' or absolute paths) and resolve the path with path.resolve() then verify it's within UPLOAD_DIR using path.is_relative_to(UPLOAD_DIR) (Python 3.9+) or by comparing resolved paths."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The new file introduces a critical path traversal vulnerability allowing arbitrary file read.",
+   "usage": {
+    "input_tokens": 576,
+    "output_tokens": 512,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0006-path-traversal/L1/r1/f0",
+     "path": "app/files.py",
+     "line": 7,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal in read_upload allows arbitrary file read",
+     "explanation": "The filename parameter is user-controlled and joined directly with UPLOAD_DIR using pathlib's / operator. An attacker can supply a filename like '../../etc/passwd' to read arbitrary files on the server. Fix: resolve the path and verify it's within UPLOAD_DIR before reading, e.g., `path = (UPLOAD_DIR / filename).resolve(); if not path.is_relative_to(UPLOAD_DIR.resolve()): raise ValueError('Invalid path')`."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The new file introduces a path traversal vulnerability in read_upload() because user-supplied filename is joined with the base directory without validation, allowing directory traversal (e.g., '../../etc/passwd').",
+   "usage": {
+    "input_tokens": 576,
+    "output_tokens": 492,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0006-path-traversal/L1/r2/f0",
+     "path": "app/files.py",
+     "line": 7,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal in read_upload()",
+     "explanation": "The function joins user-controlled filename with UPLOAD_DIR using pathlib's / operator, but does not verify the resolved path stays within UPLOAD_DIR. An attacker can pass filenames like '../../etc/passwd' to read arbitrary files. Fix: resolve both paths and ensure the target is within UPLOAD_DIR, e.g., `path = (UPLOAD_DIR / filename).resolve(); if not path.is_relative_to(UPLOAD_DIR.resolve()): raise ValueError('Invalid filename')`."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The new file introduces a path traversal vulnerability in read_upload() that allows reading arbitrary files outside the upload directory.",
+   "usage": {
+    "input_tokens": 576,
+    "output_tokens": 433,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0006-path-traversal/L2/r0/f0",
+     "path": "app/files.py",
+     "line": 7,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal in read_upload allows arbitrary file read",
+     "explanation": "The function joins user-controlled filename with UPLOAD_DIR using Path's / operator, which resolves '..' components. An attacker can pass filenames like '../../../etc/passwd' to read any file the process can access. Fix: validate that the resolved path is within UPLOAD_DIR, e.g., `path = (UPLOAD_DIR / filename).resolve(); if not path.is_relative_to(UPLOAD_DIR.resolve()): raise ValueError('Invalid filename')`."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The new file app/files.py introduces a path traversal vulnerability in read_upload() because it does not validate that the resolved path stays within UPLOAD_DIR.",
+   "usage": {
+    "input_tokens": 576,
+    "output_tokens": 439,
+    "served_model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+   },
+   "findings": [
+    {
+     "id": "py-0006-path-traversal/L2/r1/f0",
+     "path": "app/files.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal in read_upload()",
+     "explanation": "The function joins user-controlled filename with UPLOAD_DIR using Path's / operator, which resolves '..' sequences. An attacker could pass filenames like '../../../etc/passwd' to read arbitrary files. Fix: resolve the path and verify it is within UPLOAD_DIR, e.g., `path = (UPLOAD_DIR / filename).resolve(); if not path.is_relative_to(UPLOAD_DIR.resolve()): raise ValueError('Invalid filename')`."
+    }
+   ]
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  }
+ ]
+}

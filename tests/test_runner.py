@@ -94,3 +94,43 @@ def test_groq_long_retry_after_is_recorded_not_slept(monkeypatch):
     monkeypatch.setenv("GROQ_API_KEY", "gsk_test")
     result = openai_compat.GroqReviewer()._review("prompt")
     assert slept == [] and result.error.startswith("rate_limited")
+
+
+def test_time_budget_stops_partial_and_resume_finishes(tmp_path):
+    from reviewbench.runner import find_resumable
+
+    cases = discover((CASES, "public"))[:2]
+    out = tmp_path / "results" / "r.json"
+    ticks = iter(range(0, 10_000, 60))  # every clock() call advances one minute
+    calls = []
+
+    def counting(request):
+        calls.append(request)
+        return _oracle(request)
+
+    doc = run(cases, ReplayReviewer(fn=counting), ["L0"], 2, out, log=lambda m: None,
+              max_minutes=2, clock=lambda: next(ticks))
+    assert doc["status"] == "partial" and 0 < len(doc["records"]) < 4
+    first = len(doc["records"])
+    assert find_resumable(out.parent, doc["provider"], doc["model"], 2, ["L0"]) == out
+
+    doc2 = run(cases, ReplayReviewer(fn=counting), ["L0"], 2, out, log=lambda m: None)
+    assert doc2["status"] == "complete" and len(doc2["records"]) == 4
+    assert len(calls) == 4  # resumed reviews were not repeated
+    keys = {(r["case"], r["level"], r["run"]) for r in doc2["records"]}
+    assert len(keys) == 4 and first < 4
+    assert find_resumable(out.parent, doc["provider"], doc["model"], 2, ["L0"]) is None
+
+
+def test_resume_retries_rate_limited_records(tmp_path):
+    cases = discover((CASES, "public"))[:1]
+    out = tmp_path / "r.json"
+    from reviewbench.adapters.base import ReviewResult
+
+    class Limited(ReplayReviewer):
+        def _review(self, prompt):
+            return ReviewResult("", [], error="rate_limited: quota")
+
+    run(cases, Limited(), ["L0"], 1, out, log=lambda m: None)
+    doc = run(cases, ReplayReviewer(fn=_oracle), ["L0"], 1, out, log=lambda m: None)
+    assert [r["error"] for r in doc["records"]] == [None]

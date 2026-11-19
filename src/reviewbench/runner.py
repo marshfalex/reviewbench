@@ -49,21 +49,60 @@ def results_path(out_dir: Path, provider: str, model: str, today: dt.date | None
     return path
 
 
+def find_resumable(out_dir: Path, provider: str, model: str, k: int, levels: list[str]) -> Path | None:
+    """Newest partial results file for the same reviewer and settings, if any."""
+    for path in sorted(out_dir.glob("*.json"), reverse=True):
+        if path.name.endswith(".adjudications.json"):
+            continue
+        try:
+            doc = json.loads(path.read_text())
+        except (OSError, json.JSONDecodeError):
+            continue
+        if (doc.get("status") == "partial" and doc.get("bench_version") == BENCH_VERSION
+                and doc.get("provider") == provider and doc.get("model") == model
+                and doc.get("k") == k and doc.get("levels") == levels):
+            return path
+    return None
+
+
 def run(cases: list[Case], reviewer: Reviewer, levels: list[str], k: int, out_path: Path,
-        log=lambda msg: print(msg, file=sys.stderr)) -> dict:
-    doc = {
-        "bench_version": BENCH_VERSION,
-        "created": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
-        "provider": reviewer.provider, "model": reviewer.model, "k": k, "levels": levels,
-        "status": "partial",
-        "cases": {c.id: case_truth(c) for c in cases},
-        "records": [],
-    }
+        log=lambda msg: print(msg, file=sys.stderr), max_minutes: float | None = None,
+        clock=None) -> dict:
+    """Run every (case, level, run) not already recorded in out_path (resume), checkpointing
+    after each review. Stops early, leaving status "partial", once max_minutes is used up."""
+    import time as _time
+    clock = clock or _time.monotonic
+    started = clock()
+    if out_path.exists():
+        doc = json.loads(out_path.read_text())
+        done = {(r["case"], r["level"], r["run"]) for r in doc["records"]
+                if not (r.get("error") or "").startswith("rate_limited")}
+        doc["records"] = [r for r in doc["records"] if (r["case"], r["level"], r["run"]) in done]
+        doc["cases"].update({c.id: case_truth(c) for c in cases})
+        log(f"resuming {out_path.name}: {len(done)} reviews already done")
+    else:
+        doc = {
+            "bench_version": BENCH_VERSION,
+            "created": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+            "provider": reviewer.provider, "model": reviewer.model, "k": k, "levels": levels,
+            "status": "partial",
+            "cases": {c.id: case_truth(c) for c in cases},
+            "records": [],
+        }
+        done = set()
+    doc["status"] = "partial"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     for case in cases:
         for level in levels:
-            request = build_request(case, level)
+            request = None
             for r in range(k):
+                if (case.id, level, r) in done:
+                    continue
+                if max_minutes is not None and (clock() - started) / 60 >= max_minutes:
+                    log(f"time budget of {max_minutes} min used; stopping with status partial")
+                    out_path.write_text(json.dumps(doc, indent=1))
+                    return doc
+                request = request or build_request(case, level)
                 try:
                     result = reviewer.review(request)
                 except Exception as e:  # recorded, not fatal: one flaky call must not lose the run
@@ -77,7 +116,7 @@ def run(cases: list[Case], reviewer: Reviewer, levels: list[str], k: int, out_pa
                                        "findings": findings})
                 log(f"{case.id} {level} run{r}: {len(findings)} findings"
                     + (f" ERROR {result.error}" if result.error else ""))
-        out_path.write_text(json.dumps(doc, indent=1))  # checkpoint after each case
+                out_path.write_text(json.dumps(doc, indent=1))  # checkpoint after every review
     doc["status"] = "complete"
     out_path.write_text(json.dumps(doc, indent=1))
     return doc

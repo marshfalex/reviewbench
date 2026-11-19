@@ -39,5 +39,11 @@ Append-only. One short entry per working session: what was done, what was learne
   `[owner]` item for CI access to held-out cases: a read-only fine-grained token, an opt-in
   checkout step, and the limit that raw held-out results don't survive an ephemeral runner. It
   replaces the matching unapproved idea.
-- Next: a session that is allowed to attach `reviewbench-heldout` builds the 5 held-out cases
-  there. Otherwise, start CVE batch 1 in the public repo.
+- Later the owner approved attaching the repo. The 5 cases are now in an open PR in
+  `reviewbench-heldout`; details live there, not here. Method: pin the fix commit with `git log`
+  between release tags, reverse its source hunks, and excerpt big files with `# [... omitted ...]`
+  markers to stay under Groq's 24,000-char budget (watch L2: Django's related file pushed it over
+  until trimmed).
+- Learned: an empty GitHub repo has no base branch for a PR. The owner chose to seed `main` with a
+  README-only commit.
+- Next: CVE batch 1 in the public repo. The same build method should work.

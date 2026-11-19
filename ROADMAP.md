@@ -10,9 +10,8 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
 - [ ] [owner] Create private repo `marshfalex/reviewbench-heldout` and add the 5 held-out CVE cases
       (PyJWT iss CVE-2024-53861, urllib3 Proxy-Authorization CVE-2024-37891, Flask Vary: Cookie
       CVE-2023-30861, Django Trunc/Extract CVE-2022-34265, python-multipart ReDoS CVE-2024-24762).
-      _Partial (2026-11-19): the owner created the empty repo. The 5 cases still need to be built
-      there. A Claude session can build them once it is allowed to attach that repo with push
-      access; this session's attempt was denied._
+      _Partial (2026-11-19): the owner created the repo, and the 5 cases are in an open PR there.
+      Tick this item once that PR merges._
 - [ ] [owner] **Let the `benchmark` workflow read held-out cases** (no cost; prerequisite: the
       held-out cases exist). The owner needs to:
       1. Create a fine-grained personal access token scoped to `marshfalex/reviewbench-heldout`

@@ -177,3 +177,45 @@ def test_quota_stops_run_as_partial(tmp_path):
     cases = discover((CASES, "public"))[:3]
     doc = run(cases, Quota(), ["L0"], 2, tmp_path / "r.json", log=lambda m: None)
     assert doc["status"] == "partial" and Quota.calls == 1
+
+
+def test_free_providers_registered_and_require_a_model():
+    import pytest
+
+    for name in ("openrouter", "gemini", "cerebras", "mistral"):
+        with pytest.raises(ValueError, match="pass --model"):
+            get_adapter(name)
+        r = get_adapter(name, "some-model")
+        assert r.model == "some-model" and not r.is_paid and r.url.startswith("https://")
+
+
+def test_json_mode_rejected_falls_back_to_plain(monkeypatch):
+    import requests
+
+
+    body = {"choices": [{"message": {"content": '{"summary": "s", "findings": []}'}}], "usage": {}}
+    sent = []
+
+    class Bad:
+        status_code, headers, text = 400, {}, "response_format is not supported"
+
+    class Ok:
+        status_code, headers, text = 200, {}, ""
+
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return body
+
+    responses = [Bad(), Ok()]
+
+    def post(url, headers, json, timeout):
+        sent.append(dict(json))
+        return responses.pop(0)
+
+    monkeypatch.setattr(requests, "post", post)
+    monkeypatch.setenv("MISTRAL_API_KEY", "k")
+    result = get_adapter("mistral", "m")._review("prompt")
+    assert result.error is None
+    assert "response_format" in sent[0] and "response_format" not in sent[1]

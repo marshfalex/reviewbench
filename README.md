@@ -28,6 +28,21 @@ relying on one is different:
   still pending is always shown.
 * **Small n, stated.** Every number carries its n and a Wilson 95% interval.
 
+## Providers
+
+| provider | cost | key (env / repo secret) | notes |
+|---|---|---|---|
+| `groq` | free tier | `GROQ_API_KEY` | default model `openai/gpt-oss-120b`; ~24k-char prompt cap |
+| `gemini` | free tier | `GEMINI_API_KEY` | Google AI Studio, OpenAI-compatible endpoint; pass `--model` |
+| `openrouter` | free models | `OPENROUTER_API_KEY` | use model ids ending in `:free`; pass `--model` |
+| `cerebras` | free tier | `CEREBRAS_API_KEY` | pass `--model` |
+| `mistral` | free tier | `MISTRAL_API_KEY` | "Experiment" plan; pass `--model` |
+| `ollama` | free (local) | none | runs on your machine |
+| `anthropic` | **paid** | `ANTHROPIC_API_KEY` | refused unless `--yes` / `--max-usd` covers the estimate |
+
+Each hosted provider has its own rate limit, so the benchmark workflow can run several models in
+parallel. Free tiers are slow (minutes per review); runs checkpoint and resume (`--resume`).
+
 ## Quick start
 
 ```bash

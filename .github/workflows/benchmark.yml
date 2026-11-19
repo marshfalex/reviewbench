@@ -6,12 +6,12 @@ on:
   workflow_dispatch:
     inputs:
       provider:
-        description: "groq (free tier) or anthropic (PAID)"
+        description: "free tiers: groq, gemini, openrouter, cerebras, mistral. PAID: anthropic"
         type: choice
-        options: [groq, anthropic]
+        options: [groq, gemini, openrouter, cerebras, mistral, anthropic]
         default: groq
       model:
-        description: "model id; empty = the adapter's default"
+        description: "model id; empty = the adapter's default (groq/anthropic only; others require one)"
         type: string
         default: ""
       k:
@@ -28,8 +28,8 @@ on:
         default: "0"
 permissions:
   contents: write
-concurrency:
-  group: benchmark
+concurrency:  # one run per provider+model at a time; different models run in parallel
+  group: benchmark-${{ inputs.provider }}-${{ inputs.model }}
   cancel-in-progress: false
 jobs:
   run:
@@ -53,6 +53,10 @@ jobs:
         timeout-minutes: 300  # step-level, so the always() steps below still get time to commit
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: >
           python -m reviewbench run --provider "$PROVIDER" ${MODEL:+--model "$MODEL"}

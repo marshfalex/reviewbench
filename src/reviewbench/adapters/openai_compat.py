@@ -53,6 +53,9 @@ class OpenAICompatReviewer(Reviewer):
                 if attempt < self.retries - 1:
                     time.sleep(wait)
                     continue
+            if r.status_code == 400 and "response_format" in payload and "response_format" in r.text:
+                payload.pop("response_format")  # endpoint has no JSON mode; the prompt still asks for JSON
+                continue
             if r.status_code == 413:  # bigger than this tier allows, despite our budget
                 return ReviewResult("", [], error="too_large: HTTP 413")
             r.raise_for_status()
@@ -87,3 +90,45 @@ class OllamaReviewer(OpenAICompatReviewer):
         super().__init__(model)
         host = os.environ.get("OLLAMA_HOST", "http://localhost:11434").rstrip("/")
         self.url = f"{host}/v1/chat/completions"
+
+
+# --- Free-tier hosted providers (OpenAI-compatible endpoints). Each has its own rate limit,
+# so several models can be benchmarked in parallel at no cost. Model ids change often, so
+# these adapters have no default model: pass --model (the provider's model list is the source).
+
+class _ModelRequired(OpenAICompatReviewer):
+    def __init__(self, model: str | None = None):
+        super().__init__(model)
+        if not self.model:
+            raise ValueError(f"provider {self.provider!r} has no default model; pass --model")
+
+
+class OpenRouterReviewer(_ModelRequired):
+    """openrouter.ai: free models end in ':free'."""
+    provider = "openrouter"
+    url = "https://openrouter.ai/api/v1/chat/completions"
+    key_env = "OPENROUTER_API_KEY"
+    max_prompt_chars = 100_000
+
+
+class GeminiReviewer(_ModelRequired):
+    """Google AI Studio free tier, via its OpenAI-compatible endpoint."""
+    provider = "gemini"
+    url = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+    key_env = "GEMINI_API_KEY"
+    max_prompt_chars = 200_000
+
+
+class CerebrasReviewer(_ModelRequired):
+    provider = "cerebras"
+    url = "https://api.cerebras.ai/v1/chat/completions"
+    key_env = "CEREBRAS_API_KEY"
+    max_prompt_chars = 24_000
+
+
+class MistralReviewer(_ModelRequired):
+    """Mistral's free 'Experiment' tier."""
+    provider = "mistral"
+    url = "https://api.mistral.ai/v1/chat/completions"
+    key_env = "MISTRAL_API_KEY"
+    max_prompt_chars = 100_000

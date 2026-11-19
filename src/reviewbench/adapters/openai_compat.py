@@ -7,7 +7,10 @@ import time
 
 from reviewbench.adapters.base import OUTPUT_SCHEMA, SYSTEM_PROMPT, Reviewer, ReviewResult, parse_review
 
-MAX_RETRY_WAIT_S = 120  # longer waits signal a daily quota; see review loop
+# Groq's per-minute token limit routinely asks for 3-7 min waits on large prompts; those are
+# normal and must be slept. Only a wait longer than this signals a daily quota, which a run
+# can't outlast: the review is recorded as rate_limited and the runner stops (status partial).
+MAX_RETRY_WAIT_S = 1200
 
 
 class OpenAICompatReviewer(Reviewer):

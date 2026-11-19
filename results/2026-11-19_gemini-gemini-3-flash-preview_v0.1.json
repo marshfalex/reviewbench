@@ -1,0 +1,2081 @@
+{
+ "bench_version": "0.1",
+ "created": "2026-11-19T17:36:19+00:00",
+ "provider": "gemini",
+ "model": "gemini-3-flash-preview",
+ "k": 3,
+ "levels": [
+  "L0",
+  "L1",
+  "L2"
+ ],
+ "status": "partial",
+ "cases": {
+  "py-0001-sql-injection": {
+   "title": "SQL query built with an f-string",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "injection"
+   ],
+   "bugs": [
+    {
+     "file": "app/users.py",
+     "lines": [
+      6,
+      6
+     ],
+     "class": "sql_injection",
+     "cwe": "CWE-89",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0002-hardcoded-secret": {
+   "title": "Payment API key hard-coded in source",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "secrets"
+   ],
+   "bugs": [
+    {
+     "file": "app/payments.py",
+     "lines": [
+      3,
+      3
+     ],
+     "class": "leaked_secret",
+     "cwe": "CWE-798",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "http error handling",
+     "file": "app/payments.py",
+     "note": ""
+    },
+    {
+     "match": "api response",
+     "file": "app/payments.py",
+     "note": ""
+    },
+    {
+     "match": "http request failures",
+     "file": "app/payments.py",
+     "note": ""
+    },
+    {
+     "match": "raise_for_status",
+     "file": "app/payments.py",
+     "note": "r.json() on a 4xx/5xx hides the failure"
+    }
+   ]
+  },
+  "py-0003-off-by-one-page": {
+   "title": "1-indexed pagination skips the first page",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "off-by-one"
+   ],
+   "bugs": [
+    {
+     "file": "app/pagination.py",
+     "lines": [
+      5,
+      5
+     ],
+     "class": "off_by_one",
+     "cwe": "CWE-193",
+     "severity": "high"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0004-missing-admin-check": {
+   "title": "Admin delete route without auth",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "authz"
+   ],
+   "bugs": [
+    {
+     "file": "app/admin_routes.py",
+     "lines": [
+      18,
+      21
+     ],
+     "class": "missing_auth",
+     "cwe": "CWE-862",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0005-check-then-act-race": {
+   "title": "Unlocked check-then-act on shared stock",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "concurrency"
+   ],
+   "bugs": [
+    {
+     "file": "app/inventory.py",
+     "lines": [
+      9,
+      11
+     ],
+     "class": "race_condition",
+     "cwe": "CWE-362",
+     "severity": "high"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "negative quantity",
+     "file": "app/inventory.py",
+     "note": "reserve(item, -5) increases stock (found by the model; not planted)"
+    }
+   ]
+  },
+  "py-0006-path-traversal": {
+   "title": "User-supplied filename joined to upload dir",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "path-traversal"
+   ],
+   "bugs": [
+    {
+     "file": "app/files.py",
+     "lines": [
+      7,
+      8
+     ],
+     "class": "path_traversal",
+     "cwe": "CWE-22",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0007-pickle-cookie": {
+   "title": "pickle.loads on a cookie",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "deserialization"
+   ],
+   "bugs": [
+    {
+     "file": "app/session.py",
+     "lines": [
+      7,
+      7
+     ],
+     "class": "unsafe_deserialization",
+     "cwe": "CWE-502",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0008-mutable-default": {
+   "title": "Mutable default argument",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "python-gotcha"
+   ],
+   "bugs": [
+    {
+     "file": "app/tags.py",
+     "lines": [
+      1,
+      4
+     ],
+     "class": "mutable_default",
+     "cwe": null,
+     "severity": "high"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "mutates input list",
+     "file": "app/tags.py",
+     "note": "same root cause as the planted bug, still true"
+    }
+   ]
+  },
+  "py-0009-swallowed-exception": {
+   "title": "Config loader swallows errors and leaks the file",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "error-handling"
+   ],
+   "bugs": [
+    {
+     "file": "app/config_loader.py",
+     "lines": [
+      7,
+      10
+     ],
+     "class": "resource_leak_exception_swallow",
+     "cwe": "CWE-755",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0010-timing-unsafe-compare": {
+   "title": "HMAC signature compared with ==",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "crypto"
+   ],
+   "bugs": [
+    {
+     "file": "app/webhooks.py",
+     "lines": [
+      9,
+      9
+     ],
+     "class": "timing_unsafe_compare",
+     "cwe": "CWE-208",
+     "severity": "high"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "empty webhook secret",
+     "file": "app/webhooks.py",
+     "note": ""
+    },
+    {
+     "match": "hard-coded to empty",
+     "file": "app/webhooks.py",
+     "note": ""
+    },
+    {
+     "match": "empty key",
+     "file": "app/webhooks.py",
+     "note": ""
+    },
+    {
+     "match": "empty secret",
+     "file": "app/webhooks.py",
+     "note": ""
+    }
+   ]
+  },
+  "py-0011-trial-boundary": {
+   "title": "Trial length off by one day",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "dates"
+   ],
+   "bugs": [
+    {
+     "file": "app/billing.py",
+     "lines": [
+      6,
+      6
+     ],
+     "class": "wrong_boundary_dates",
+     "cwe": "CWE-193",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0012-ssrf-preview": {
+   "title": "Server fetches arbitrary user URLs",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "ssrf"
+   ],
+   "bugs": [
+    {
+     "file": "app/preview.py",
+     "lines": [
+      5,
+      6
+     ],
+     "class": "ssrf",
+     "cwe": "CWE-918",
+     "severity": "high"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "network exceptions",
+     "file": "app/preview.py",
+     "note": "minor, but real"
+    }
+   ]
+  },
+  "py-0013-idor-invoice": {
+   "title": "Invoice lookup without ownership check",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "security",
+    "authz",
+    "idor"
+   ],
+   "bugs": [
+    {
+     "file": "app/invoices.py",
+     "lines": [
+      9,
+      12
+     ],
+     "class": "idor_invoice",
+     "cwe": "CWE-639",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0014-cache-leaks-across-users": {
+   "title": "lru_cache keyed without the current user",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "security",
+    "caching"
+   ],
+   "bugs": [
+    {
+     "file": "app/profile.py",
+     "lines": [
+      6,
+      9
+     ],
+     "class": "cache_leaks_across_users",
+     "cwe": "CWE-524",
+     "severity": "high"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0015-retry-double-charge": {
+   "title": "Non-idempotent charge retried on timeout",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "payments",
+    "idempotency"
+   ],
+   "bugs": [
+    {
+     "file": "app/billing_client.py",
+     "lines": [
+      8,
+      14
+     ],
+     "class": "retry_double_charge",
+     "cwe": null,
+     "severity": "high"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0016-float-money": {
+   "title": "Money computed in float dollars",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "money"
+   ],
+   "bugs": [
+    {
+     "file": "app/cart.py",
+     "lines": [
+      3,
+      5
+     ],
+     "class": "float_money",
+     "cwe": "CWE-1339",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0017-cursor-pagination-skips": {
+   "title": "Keyset pagination on a non-unique column",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "pagination",
+    "data-dependent"
+   ],
+   "bugs": [
+    {
+     "file": "app/feed.py",
+     "lines": [
+      4,
+      7
+     ],
+     "class": "cursor_pagination_skips",
+     "cwe": null,
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0018-naive-local-vs-utc": {
+   "title": "Expiry compares local time with UTC",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "correctness",
+    "time"
+   ],
+   "bugs": [
+    {
+     "file": "app/tokens.py",
+     "lines": [
+      6,
+      7
+     ],
+     "class": "naive_utc_expiry",
+     "cwe": null,
+     "severity": "high"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0019-clean-parameterized-query": {
+   "title": "Clean control: parameterized query",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "control"
+   ],
+   "bugs": [],
+   "known_issues": []
+  },
+  "py-0020-clean-pagination": {
+   "title": "Clean control: correct 1-indexed pagination",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "control"
+   ],
+   "bugs": [],
+   "known_issues": []
+  },
+  "py-0021-clean-locked-reserve": {
+   "title": "Clean control: locked reserve",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "control"
+   ],
+   "bugs": [],
+   "known_issues": [
+    {
+     "match": "negative quantity",
+     "file": "app/inventory_safe.py",
+     "note": "reserve(item, -5) increases stock (found by the model; not planted)"
+    }
+   ]
+  },
+  "py-0022-clean-compare-digest": {
+   "title": "Clean control: constant-time HMAC compare",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "control"
+   ],
+   "bugs": [],
+   "known_issues": []
+  }
+ },
+ "records": [
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a critical security vulnerability due to improper handling of user input in a database query.",
+   "usage": {
+    "input_tokens": 530,
+    "output_tokens": 156,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L0/r0/f0",
+     "path": "app/users.py",
+     "line": 6,
+     "category": "security",
+     "severity": "critical",
+     "title": "SQL Injection vulnerability",
+     "explanation": "The 'username' parameter is directly interpolated into the SQL query string using an f-string, which allows an attacker to manipulate the query and potentially access or delete unauthorized data. Use parameterized queries instead: cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))."
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L0",
+   "run": 1,
+   "error": "unparseable_output: JSONDecodeError('Expecting property name enclosed in double quotes: line 11 column 5 (char 643)')",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L0",
+   "run": 2,
+   "error": "unparseable_output: JSONDecodeError('Expecting property name enclosed in double quotes: line 11 column 5 (char 643)')",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a critical security vulnerability due to improper handling of user input in a database query.",
+   "usage": {
+    "input_tokens": 606,
+    "output_tokens": 165,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L1/r0/f0",
+     "path": "app/users.py",
+     "line": 6,
+     "category": "security",
+     "severity": "critical",
+     "title": "SQL Injection vulnerability in find_user",
+     "explanation": "The 'username' parameter is directly interpolated into the SQL query string using an f-string. This allows an attacker to execute arbitrary SQL commands by providing a crafted input. Use parameterized queries instead: cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))"
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces a critical security vulnerability by using string interpolation for SQL queries, which allows for SQL injection attacks.",
+   "usage": {
+    "input_tokens": 606,
+    "output_tokens": 152,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L1/r1/f0",
+     "path": "app/users.py",
+     "line": 6,
+     "category": "security",
+     "severity": "critical",
+     "title": "SQL Injection vulnerability",
+     "explanation": "The code uses an f-string to build a SQL query with the 'username' parameter, which allows an attacker to manipulate the query structure. Use parameterized queries instead: cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))"
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR introduces a critical security vulnerability by using string interpolation for SQL queries, which allows for SQL injection attacks.",
+   "usage": {
+    "input_tokens": 606,
+    "output_tokens": 152,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L1/r2/f0",
+     "path": "app/users.py",
+     "line": 6,
+     "category": "security",
+     "severity": "critical",
+     "title": "SQL Injection vulnerability",
+     "explanation": "The code uses an f-string to build a SQL query with the 'username' parameter, which allows an attacker to manipulate the query structure. Use parameterized queries instead: cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))"
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a critical security vulnerability due to improper handling of user input in a database query.",
+   "usage": {
+    "input_tokens": 606,
+    "output_tokens": 165,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L2/r0/f0",
+     "path": "app/users.py",
+     "line": 6,
+     "category": "security",
+     "severity": "critical",
+     "title": "SQL Injection vulnerability in find_user",
+     "explanation": "The 'username' parameter is directly interpolated into the SQL query string using an f-string. This allows an attacker to execute arbitrary SQL commands by providing a crafted input. Use parameterized queries instead: cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))"
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces a critical security vulnerability by using string interpolation for SQL queries, which allows for SQL injection attacks.",
+   "usage": {
+    "input_tokens": 606,
+    "output_tokens": 152,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L2/r1/f0",
+     "path": "app/users.py",
+     "line": 6,
+     "category": "security",
+     "severity": "critical",
+     "title": "SQL Injection vulnerability",
+     "explanation": "The code uses an f-string to build a SQL query with the 'username' parameter, which allows an attacker to manipulate the query structure. Use parameterized queries instead: cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))"
+    }
+   ]
+  },
+  {
+   "case": "py-0001-sql-injection",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR introduces a critical security vulnerability due to improper handling of user input in a database query.",
+   "usage": {
+    "input_tokens": 606,
+    "output_tokens": 165,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0001-sql-injection/L2/r2/f0",
+     "path": "app/users.py",
+     "line": 6,
+     "category": "security",
+     "severity": "critical",
+     "title": "SQL Injection vulnerability in find_user",
+     "explanation": "The 'username' parameter is directly interpolated into the SQL query string using an f-string. This allows an attacker to execute arbitrary SQL commands by providing a crafted input. Use parameterized queries instead: cur.execute(\"SELECT id, email FROM users WHERE name = ?\", (username,))"
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR adds a basic Stripe payment integration but has a critical security flaw with a hardcoded secret and lacks robust error handling for the external API call.",
+   "usage": {
+    "input_tokens": 617,
+    "output_tokens": 326,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L0/r0/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "critical",
+     "title": "Hardcoded Stripe secret key",
+     "explanation": "The Stripe secret key is hardcoded in the source code. This exposes the credential to anyone with access to the repository. Use environment variables (e.g., `os.getenv('STRIPE_SECRET_KEY')`) or a secret management service instead."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L0/r0/f1",
+     "path": "app/payments.py",
+     "line": 13,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing error handling for API request",
+     "explanation": "The code calls `r.json()` without checking if the request was successful. If the Stripe API returns an error status code (4xx or 5xx) or a non-JSON response, the function will fail or return misleading data."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: ReadTimeout: HTTPSConnectionPool(host='generativelanguage.googleapis.com', port=443): Read timed out. (read timeout=300)",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces a critical security vulnerability by hardcoding a secret key and lacks error handling for the API response.",
+   "usage": {
+    "input_tokens": 772,
+    "output_tokens": 287,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0002-hardcoded-secret/L2/r1/f0",
+     "path": "app/payments.py",
+     "line": 3,
+     "category": "security",
+     "severity": "critical",
+     "title": "Hardcoded API secret key",
+     "explanation": "The Stripe secret key is hardcoded in the source code, which can lead to unauthorized access if the repository is compromised. Store secrets in environment variables (e.g., os.getenv('STRIPE_SECRET_KEY')) or a dedicated secret manager."
+    },
+    {
+     "id": "py-0002-hardcoded-secret/L2/r1/f1",
+     "path": "app/payments.py",
+     "line": 13,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing response status check",
+     "explanation": "The function returns the JSON payload without checking if the HTTP request was successful. If the API returns an error (e.g., 4xx or 5xx), the caller might receive an error object instead of the expected success data, or r.json() might fail if the response is not valid JSON. Use r.raise_for_status() before parsing."
+    }
+   ]
+  },
+  {
+   "case": "py-0002-hardcoded-secret",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The pagination logic contains a calculation error that skips the first page and lacks validation for the items per page parameter.",
+   "usage": {
+    "input_tokens": 550,
+    "output_tokens": 314,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L0/r0/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect start index for 1-indexed pagination",
+     "explanation": "The calculation 'page * per_page' for page 1 results in an offset of 'per_page', skipping the first page of results. For 1-indexed pagination, the start index should be '(page - 1) * per_page'."
+    },
+    {
+     "id": "py-0003-off-by-one-page/L0/r0/f1",
+     "path": "app/pagination.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for per_page",
+     "explanation": "If 'per_page' is zero or negative, the function will return an empty list or incorrect slices. The function should validate that 'per_page' is at least 1."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The pagination logic contains a calculation error that skips the first page and lacks validation for the items per page parameter.",
+   "usage": {
+    "input_tokens": 550,
+    "output_tokens": 314,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L0/r1/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect start index for 1-indexed pagination",
+     "explanation": "The calculation 'page * per_page' for page 1 results in an offset of 'per_page', skipping the first page of results. For 1-indexed pagination, the start index should be '(page - 1) * per_page'."
+    },
+    {
+     "id": "py-0003-off-by-one-page/L0/r1/f1",
+     "path": "app/pagination.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for per_page",
+     "explanation": "If 'per_page' is zero or negative, the function will return an empty list or incorrect slices. The function should validate that 'per_page' is at least 1."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The pagination logic contains a calculation error that causes the first page of results to be skipped.",
+   "usage": {
+    "input_tokens": 550,
+    "output_tokens": 171,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L0/r2/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect start index for 1-indexed pagination",
+     "explanation": "The calculation `start = page * per_page` for a 1-indexed page results in skipping the first page of items. For example, if page=1 and per_page=10, start becomes 10 instead of 0. Fix: use `start = (page - 1) * per_page`."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The pagination logic contains a calculation error that causes the first page of items to be skipped.",
+   "usage": {
+    "input_tokens": 649,
+    "output_tokens": 167,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L1/r0/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect pagination offset calculation",
+     "explanation": "The calculation `start = page * per_page` for a 1-indexed page skips the first page of items. For example, if page=1 and per_page=10, the start index becomes 10 instead of 0. Change the calculation to `start = (page - 1) * per_page`."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The pagination logic contains a critical indexing error that skips the first page of results and lacks validation for the items-per-page parameter.",
+   "usage": {
+    "input_tokens": 649,
+    "output_tokens": 335,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L1/r1/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect start index for 1-indexed pagination",
+     "explanation": "The current formula `page * per_page` for a 1-indexed system skips the first page. For example, if `page=1` and `per_page=10`, `start` becomes 10, returning items from index 10 to 19 instead of 0 to 9. Fix: use `(page - 1) * per_page`."
+    },
+    {
+     "id": "py-0003-off-by-one-page/L1/r1/f1",
+     "path": "app/pagination.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for per_page",
+     "explanation": "The function does not validate that `per_page` is a positive integer. If `per_page` is 0 or negative, the slicing behavior may produce empty lists or unexpected results. Add a check: `if per_page < 1: raise ValueError('per_page must be >= 1')`."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The pagination logic contains a critical indexing error that skips the first page of results and lacks validation for the items-per-page parameter.",
+   "usage": {
+    "input_tokens": 649,
+    "output_tokens": 335,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L1/r2/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect start index for 1-indexed pagination",
+     "explanation": "The current formula `page * per_page` for a 1-indexed system skips the first page. For example, if `page=1` and `per_page=10`, `start` becomes 10, returning items from index 10 to 19 instead of 0 to 9. Fix: use `(page - 1) * per_page`."
+    },
+    {
+     "id": "py-0003-off-by-one-page/L1/r2/f1",
+     "path": "app/pagination.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for per_page",
+     "explanation": "The function does not validate that `per_page` is a positive integer. If `per_page` is 0 or negative, the slicing behavior may produce empty lists or unexpected results. Add a check: `if per_page < 1: raise ValueError('per_page must be >= 1')`."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The pagination logic contains a critical indexing error that skips the first page of results and lacks validation for the items-per-page parameter.",
+   "usage": {
+    "input_tokens": 649,
+    "output_tokens": 335,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L2/r1/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect start index for 1-indexed pagination",
+     "explanation": "The current formula `page * per_page` for a 1-indexed system skips the first page. For example, if `page=1` and `per_page=10`, `start` becomes 10, returning items from index 10 to 19 instead of 0 to 9. Fix: use `(page - 1) * per_page`."
+    },
+    {
+     "id": "py-0003-off-by-one-page/L2/r1/f1",
+     "path": "app/pagination.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for per_page",
+     "explanation": "The function does not validate that `per_page` is a positive integer. If `per_page` is 0 or negative, the slicing behavior may produce empty lists or unexpected results. Add a check: `if per_page < 1: raise ValueError('per_page must be >= 1')`."
+    }
+   ]
+  },
+  {
+   "case": "py-0003-off-by-one-page",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The pagination logic contains a calculation error that causes the first page of items to be skipped.",
+   "usage": {
+    "input_tokens": 649,
+    "output_tokens": 167,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0003-off-by-one-page/L2/r2/f0",
+     "path": "app/pagination.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect pagination offset calculation",
+     "explanation": "The calculation `start = page * per_page` for a 1-indexed page skips the first page of items. For example, if page=1 and per_page=10, the start index becomes 10 instead of 0. Change the calculation to `start = (page - 1) * per_page`."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The administrative routes lack consistent security controls. Specifically, the user deletion endpoint is completely unprotected, allowing any user (authenticated or not) to delete accounts. Additionally, there are no safeguards against admins deleting their own accounts.",
+   "usage": {
+    "input_tokens": 667,
+    "output_tokens": 318,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L0/r0/f0",
+     "path": "app/admin_routes.py",
+     "line": 17,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication and authorization on delete endpoint",
+     "explanation": "The delete_user endpoint is missing the @login_required decorator and the admin check present in list_users. This allows any unauthenticated user to delete any user from the database by sending a DELETE request to /admin/users/<id>. Add @login_required and verify current_user.is_admin before proceeding with the deletion."
+    },
+    {
+     "id": "py-0004-missing-admin-check/L0/r0/f1",
+     "path": "app/admin_routes.py",
+     "line": 19,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing self-deletion protection",
+     "explanation": "The endpoint allows an administrator to delete their own account. If the system has only one admin, this could lead to a permanent lockout from administrative functions. Add a check to ensure user_id != current_user.id."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces an administrative route for deleting users that lacks any authentication or authorization checks, posing a critical security risk.",
+   "usage": {
+    "input_tokens": 857,
+    "output_tokens": 255,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0004-missing-admin-check/L1/r0/f0",
+     "path": "app/admin_routes.py",
+     "line": 17,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication and authorization on user deletion endpoint",
+     "explanation": "The delete_user endpoint is not protected by the @login_required decorator or an explicit check for admin privileges (current_user.is_admin). This allows any unauthenticated user to delete any account in the system by sending a DELETE request to the endpoint. Add @login_required and an admin check similar to the list_users function."
+    }
+   ]
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0004-missing-admin-check",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a race condition in the inventory reservation logic because a defined lock is not utilized.",
+   "usage": {
+    "input_tokens": 564,
+    "output_tokens": 170,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L0/r0/f0",
+     "path": "app/inventory.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition in stock reservation",
+     "explanation": "The `reserve` function reads and updates the shared `stock` dictionary without acquiring the `_lock`. In a concurrent environment, multiple threads can read the same `available` value before any of them update it, leading to over-selling and inconsistent state. Wrap the logic inside the function with `with _lock:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces a race condition in the inventory reservation logic because the defined lock is not utilized.",
+   "usage": {
+    "input_tokens": 564,
+    "output_tokens": 164,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L0/r1/f0",
+     "path": "app/inventory.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition in inventory reservation",
+     "explanation": "The function reads and updates the shared `stock` dictionary without using the `_lock`. Concurrent calls can lead to over-allocation where the stock drops below zero because multiple threads may read the same initial value before any of them write the update. Wrap the logic in `with _lock:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR introduces a race condition in the inventory reservation logic because the defined lock is not utilized.",
+   "usage": {
+    "input_tokens": 564,
+    "output_tokens": 164,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0005-check-then-act-race/L0/r2/f0",
+     "path": "app/inventory.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Race condition in inventory reservation",
+     "explanation": "The function reads and updates the shared `stock` dictionary without using the `_lock`. Concurrent calls can lead to over-allocation where the stock drops below zero because multiple threads may read the same initial value before any of them write the update. Wrap the logic in `with _lock:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0005-check-then-act-race",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0006-path-traversal",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0007-pickle-cookie",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0008-mutable-default",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0009-swallowed-exception",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0010-timing-unsafe-compare",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0011-trial-boundary",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0012-ssrf-preview",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0013-idor-invoice",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0014-cache-leaks-across-users",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  }
+ ]
+}

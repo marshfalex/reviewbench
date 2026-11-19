@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from pathlib import Path
 
 from reviewbench import BENCH_VERSION
@@ -11,6 +12,7 @@ from reviewbench.adapters import ADAPTERS, get_adapter
 from reviewbench.adjudicate import apply_rules, interactive, load_rules, load_verdicts, save_verdicts
 from reviewbench.cases import discover, validate_case
 from reviewbench.context import LEVELS
+from reviewbench.heldout import attach_summary, heldout_dir, leaks, raw_path, redacting_log
 from reviewbench.report import leaderboard, run_report
 from reviewbench.runner import estimate_cost, find_resumable, results_path, run
 
@@ -19,8 +21,9 @@ ROOT = Path.cwd()
 
 def _cases(args):
     dirs = [(Path(args.cases), "public")]
-    if args.heldout and Path(args.heldout).exists():
-        dirs.append((Path(args.heldout), "heldout"))
+    held = heldout_dir(args.heldout)
+    if held:
+        dirs.append((held, "heldout"))
     cases = discover(*dirs)
     if args.only:
         wanted = set(args.only.split(","))
@@ -74,12 +77,32 @@ def cmd_run(args) -> int:
         out = find_resumable(Path(args.results_dir), reviewer.provider, reviewer.model, args.k, levels)
     if out is None:
         out = results_path(Path(args.results_dir), reviewer.provider, reviewer.model)
-    doc = run(cases, reviewer, levels, args.k, out, max_minutes=args.max_minutes)
+    public = [c for c in cases if c.split == "public"]
+    held = [c for c in cases if c.split != "public"]
     rules = load_rules(Path(args.rules))
-    verdicts = {}
+    started = time.monotonic()
+    doc = run(public, reviewer, levels, args.k, out, max_minutes=args.max_minutes)
+    verdicts = load_verdicts(out)  # a resumed run keeps earlier verdicts
     added = apply_rules(doc, verdicts, rules)
     if verdicts:
         save_verdicts(out, verdicts)
+    if held and doc["status"] != "complete":
+        print("held-out cases not started: public run is partial (continue with --resume)", file=sys.stderr)
+    elif held:
+        # reviewed into git-ignored results/raw/; only aggregates reach the committed file
+        raw = raw_path(out)
+        log = redacting_log(held, lambda msg: print(msg, file=sys.stderr))
+        left = None if args.max_minutes is None else max(args.max_minutes - (time.monotonic() - started) / 60, 0)
+        raw_doc = run(held, reviewer, levels, args.k, raw, log=log, max_minutes=left)
+        raw_verdicts = load_verdicts(raw)
+        if apply_rules(raw_doc, raw_verdicts, rules):
+            save_verdicts(raw, raw_verdicts)
+        attach_summary(out)
+        doc = json.loads(out.read_text())
+        print(f"held-out: {len(held)} case(s), raw results in {raw.parent} (never commit)", file=sys.stderr)
+    problems = leaks(doc)
+    if problems:  # cannot happen by construction; fail loudly (the file is kept: it may hold hours of runs)
+        raise SystemExit("held-out leak check failed: " + "; ".join(problems))
     out.with_suffix(".md").write_text(run_report(doc, verdicts))
     print(f"wrote {out} ({added} findings pre-adjudicated by rules)", file=sys.stderr)
     return 0
@@ -92,6 +115,14 @@ def cmd_adjudicate(args) -> int:
     added = apply_rules(doc, verdicts, load_rules(Path(args.rules)))
     judged = 0 if args.rules_only else interactive(doc, verdicts)
     save_verdicts(path, verdicts)
+    raw = raw_path(path)
+    if raw.exists():  # held-out raw results are local only; adjudicate them too, then re-aggregate
+        raw_doc, raw_verdicts = json.loads(raw.read_text()), load_verdicts(raw)
+        added += apply_rules(raw_doc, raw_verdicts, load_rules(Path(args.rules)))
+        judged += 0 if args.rules_only else interactive(raw_doc, raw_verdicts)
+        save_verdicts(raw, raw_verdicts)
+        attach_summary(path)
+        doc = json.loads(path.read_text())
     path.with_suffix(".md").write_text(run_report(doc, verdicts))
     print(f"{added} by rule, {judged} by hand; saved {path.stem}.adjudications.json", file=sys.stderr)
     return 0
@@ -116,7 +147,8 @@ def main(argv: list[str] | None = None) -> int:
 
     def case_args(p):
         p.add_argument("--cases", default="cases")
-        p.add_argument("--heldout", default="heldout", help="private held-out cases dir (never committed)")
+        p.add_argument("--heldout", help="private held-out cases dir (never committed); "
+                       "default: $REVIEWBENCH_HELDOUT, else heldout/ if it exists")
         p.add_argument("--only", help="comma-separated case ids")
 
     def run_args(p):

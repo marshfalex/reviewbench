@@ -96,8 +96,10 @@ Real bugs are preferred over synthetic ones: reversed CVE fix commits and
 public postmortems, with provenance. Code under `cases/` is buggy on purpose
 and is excluded from linting.
 
-Want a case kept out of training data? Don't open a PR. Put it in `heldout/`
-locally (git-ignored); held-out results are reported separately.
+Want a case kept out of training data? Don't open a PR. Keep it in a private
+directory and point `REVIEWBENCH_HELDOUT` at it (or use the git-ignored
+`heldout/`). Held-out results are reported separately and only as aggregate
+numbers; per-case details stay in the git-ignored `results/raw/`.
 
 ## Layout
 

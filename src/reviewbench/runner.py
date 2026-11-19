@@ -58,7 +58,8 @@ def find_resumable(out_dir: Path, provider: str, model: str, k: int, levels: lis
             doc = json.loads(path.read_text())
         except (OSError, json.JSONDecodeError):
             continue
-        if (doc.get("status") == "partial" and doc.get("bench_version") == BENCH_VERSION
+        partial = doc.get("status") == "partial" or (doc.get("heldout") or {}).get("status") == "partial"
+        if (partial and doc.get("bench_version") == BENCH_VERSION
                 and doc.get("provider") == provider and doc.get("model") == model
                 and doc.get("k") == k and doc.get("levels") == levels):
             return path

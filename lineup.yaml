@@ -1,0 +1,26 @@
+# Models the scheduled benchmark keeps running until each has a complete result.
+# A provider is skipped automatically while its API key secret is not set, so adding a
+# key in Settings -> Secrets and variables -> Actions is all it takes to switch one on.
+#
+# model: an exact id, or "auto:<text>" to pick the newest model whose id contains <text>
+#        from the provider's own model list (excluding preview/experimental/lite variants).
+# heldout_ok: false for free endpoints that may log or train on prompts. Held-out cases must
+#        never be sent to those (only matters once CI can read the held-out repo).
+k: 3
+levels: L0,L1,L2
+models:
+  - provider: groq
+    model: openai/gpt-oss-120b
+    heldout_ok: true
+  - provider: gemini
+    model: auto:flash
+    heldout_ok: false
+  - provider: openrouter
+    model: nvidia/nemotron-3-ultra-550b-a55b:free
+    heldout_ok: false
+  - provider: cerebras
+    model: auto:qwen
+    heldout_ok: false
+  - provider: mistral
+    model: auto:codestral
+    heldout_ok: false

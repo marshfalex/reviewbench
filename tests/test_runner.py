@@ -219,3 +219,38 @@ def test_json_mode_rejected_falls_back_to_plain(monkeypatch):
     result = get_adapter("mistral", "m")._review("prompt")
     assert result.error is None
     assert "response_format" in sent[0] and "response_format" not in sent[1]
+
+
+def test_pick_auto_prefers_newest_stable():
+    from reviewbench.lineup import pick_auto
+
+    ids = ["models/gemini-2.5-flash", "models/gemini-3.0-flash", "models/gemini-3.0-flash-preview",
+           "models/gemini-3.0-flash-lite", "models/gemini-3.0-pro"]
+    assert pick_auto(ids, "flash") == "gemini-3.0-flash"
+    assert pick_auto(ids, "nothing") is None
+
+
+def test_lineup_plan_skips_missing_keys_and_complete(tmp_path, monkeypatch):
+    import json as _json
+
+    from reviewbench import BENCH_VERSION
+    from reviewbench.lineup import plan
+
+    (tmp_path / "lineup.yaml").write_text(
+        "k: 3\n"
+        "levels: L0,L1,L2\n"
+        "models:\n"
+        "  - {provider: groq, model: openai/gpt-oss-120b}\n"
+        "  - {provider: gemini, model: 'auto:flash'}\n"
+        "  - {provider: mistral, model: m}\n"
+        "  - {provider: anthropic, model: claude}\n")
+    res = tmp_path / "results"
+    res.mkdir()
+    (res / "a.json").write_text(_json.dumps({"status": "complete", "bench_version": BENCH_VERSION,
+        "provider": "mistral", "model": "m", "k": 3, "levels": ["L0", "L1", "L2"]}))
+    for key in ("GROQ_API_KEY", "GEMINI_API_KEY", "MISTRAL_API_KEY", "OPENROUTER_API_KEY", "CEREBRAS_API_KEY"):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("GEMINI_API_KEY", "g")
+    monkeypatch.setenv("MISTRAL_API_KEY", "m")
+    entries = plan(tmp_path / "lineup.yaml", res, lister=lambda p: ["models/gemini-3.0-flash"], log=lambda m: None)
+    assert entries == [{"provider": "gemini", "model": "gemini-3.0-flash", "k": "3", "levels": "L0,L1,L2"}]

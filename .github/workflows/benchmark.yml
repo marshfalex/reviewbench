@@ -1,25 +1,29 @@
 name: benchmark
-# Runs the full benchmark for one model. Started by hand from the Actions tab.
-# Manual only. Runs the benchmark against one model and commits the results
-# and the regenerated leaderboard to the branch it was started on.
+# Runs the benchmark and commits results + the regenerated leaderboard.
+#  - Every 6 hours (and on "Run workflow" with provider = lineup) it works through lineup.yaml:
+#    every free model whose API-key secret is set and whose result isn't complete yet runs in
+#    parallel, resuming its partial results. Adding a key is all it takes to switch a model on.
+#  - "Run workflow" with a specific provider runs just that one model (paid providers need max_usd).
 on:
+  schedule:
+    - cron: "17 */6 * * *"
   workflow_dispatch:
     inputs:
       provider:
-        description: "free tiers: groq, gemini, openrouter, cerebras, mistral. PAID: anthropic"
+        description: "lineup = every model in lineup.yaml. Or one provider; free: groq, gemini, openrouter, cerebras, mistral. PAID: anthropic"
         type: choice
-        options: [groq, gemini, openrouter, cerebras, mistral, anthropic]
-        default: groq
+        options: [lineup, groq, gemini, openrouter, cerebras, mistral, anthropic]
+        default: lineup
       model:
-        description: "model id; empty = the adapter's default (groq/anthropic only; others require one)"
+        description: "single-provider runs: model id (empty = adapter default, groq/anthropic only)"
         type: string
         default: ""
       k:
-        description: "runs per case and context level"
+        description: "single-provider runs: runs per case and context level"
         type: string
         default: "3"
       levels:
-        description: "context levels"
+        description: "single-provider runs: context levels"
         type: string
         default: "L0,L1,L2"
       max_usd:
@@ -28,19 +32,54 @@ on:
         default: "0"
 permissions:
   contents: write
-concurrency:  # one run per provider+model at a time; different models run in parallel
-  group: benchmark-${{ inputs.provider }}-${{ inputs.model }}
-  cancel-in-progress: false
 jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e .
+      - id: plan
+        env:
+          INPUT_PROVIDER: ${{ inputs.provider || 'lineup' }}
+          INPUT_MODEL: ${{ inputs.model }}
+          INPUT_K: ${{ inputs.k }}
+          INPUT_LEVELS: ${{ inputs.levels }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+        run: |
+          if [ "$INPUT_PROVIDER" = "lineup" ]; then
+            entries=$(python -m reviewbench lineup)
+          else
+            entries=$(python -c 'import json,os; print(json.dumps([{"provider": os.environ["INPUT_PROVIDER"], "model": os.environ["INPUT_MODEL"], "k": os.environ["INPUT_K"], "levels": os.environ["INPUT_LEVELS"]}]))')
+          fi
+          echo "matrix=$entries" >> "$GITHUB_OUTPUT"
+          echo "Planned: $entries"
   run:
+    needs: plan
+    if: needs.plan.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     timeout-minutes: 330
-    env:  # inputs reach the shell only as env vars, never interpolated into scripts
-      PROVIDER: ${{ inputs.provider }}
-      MODEL: ${{ inputs.model }}
-      K: ${{ inputs.k }}
-      LEVELS: ${{ inputs.levels }}
-      MAX_USD: ${{ inputs.max_usd }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    concurrency:  # one run per provider+model at a time; different models run in parallel
+      group: benchmark-${{ matrix.provider }}-${{ matrix.model }}
+      cancel-in-progress: false
+    env:  # values reach the shell only as env vars, never interpolated into scripts
+      PROVIDER: ${{ matrix.provider }}
+      MODEL: ${{ matrix.model }}
+      K: ${{ matrix.k }}
+      LEVELS: ${{ matrix.levels }}
+      MAX_USD: ${{ inputs.max_usd || '0' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -61,25 +100,48 @@ jobs:
         run: >
           python -m reviewbench run --provider "$PROVIDER" ${MODEL:+--model "$MODEL"}
           -k "$K" --levels "$LEVELS" --max-usd "$MAX_USD" --resume --max-minutes 270
-      # always(): a run that times out or errors still commits its per-case checkpoint
-      # (status "partial"), so a quota stall never loses hours of results.
-      - name: Leaderboard
+      # always(): a run that times out or errors still commits its checkpoint (status "partial").
+      # Each model job commits only its own files; the leaderboard job below rebuilds the table.
+      - name: Apply adjudication rules
         if: always()
         run: |
           for f in results/*.json; do
             case "$f" in *.adjudications.json) ;; *) python -m reviewbench adjudicate "$f" --rules-only ;; esac
           done
-          python -m reviewbench leaderboard
       - name: Commit results
         if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add results/
+          git add results/ ':!results/LEADERBOARD.md'
           git commit -m "results: $PROVIDER $MODEL k=$K" || exit 0
-          # main may have moved during a multi-hour run (e.g. a PR was merged): rebase, then push.
-          for i in 1 2 3; do
+          # main moves during multi-hour runs (merged PRs, other models' commits): rebase, then push.
+          for i in 1 2 3 4 5; do
             git pull --rebase origin "$GITHUB_REF_NAME" && git push && exit 0
-            sleep 10
+            sleep $((i * 10))
+          done
+          exit 1
+  leaderboard:
+    needs: [plan, run]
+    if: always() && needs.plan.outputs.matrix != '[]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e .
+      - name: Rebuild and commit the leaderboard
+        run: |
+          python -m reviewbench leaderboard
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/LEADERBOARD.md
+          git commit -m "leaderboard: update" || exit 0
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin "$GITHUB_REF_NAME" && git push && exit 0
+            sleep $((i * 10))
           done
           exit 1

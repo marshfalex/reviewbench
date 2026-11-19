@@ -40,8 +40,11 @@ relying on one is different:
 | `ollama` | free (local) | none | runs on your machine |
 | `anthropic` | **paid** | `ANTHROPIC_API_KEY` | refused unless `--yes` / `--max-usd` covers the estimate |
 
-Each hosted provider has its own rate limit, so the benchmark workflow can run several models in
-parallel. Free tiers are slow (minutes per review); runs checkpoint and resume (`--resume`).
+Each hosted provider has its own rate limit, so models run in parallel. The `benchmark` workflow
+runs itself every 6 hours: it works through [`lineup.yaml`](lineup.yaml), runs every model whose
+API-key secret is set, and resumes partial results until each model is complete. Adding a key
+switches that provider on; `model: auto:<text>` picks the newest matching model from the provider's
+own list.
 
 ## Quick start
 

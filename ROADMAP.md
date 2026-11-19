@@ -35,9 +35,9 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
       Keys; use models ending in `:free`), `CEREBRAS_API_KEY` (cloud.cerebras.ai),
       `MISTRAL_API_KEY` (console.mistral.ai → Experiment plan). Each provider has its own rate limit,
       so models run in parallel.
-- [ ] **Run the free-model lineup in parallel** (needs the keys above): one benchmark run per
-      provider with k=3, L0/L1/L2. Pick a current model id from each provider's model list and
-      record the choice in the journal. Re-trigger partial runs until each completes.
+- [x] **Run the free-model lineup in parallel**, automated: the `benchmark` workflow runs every 6 h
+      and works through `lineup.yaml`, running each model whose key secret is set until its result is
+      complete. Add or change models by editing `lineup.yaml`.
 - [ ] **Findings report v0.1, first cut**, as soon as ONE full run completes (don't wait for the CVE
       cases): `docs/findings/v0.1.md`. Headline numbers with n and CIs, recall by difficulty and
       context level, any-of-k vs all-of-k, the L0→L2 effect on the cursor case, and every miss with a

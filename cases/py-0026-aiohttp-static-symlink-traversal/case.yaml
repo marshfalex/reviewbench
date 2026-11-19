@@ -1,0 +1,34 @@
+id: py-0026-aiohttp-static-symlink-traversal
+title: Static file route skips the path containment check when follow_symlinks is on
+language: python
+difficulty: hard
+tags:
+- security
+- path-traversal
+- web
+- cve
+source:
+  kind: cve
+  ref: https://github.com/aio-libs/aiohttp/commit/9118a5831e8a65b8c839eb7e4ac983e040ff41df
+  license: Apache-2.0
+  cve: CVE-2024-23334
+  advisory: GHSA-5h86-8mv2-jq9f
+  fixed_in: aiohttp 3.9.2
+  notes: pr.diff is the fix's change to aiohttp/web_urldispatcher.py, reversed. repo/ holds lines 1-60 (imports)
+    and 539-703 (StaticResource) of the file at the fix commit.
+bugs:
+- file: aiohttp/web_urldispatcher.py
+  lines:
+  - 188
+  - 190
+  class: path_traversal
+  cwe: CWE-22
+  severity: high
+  description: With follow_symlinks=True the resolved path is never checked against the static directory, so a request
+    like /static/../../etc/passwd is served (directory traversal), not only symlinks inside the directory.
+context:
+  related: []
+known_issues:
+- match: traversal
+  file: aiohttp/web_urldispatcher.py
+  note: the same missing check in url_for(append_version=True), lines 122-124

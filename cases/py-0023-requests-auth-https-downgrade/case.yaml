@@ -1,0 +1,32 @@
+id: py-0023-requests-auth-https-downgrade
+title: Authorization header kept on an https-to-http redirect to the same host
+language: python
+difficulty: easy
+tags:
+- security
+- credentials
+- http
+- redirect
+- cve
+source:
+  kind: cve
+  ref: https://github.com/psf/requests/commit/3331e2aecdbf575dd60abef4df79c52d78610a83
+  license: Apache-2.0
+  cve: CVE-2018-18074
+  advisory: GHSA-x84v-xcm2-53pg
+  fixed_in: requests 2.20.0
+  notes: pr.diff is the fix's change to requests/sessions.py, reversed. repo/ holds lines 1-48 (imports, helpers)
+    and 95-320 (SessionRedirectMixin) of the file at the fix commit.
+bugs:
+- file: requests/sessions.py
+  lines:
+  - 200
+  - 201
+  class: credential_leak_on_redirect
+  cwe: CWE-522
+  severity: high
+  description: Authorization is stripped only when the hostname changes, so a redirect from https://host to http://host
+    (or to another port) re-sends the credentials, in cleartext on the http hop.
+context:
+  related: []
+known_issues: []

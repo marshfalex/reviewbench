@@ -10,11 +10,13 @@ ALL = discover((CASES, "public"))
 
 
 def test_case_counts():
-    assert len(ALL) == 22
+    assert len(ALL) == 27
     assert sum(c.is_control for c in ALL) == 4
     bugs = [c for c in ALL if not c.is_control]
-    assert sum(c.difficulty == "easy" for c in bugs) == 12
-    assert sum(c.difficulty == "hard" for c in bugs) == 6
+    assert sum(c.difficulty == "easy" for c in bugs) == 15
+    assert sum(c.difficulty == "hard" for c in bugs) == 8
+    cves = [c for c in ALL if c.source["kind"] == "cve"]
+    assert len(cves) == 5 and all(c.source.get("cve", "").startswith("CVE-") for c in cves)
 
 
 @pytest.mark.parametrize("case", ALL, ids=lambda c: c.id)

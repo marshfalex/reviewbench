@@ -108,7 +108,7 @@ Hypothesis under test: more context fixes misses that depend on facts outside
 the diff (e.g. a non-unique sort key) and false positives of the "can't see
 the guard in the other file" kind.
 
-Note for v0.1: the 22 ported cases are new-file PRs, so L1 adds no
+Note for v0.1: the 22 ported synthetic cases are new-file PRs, so L1 adds no
 information over L0 for them (the whole file is already in the diff). L0 vs
 L1 becomes informative with modification PRs such as reversed CVE fixes.
 

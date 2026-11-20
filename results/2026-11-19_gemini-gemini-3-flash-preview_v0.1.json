@@ -9,7 +9,7 @@
   "L1",
   "L2"
  ],
- "status": "partial",
+ "status": "complete",
  "cases": {
   "py-0001-sql-injection": {
    "title": "SQL query built with an f-string",
@@ -515,6 +515,145 @@
    ],
    "bugs": [],
    "known_issues": []
+  },
+  "py-0023-requests-auth-https-downgrade": {
+   "title": "Authorization header kept on an https-to-http redirect to the same host",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "credentials",
+    "http",
+    "redirect",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "requests/sessions.py",
+     "lines": [
+      200,
+      201
+     ],
+     "class": "credential_leak_on_redirect",
+     "cwe": "CWE-522",
+     "severity": "high"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0024-urllib3-cookie-redirect": {
+   "title": "Cookie header is forwarded on cross-origin redirects",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "credentials",
+    "http",
+    "redirect",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "src/urllib3/util/retry.py",
+     "lines": [
+      190,
+      190
+     ],
+     "class": "credential_leak_on_redirect",
+     "cwe": "CWE-200",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0025-jinja2-xmlattr-key-injection": {
+   "title": "xmlattr filter accepts attribute keys containing spaces",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "security",
+    "xss",
+    "templating",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "src/jinja2/filters.py",
+     "lines": [
+      88,
+      92
+     ],
+     "class": "attribute_injection",
+     "cwe": "CWE-79",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0026-aiohttp-static-symlink-traversal": {
+   "title": "Static file route skips the path containment check when follow_symlinks is on",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "security",
+    "path-traversal",
+    "web",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "aiohttp/web_urldispatcher.py",
+     "lines": [
+      188,
+      190
+     ],
+     "class": "path_traversal",
+     "cwe": "CWE-22",
+     "severity": "high"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "traversal",
+     "file": "aiohttp/web_urldispatcher.py",
+     "note": "the same missing check in url_for(append_version=True), lines 122-124"
+    }
+   ]
+  },
+  "py-0027-gitpython-clone-ext-protocol-rce": {
+   "title": "Repo.clone/clone_from no longer refuse ext:: URLs and protocol/upload-pack options",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "command-injection",
+    "rce",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "git/repo/base.py",
+     "lines": [
+      236,
+      239
+     ],
+     "class": "command_injection",
+     "cwe": "CWE-94",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "ext::",
+     "file": "git/repo/base.py",
+     "note": "the same unchecked URL in Repo.clone (line ~202)"
+    },
+    {
+     "match": "upload-pack",
+     "file": "git/repo/base.py",
+     "note": "the same unchecked options in Repo.clone (line ~202)"
+    }
+   ]
   }
  },
  "records": [
@@ -2072,6 +2211,1303 @@
    "case": "py-0015-retry-double-charge",
    "level": "L1",
    "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The billing client lacks critical safeguards for financial transactions, specifically idempotency and proper response validation, which could lead to duplicate charges or unhandled failures.",
+   "usage": {
+    "input_tokens": 758,
+    "output_tokens": 505,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0015-retry-double-charge/L1/r2/f0",
+     "path": "app/billing_client.py",
+     "line": 10,
+     "category": "correctness",
+     "severity": "critical",
+     "title": "Potential double charging due to missing idempotency key",
+     "explanation": "Retrying a POST request after a timeout is dangerous because the server might have successfully processed the charge but failed to send the response in time. Without an idempotency key (e.g., a unique UUID for the transaction), the retry will result in the customer being charged multiple times. Fix: Generate a unique idempotency key for the transaction and include it in the request headers or body."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L1/r2/f1",
+     "path": "app/billing_client.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Missing response status code validation",
+     "explanation": "The code assumes that if no exception is raised, the charge was successful. It calls `r.json()` immediately, which will fail if the server returns a non-JSON error page (e.g., 502 Bad Gateway) and ignores logical failures (e.g., 400 Bad Request or 402 Payment Required). Fix: Call `r.raise_for_status()` before parsing the JSON and handle specific HTTP error codes."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L1/r2/f2",
+     "path": "app/billing_client.py",
+     "line": 12,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Incomplete exception handling for retries",
+     "explanation": "The retry logic only catches `requests.Timeout`. Other transient network issues, such as `requests.ConnectionError`, will cause the function to crash immediately without attempting the remaining retries. Fix: Catch `requests.RequestException` or a tuple of specific transient errors like `(requests.Timeout, requests.ConnectionError)`."
+    }
+   ]
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The billing client implementation has critical flaws regarding transaction safety and error handling, most notably the risk of double-charging customers during retries.",
+   "usage": {
+    "input_tokens": 758,
+    "output_tokens": 411,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0015-retry-double-charge/L2/r0/f0",
+     "path": "app/billing_client.py",
+     "line": 10,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Risk of double charging due to missing idempotency key",
+     "explanation": "If a request times out, it is unknown if the server processed the charge. Retrying without an idempotency key can lead to the customer being charged multiple times. Add a unique 'Idempotency-Key' header or field to the request that the server can use to deduplicate transactions."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L2/r0/f1",
+     "path": "app/billing_client.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing HTTP status code validation",
+     "explanation": "The code calls r.json() without verifying the response status. If the server returns a 4xx or 5xx error, the response body might not be valid JSON or might contain error details that should be handled explicitly. Use r.raise_for_status() before parsing."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L2/r0/f2",
+     "path": "app/billing_client.py",
+     "line": 12,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Incomplete retry logic for network errors",
+     "explanation": "Only requests.Timeout is caught for retries. Other transient network issues like ConnectionError or DNS failures will cause the function to fail immediately without attempting the remaining retries. Catch requests.RequestException or a more specific tuple of connection-related errors."
+    }
+   ]
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The billing client lacks critical safeguards for financial transactions, specifically idempotency and proper response validation, which could lead to duplicate charges or unhandled failures.",
+   "usage": {
+    "input_tokens": 758,
+    "output_tokens": 505,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0015-retry-double-charge/L2/r1/f0",
+     "path": "app/billing_client.py",
+     "line": 10,
+     "category": "correctness",
+     "severity": "critical",
+     "title": "Potential double charging due to missing idempotency key",
+     "explanation": "Retrying a POST request after a timeout is dangerous because the server might have successfully processed the charge but failed to send the response in time. Without an idempotency key (e.g., a unique UUID for the transaction), the retry will result in the customer being charged multiple times. Fix: Generate a unique idempotency key for the transaction and include it in the request headers or body."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L2/r1/f1",
+     "path": "app/billing_client.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Missing response status code validation",
+     "explanation": "The code assumes that if no exception is raised, the charge was successful. It calls `r.json()` immediately, which will fail if the server returns a non-JSON error page (e.g., 502 Bad Gateway) and ignores logical failures (e.g., 400 Bad Request or 402 Payment Required). Fix: Call `r.raise_for_status()` before parsing the JSON and handle specific HTTP error codes."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L2/r1/f2",
+     "path": "app/billing_client.py",
+     "line": 12,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Incomplete exception handling for retries",
+     "explanation": "The retry logic only catches `requests.Timeout`. Other transient network issues, such as `requests.ConnectionError`, will cause the function to crash immediately without attempting the remaining retries. Fix: Catch `requests.RequestException` or a tuple of specific transient errors like `(requests.Timeout, requests.ConnectionError)`."
+    }
+   ]
+  },
+  {
+   "case": "py-0015-retry-double-charge",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The billing client implementation has critical flaws regarding transaction safety and error handling, most notably the risk of double-charging customers during retries.",
+   "usage": {
+    "input_tokens": 758,
+    "output_tokens": 411,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0015-retry-double-charge/L2/r2/f0",
+     "path": "app/billing_client.py",
+     "line": 10,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Risk of double charging due to missing idempotency key",
+     "explanation": "If a request times out, it is unknown if the server processed the charge. Retrying without an idempotency key can lead to the customer being charged multiple times. Add a unique 'Idempotency-Key' header or field to the request that the server can use to deduplicate transactions."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L2/r2/f1",
+     "path": "app/billing_client.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing HTTP status code validation",
+     "explanation": "The code calls r.json() without verifying the response status. If the server returns a 4xx or 5xx error, the response body might not be valid JSON or might contain error details that should be handled explicitly. Use r.raise_for_status() before parsing."
+    },
+    {
+     "id": "py-0015-retry-double-charge/L2/r2/f2",
+     "path": "app/billing_client.py",
+     "line": 12,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Incomplete retry logic for network errors",
+     "explanation": "Only requests.Timeout is caught for retries. Other transient network issues like ConnectionError or DNS failures will cause the function to fail immediately without attempting the remaining retries. Catch requests.RequestException or a more specific tuple of connection-related errors."
+    }
+   ]
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The implementation uses floating-point arithmetic and default rounding for currency, which can lead to precision errors and non-standard financial rounding.",
+   "usage": {
+    "input_tokens": 540,
+    "output_tokens": 364,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0016-float-money/L0/r0/f0",
+     "path": "app/cart.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Floating point precision for currency",
+     "explanation": "Using `float` for monetary values can lead to precision errors due to binary representation limits (e.g., 0.1 + 0.2 != 0.3). Use `decimal.Decimal` for all currency calculations to ensure exact decimal representation."
+    },
+    {
+     "id": "py-0016-float-money/L0/r0/f1",
+     "path": "app/cart.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Non-standard financial rounding",
+     "explanation": "Python's `round()` function uses 'round half to even' (banker's rounding), which may not align with standard accounting practices (e.g., `round(2.5)` is 2, but `round(3.5)` is 4). Use `decimal.Decimal.quantize()` with an explicit rounding mode like `ROUND_HALF_UP`."
+    }
+   ]
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The implementation uses floating-point arithmetic for currency, which leads to precision errors, and relies on Python's default rounding behavior which is often unsuitable for financial calculations.",
+   "usage": {
+    "input_tokens": 540,
+    "output_tokens": 395,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0016-float-money/L0/r1/f0",
+     "path": "app/cart.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Floating-point precision errors in currency calculation",
+     "explanation": "Using \"float\" for currency leads to precision issues because many decimal values cannot be represented exactly in binary floating-point (e.g., 0.1 + 0.2 != 0.3). This can result in incorrect totals. Use \"decimal.Decimal\" for all monetary values to ensure exact representation."
+    },
+    {
+     "id": "py-0016-float-money/L0/r1/f1",
+     "path": "app/cart.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Unsuitable rounding method for financial transactions",
+     "explanation": "Python's built-in \"round()\" function uses \"round half to even\" (banker's rounding), which may not comply with financial standards that typically require \"round half up\". Additionally, rounding floats is unreliable due to representation errors (e.g., round(2.675, 2) results in 2.67). Use \"decimal.Decimal.quantize()\" with an explicit rounding mode like \"ROUND_HALF_UP\"."
+    }
+   ]
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The implementation uses floating-point arithmetic for currency, which leads to precision errors, and relies on Python's default rounding behavior which is often unsuitable for financial calculations.",
+   "usage": {
+    "input_tokens": 540,
+    "output_tokens": 395,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0016-float-money/L0/r2/f0",
+     "path": "app/cart.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Floating-point precision errors in currency calculation",
+     "explanation": "Using \"float\" for currency leads to precision issues because many decimal values cannot be represented exactly in binary floating-point (e.g., 0.1 + 0.2 != 0.3). This can result in incorrect totals. Use \"decimal.Decimal\" for all monetary values to ensure exact representation."
+    },
+    {
+     "id": "py-0016-float-money/L0/r2/f1",
+     "path": "app/cart.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Unsuitable rounding method for financial transactions",
+     "explanation": "Python's built-in \"round()\" function uses \"round half to even\" (banker's rounding), which may not comply with financial standards that typically require \"round half up\". Additionally, rounding floats is unreliable due to representation errors (e.g., round(2.675, 2) results in 2.67). Use \"decimal.Decimal.quantize()\" with an explicit rounding mode like \"ROUND_HALF_UP\"."
+    }
+   ]
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a basic cart total calculation but uses floating-point arithmetic for currency, which is prone to precision errors and inconsistent rounding.",
+   "usage": {
+    "input_tokens": 630,
+    "output_tokens": 321,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0016-float-money/L1/r0/f0",
+     "path": "app/cart.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Use of float for currency calculations",
+     "explanation": "Floating-point math can introduce precision errors (e.g., 0.1 + 0.2 != 0.3) that accumulate in financial calculations. Use the `decimal.Decimal` class to ensure exact decimal representation and precision control."
+    },
+    {
+     "id": "py-0016-float-money/L1/r0/f1",
+     "path": "app/cart.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "low",
+     "title": "Inconsistent rounding behavior",
+     "explanation": "Python's built-in `round()` function implements 'round half to even' (banker's rounding), where `round(2.5)` is 2 and `round(3.5)` is 4. This may not align with business or legal requirements for tax calculations, which often require 'round half up'. Use `decimal.Decimal` with an explicit rounding strategy like `ROUND_HALF_UP`."
+    }
+   ]
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces floating-point arithmetic for currency calculations, which leads to precision errors and incorrect rounding. This is particularly dangerous when the result is converted to integer cents for payment processing, as it can result in off-by-one-cent errors.",
+   "usage": {
+    "input_tokens": 726,
+    "output_tokens": 593,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0016-float-money/L2/r1/f0",
+     "path": "app/cart.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Floating point precision for currency",
+     "explanation": "Using `float` for monetary values leads to precision errors (e.g., `0.1 + 0.2` does not exactly equal `0.3`). This can result in incorrect totals. Use `decimal.Decimal` for all currency-related variables and parameters to ensure exact decimal representation."
+    },
+    {
+     "id": "py-0016-float-money/L2/r1/f1",
+     "path": "app/cart.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Inconsistent rounding method",
+     "explanation": "Python's `round()` function implements 'round half to even' (banker's rounding). For example, `round(2.675, 2)` results in `2.67` instead of the `2.68` typically expected in retail and invoicing. Use `decimal.Decimal.quantize()` with an explicit rounding strategy like `ROUND_HALF_UP`."
+    },
+    {
+     "id": "py-0016-float-money/L2/r1/f2",
+     "path": "app/checkout.py",
+     "line": 7,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Truncation error in cent conversion",
+     "explanation": "Converting a float to cents using `int(total * 100)` is unsafe. Due to floating-point inaccuracies, a value like `19.99` may be represented internally as `19.989999999999998`. Multiplying by 100 and calling `int()` will truncate this to `1998` cents instead of `1999`. Use `round(total * 100)` or perform all calculations using `Decimal`."
+    }
+   ]
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 503 Server Error: Service Unavailable for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The pagination logic is unstable and can lead to skipped records when multiple posts share the same timestamp.",
+   "usage": {
+    "input_tokens": 678,
+    "output_tokens": 234,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0017-cursor-pagination-skips/L1/r0/f0",
+     "path": "app/feed.py",
+     "line": 4,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Unstable pagination due to non-unique cursor",
+     "explanation": "Using only `created_at` for pagination is unreliable because multiple records can have the same timestamp. If a page ends on a timestamp that is shared by the next record, that record will be skipped in the next query because of the strict `created_at < ?` comparison. To fix this, use a unique tie-breaker in the cursor (e.g., `id`). The query should be updated to something like `WHERE (created_at, id) < (?, ?) ORDER BY created_at DESC, id DESC` and the function should accept both the timestamp and the ID of the last seen item."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The pagination logic in `next_page` is unreliable because it uses a non-unique column (`created_at`) for the cursor, which will cause data to be skipped when multiple records share the same timestamp.",
+   "usage": {
+    "input_tokens": 902,
+    "output_tokens": 424,
+    "served_model": "gemini-3-flash-preview"
+   },
+   "findings": [
+    {
+     "id": "py-0017-cursor-pagination-skips/L2/r1/f0",
+     "path": "app/feed.py",
+     "line": 4,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Pagination skips records with duplicate timestamps",
+     "explanation": "The `created_at` column is not unique; as seen in `importer.py`, multiple posts are often inserted with the exact same second-precision timestamp. Using `WHERE created_at < ?` for pagination will skip any remaining records that share the same timestamp as the last item of the previous page. Additionally, `ORDER BY` without a unique tie-breaker is non-deterministic. To fix this, the function should accept a composite cursor (e.g., `after_created_at` and `after_id`) and use a row-value comparison: `WHERE (created_at, id) < (?, ?) ORDER BY created_at DESC, id DESC`."
+    },
+    {
+     "id": "py-0017-cursor-pagination-skips/L2/r1/f1",
+     "path": "app/feed.py",
+     "line": 4,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Initial page request returns no results if cursor is null",
+     "explanation": "If `after_created_at` is passed as `None` (representing a request for the first page), the SQL expression `created_at < NULL` will evaluate to `NULL`, resulting in an empty list. The function should handle the initial request case, for example by using `WHERE (? IS NULL OR created_at < ?)` or providing a default high-value timestamp."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 2,
    "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
    "summary": "",
    "usage": {},

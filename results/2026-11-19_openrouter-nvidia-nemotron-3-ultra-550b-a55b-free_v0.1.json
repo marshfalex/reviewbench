@@ -9,7 +9,7 @@
   "L1",
   "L2"
  ],
- "status": "partial",
+ "status": "complete",
  "cases": {
   "py-0001-sql-injection": {
    "title": "SQL query built with an f-string",
@@ -515,6 +515,145 @@
    ],
    "bugs": [],
    "known_issues": []
+  },
+  "py-0023-requests-auth-https-downgrade": {
+   "title": "Authorization header kept on an https-to-http redirect to the same host",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "credentials",
+    "http",
+    "redirect",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "requests/sessions.py",
+     "lines": [
+      200,
+      201
+     ],
+     "class": "credential_leak_on_redirect",
+     "cwe": "CWE-522",
+     "severity": "high"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0024-urllib3-cookie-redirect": {
+   "title": "Cookie header is forwarded on cross-origin redirects",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "credentials",
+    "http",
+    "redirect",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "src/urllib3/util/retry.py",
+     "lines": [
+      190,
+      190
+     ],
+     "class": "credential_leak_on_redirect",
+     "cwe": "CWE-200",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0025-jinja2-xmlattr-key-injection": {
+   "title": "xmlattr filter accepts attribute keys containing spaces",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "security",
+    "xss",
+    "templating",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "src/jinja2/filters.py",
+     "lines": [
+      88,
+      92
+     ],
+     "class": "attribute_injection",
+     "cwe": "CWE-79",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0026-aiohttp-static-symlink-traversal": {
+   "title": "Static file route skips the path containment check when follow_symlinks is on",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "security",
+    "path-traversal",
+    "web",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "aiohttp/web_urldispatcher.py",
+     "lines": [
+      188,
+      190
+     ],
+     "class": "path_traversal",
+     "cwe": "CWE-22",
+     "severity": "high"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "traversal",
+     "file": "aiohttp/web_urldispatcher.py",
+     "note": "the same missing check in url_for(append_version=True), lines 122-124"
+    }
+   ]
+  },
+  "py-0027-gitpython-clone-ext-protocol-rce": {
+   "title": "Repo.clone/clone_from no longer refuse ext:: URLs and protocol/upload-pack options",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "command-injection",
+    "rce",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "git/repo/base.py",
+     "lines": [
+      236,
+      239
+     ],
+     "class": "command_injection",
+     "cwe": "CWE-94",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "ext::",
+     "file": "git/repo/base.py",
+     "note": "the same unchecked URL in Repo.clone (line ~202)"
+    },
+    {
+     "match": "upload-pack",
+     "file": "git/repo/base.py",
+     "note": "the same unchecked options in Repo.clone (line ~202)"
+    }
+   ]
   }
  },
  "records": [
@@ -2928,6 +3067,789 @@
   {
    "case": "py-0018-naive-local-vs-utc",
    "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 2,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 0,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 1,
+   "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
    "run": 2,
    "error": "exception: HTTPError: 429 Client Error: Too Many Requests for url: https://openrouter.ai/api/v1/chat/completions",
    "summary": "",

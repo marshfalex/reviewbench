@@ -1,20 +1,20 @@
 # openrouter / nvidia/nemotron-3-ultra-550b-a55b:free — ReviewBench v0.1
 
-Created 2026-11-19T17:36:19+00:00, k=3 runs per case and level, status `partial`. Rates are hits/n (%, Wilson 95% CI).
+Created 2026-11-19T17:36:19+00:00, k=3 runs per case and level, status `complete`. Rates are hits/n (%, Wilson 95% CI).
 
 ## public
 
 | level | difficulty | any-of-k recall | all-of-k recall | per-run recall | precision (adjudicated) | control runs w/ FP | unadjudicated | errors |
 |---|---|---|---|---|---|---|---|---|
-| L0 | all | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 18/18 (100%, 82–100) | 25/25 (100%, 87–100) | n/a | 1 | 36 |
-| L0 | easy | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 18/18 (100%, 82–100) | 25/25 (100%, 87–100) | n/a | 1 | 18 |
-| L0 | hard | n/a | n/a | n/a | n/a | n/a | 0 | 18 |
-| L1 | all | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 18/18 (100%, 82–100) | 23/23 (100%, 86–100) | n/a | 3 | 33 |
-| L1 | easy | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 18/18 (100%, 82–100) | 23/23 (100%, 86–100) | n/a | 3 | 18 |
-| L1 | hard | n/a | n/a | n/a | n/a | n/a | 0 | 15 |
-| L2 | all | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 17/17 (100%, 82–100) | 22/22 (100%, 85–100) | n/a | 7 | 34 |
-| L2 | easy | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 17/17 (100%, 82–100) | 22/22 (100%, 85–100) | n/a | 7 | 19 |
-| L2 | hard | n/a | n/a | n/a | n/a | n/a | 0 | 15 |
+| L0 | all | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 18/18 (100%, 82–100) | 25/25 (100%, 87–100) | n/a | 1 | 63 |
+| L0 | easy | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 18/18 (100%, 82–100) | 25/25 (100%, 87–100) | n/a | 1 | 39 |
+| L0 | hard | n/a | n/a | n/a | n/a | n/a | 0 | 24 |
+| L1 | all | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 18/18 (100%, 82–100) | 23/23 (100%, 86–100) | n/a | 3 | 63 |
+| L1 | easy | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 18/18 (100%, 82–100) | 23/23 (100%, 86–100) | n/a | 3 | 39 |
+| L1 | hard | n/a | n/a | n/a | n/a | n/a | 0 | 24 |
+| L2 | all | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 17/17 (100%, 82–100) | 22/22 (100%, 85–100) | n/a | 7 | 64 |
+| L2 | easy | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 17/17 (100%, 82–100) | 22/22 (100%, 85–100) | n/a | 7 | 40 |
+| L2 | hard | n/a | n/a | n/a | n/a | n/a | 0 | 24 |
 
 ## Per case
 
@@ -72,3 +72,32 @@ Created 2026-11-19T17:36:19+00:00, k=3 runs per case and level, status `partial`
 | py-0017-cursor-pagination-skips | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
 | py-0017-cursor-pagination-skips | L2 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
 | py-0018-naive-local-vs-utc | L0 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0018-naive-local-vs-utc | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0018-naive-local-vs-utc | L2 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0019-clean-parameterized-query | L0 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0019-clean-parameterized-query | L1 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0019-clean-parameterized-query | L2 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0020-clean-pagination | L0 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0020-clean-pagination | L1 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0020-clean-pagination | L2 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0021-clean-locked-reserve | L0 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0021-clean-locked-reserve | L1 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0021-clean-locked-reserve | L2 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0022-clean-compare-digest | L0 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0022-clean-compare-digest | L1 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0022-clean-compare-digest | L2 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0023-requests-auth-https-downgrade | L0 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0023-requests-auth-https-downgrade | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0023-requests-auth-https-downgrade | L2 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0024-urllib3-cookie-redirect | L0 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0024-urllib3-cookie-redirect | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0024-urllib3-cookie-redirect | L2 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0025-jinja2-xmlattr-key-injection | L0 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0025-jinja2-xmlattr-key-injection | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0025-jinja2-xmlattr-key-injection | L2 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0026-aiohttp-static-symlink-traversal | L0 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0026-aiohttp-static-symlink-traversal | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0026-aiohttp-static-symlink-traversal | L2 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0027-gitpython-clone-ext-protocol-rce | L0 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0027-gitpython-clone-ext-protocol-rce | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0027-gitpython-clone-ext-protocol-rce | L2 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |

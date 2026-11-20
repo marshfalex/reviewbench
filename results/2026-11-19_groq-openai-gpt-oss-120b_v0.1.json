@@ -515,6 +515,145 @@
    ],
    "bugs": [],
    "known_issues": []
+  },
+  "py-0023-requests-auth-https-downgrade": {
+   "title": "Authorization header kept on an https-to-http redirect to the same host",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "credentials",
+    "http",
+    "redirect",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "requests/sessions.py",
+     "lines": [
+      200,
+      201
+     ],
+     "class": "credential_leak_on_redirect",
+     "cwe": "CWE-522",
+     "severity": "high"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0024-urllib3-cookie-redirect": {
+   "title": "Cookie header is forwarded on cross-origin redirects",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "credentials",
+    "http",
+    "redirect",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "src/urllib3/util/retry.py",
+     "lines": [
+      190,
+      190
+     ],
+     "class": "credential_leak_on_redirect",
+     "cwe": "CWE-200",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0025-jinja2-xmlattr-key-injection": {
+   "title": "xmlattr filter accepts attribute keys containing spaces",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "security",
+    "xss",
+    "templating",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "src/jinja2/filters.py",
+     "lines": [
+      88,
+      92
+     ],
+     "class": "attribute_injection",
+     "cwe": "CWE-79",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0026-aiohttp-static-symlink-traversal": {
+   "title": "Static file route skips the path containment check when follow_symlinks is on",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "security",
+    "path-traversal",
+    "web",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "aiohttp/web_urldispatcher.py",
+     "lines": [
+      188,
+      190
+     ],
+     "class": "path_traversal",
+     "cwe": "CWE-22",
+     "severity": "high"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "traversal",
+     "file": "aiohttp/web_urldispatcher.py",
+     "note": "the same missing check in url_for(append_version=True), lines 122-124"
+    }
+   ]
+  },
+  "py-0027-gitpython-clone-ext-protocol-rce": {
+   "title": "Repo.clone/clone_from no longer refuse ext:: URLs and protocol/upload-pack options",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "command-injection",
+    "rce",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "git/repo/base.py",
+     "lines": [
+      236,
+      239
+     ],
+     "class": "command_injection",
+     "cwe": "CWE-94",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "ext::",
+     "file": "git/repo/base.py",
+     "note": "the same unchecked URL in Repo.clone (line ~202)"
+    },
+    {
+     "match": "upload-pack",
+     "file": "git/repo/base.py",
+     "note": "the same unchecked options in Repo.clone (line ~202)"
+    }
+   ]
   }
  },
  "records": [
@@ -4124,6 +4263,878 @@
      "severity": "medium",
      "title": "No HTTP error handling for payment request",
      "explanation": "The function returns r.json() without checking the HTTP status code or handling JSON decode errors. If the payments service returns a non\u2011200 response or a non\u2011JSON body, r.json() will raise an exception that is not caught, breaking the retry logic. Add a check like r.raise_for_status() and catch requests.exceptions.JSONDecodeError (or ValueError) to return a controlled error or retry."
+    }
+   ]
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "No issues detected in the added cart module.",
+   "usage": {
+    "input_tokens": 611,
+    "output_tokens": 192,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Potential correctness issue due to using floating\u2011point arithmetic for monetary values.",
+   "usage": {
+    "input_tokens": 611,
+    "output_tokens": 396,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0016-float-money/L0/r1/f0",
+     "path": "app/cart.py",
+     "line": 4,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Floating\u2011point rounding can produce inaccurate monetary totals",
+     "explanation": "The function uses `float` arithmetic and `round(total, 2)` to compute a price. Binary floating\u2011point cannot represent decimal fractions exactly, which may lead to off\u2011by\u2011one\u2011cent errors (e.g., 0.1 + 0.2 != 0.3). Replace the calculation with `Decimal` from the `decimal` module and round using `quantize` to ensure exact cent precision."
+    }
+   ]
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "No issues found.",
+   "usage": {
+    "input_tokens": 611,
+    "output_tokens": 269,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "No issues found.",
+   "usage": {
+    "input_tokens": 686,
+    "output_tokens": 201,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "No issues found.",
+   "usage": {
+    "input_tokens": 686,
+    "output_tokens": 208,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "No issues found.",
+   "usage": {
+    "input_tokens": 686,
+    "output_tokens": 208,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Potential rounding inaccuracies due to floating\u2011point arithmetic may cause off\u2011by\u2011one cent errors when converting the rounded total to integer cents.",
+   "usage": {
+    "input_tokens": 764,
+    "output_tokens": 630,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0016-float-money/L2/r0/f0",
+     "path": "app/cart.py",
+     "line": 4,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Floating\u2011point rounding may lose cent precision",
+     "explanation": "The function uses `round(total, 2)` on a float, which can still suffer binary representation errors (e.g., `round(2.675, 2)` yields `2.67`). When the caller multiplies by 100 and casts to `int`, the value may be off by one cent. Replace the float arithmetic with `Decimal` for monetary values, e.g., `from decimal import Decimal, ROUND_HALF_UP; subtotal = sum(Decimal(p) for p in prices); total = (subtotal * (Decimal('1') + Decimal(str(tax_rate)))).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP); return float(total)`."
+    }
+   ]
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Potential monetary rounding error when converting total dollars to integer cents.",
+   "usage": {
+    "input_tokens": 764,
+    "output_tokens": 542,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0016-float-money/L2/r1/f0",
+     "path": "app/checkout.py",
+     "line": 7,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Float-to-int cents conversion may truncate cent due to binary rounding",
+     "explanation": "order_total returns a float rounded to two decimal places, but the binary representation may be slightly less (e.g., 10.24 becomes 10.239999...). Multiplying by 100 and applying int() truncates the fraction, potentially losing a cent (1023 instead of 1024). Use round(total * 100) before converting to int, or perform all calculations in integer cents to avoid floating\u2011point errors."
+    }
+   ]
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Potential undercharging due to float rounding when converting dollars to cents.",
+   "usage": {
+    "input_tokens": 764,
+    "output_tokens": 444,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0016-float-money/L2/r2/f0",
+     "path": "app/checkout.py",
+     "line": 7,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Float-to-int conversion can truncate cents",
+     "explanation": "order_total returns a float rounded to two decimals, but due to binary floating\u2011point representation the value may be slightly less (e.g., 10.23 becomes 10.229999...). Multiplying by 100 and applying int() truncates the fraction, causing the customer to be undercharged by one cent. Fix by rounding before converting: `cents = int(round(total * 100))` or compute the total in integer cents throughout."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "No actionable problems detected in the added code.",
+   "usage": {
+    "input_tokens": 631,
+    "output_tokens": 384,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new feed pagination function lacks validation for its parameters, which can lead to unexpected behavior or resource exhaustion.",
+   "usage": {
+    "input_tokens": 631,
+    "output_tokens": 650,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0017-cursor-pagination-skips/L0/r1/f0",
+     "path": "app/feed.py",
+     "line": 4,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Unvalidated `limit` argument can be negative",
+     "explanation": "The function forwards the `limit` value directly to the SQL `LIMIT` clause. In SQLite a negative limit is treated as \"no limit\", potentially returning the entire posts table and causing high memory/CPU usage. Validate that `limit` is a positive integer and cap it to a safe maximum (e.g., 100)."
+    },
+    {
+     "id": "py-0017-cursor-pagination-skips/L0/r1/f1",
+     "path": "app/feed.py",
+     "line": 2,
+     "category": "correctness",
+     "severity": "low",
+     "title": "`after_created_at` may be None, yielding no results",
+     "explanation": "If the caller passes `None` for `after_created_at`, the query `WHERE created_at < NULL` always evaluates to false, returning an empty list instead of the first page. Add a guard that substitutes a suitable default (e.g., current timestamp) or raises a clear error when `after_created_at` is missing."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new feed pagination function lacks validation for its parameters, which can lead to unexpected behavior or resource exhaustion.",
+   "usage": {
+    "input_tokens": 631,
+    "output_tokens": 650,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0017-cursor-pagination-skips/L0/r2/f0",
+     "path": "app/feed.py",
+     "line": 4,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Unvalidated `limit` argument can be negative",
+     "explanation": "The function forwards the `limit` value directly to the SQL `LIMIT` clause. In SQLite a negative limit is treated as \"no limit\", potentially returning the entire posts table and causing high memory/CPU usage. Validate that `limit` is a positive integer and cap it to a safe maximum (e.g., 100)."
+    },
+    {
+     "id": "py-0017-cursor-pagination-skips/L0/r2/f1",
+     "path": "app/feed.py",
+     "line": 2,
+     "category": "correctness",
+     "severity": "low",
+     "title": "`after_created_at` may be None, yielding no results",
+     "explanation": "If the caller passes `None` for `after_created_at`, the query `WHERE created_at < NULL` always evaluates to false, returning an empty list instead of the first page. Add a guard that substitutes a suitable default (e.g., current timestamp) or raises a clear error when `after_created_at` is missing."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Potential pagination correctness issue with duplicate timestamps",
+   "usage": {
+    "input_tokens": 724,
+    "output_tokens": 517,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0017-cursor-pagination-skips/L1/r0/f0",
+     "path": "app/feed.py",
+     "line": 3,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Pagination may skip or duplicate rows when multiple posts share the same created_at",
+     "explanation": "The query only filters on `created_at < ?` and orders by `created_at DESC`. If several rows have identical `created_at` values, the cursor does not uniquely identify the last seen row, causing possible gaps or duplicates across pages. Fix by adding a secondary ordering (e.g., `id`) and extending the cursor condition to include the secondary key."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Potential pagination correctness issue due to non-unique cursor",
+   "usage": {
+    "input_tokens": 724,
+    "output_tokens": 559,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0017-cursor-pagination-skips/L1/r1/f0",
+     "path": "app/feed.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Cursor may skip or duplicate rows when created_at is not unique",
+     "explanation": "The query orders only by `created_at` and uses it as the pagination cursor. If multiple posts share the same `created_at` timestamp, rows can be missed or returned twice across pages. Include a tie\u2011breaker (e.g., `id`) in both the ORDER BY clause and the cursor condition.\nFix: change the SQL to `ORDER BY created_at DESC, id DESC` and adjust the cursor to `(after_created_at, after_id)` with a condition like `WHERE (created_at < ?) OR (created_at = ? AND id < ?)`. Update the function signature accordingly."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Potential pagination correctness issue due to non-unique cursor",
+   "usage": {
+    "input_tokens": 724,
+    "output_tokens": 565,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0017-cursor-pagination-skips/L1/r2/f0",
+     "path": "app/feed.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Cursor may skip or duplicate rows when timestamps are identical",
+     "explanation": "The query only filters on `created_at < ?` and orders by `created_at DESC`. If multiple posts share the same `created_at` value, pagination using only this timestamp can cause rows to be omitted or returned multiple times across pages. Include a secondary unique column (e.g., `id`) in the cursor and ordering to guarantee deterministic pagination.\nFix: change the query to `WHERE (created_at, id) < (?, ?) ORDER BY created_at DESC, id DESC` and pass both `after_created_at` and `after_id` (or adjust the API accordingly)."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Potential correctness issue when cursor is None",
+   "usage": {
+    "input_tokens": 906,
+    "output_tokens": 591,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0017-cursor-pagination-skips/L2/r0/f0",
+     "path": "app/feed.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Function fails when after_created_at is None",
+     "explanation": "The query always includes `WHERE created_at < ?`. If `after_created_at` is passed as `None`, SQLite treats the comparison as unknown and returns no rows, breaking pagination for the first page. Add a guard to handle a `None` cursor (e.g., omit the WHERE clause or use a max timestamp) before executing the query."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Potential nondeterministic pagination due to missing tie-breaker in ORDER BY clause.",
+   "usage": {
+    "input_tokens": 906,
+    "output_tokens": 458,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0017-cursor-pagination-skips/L2/r1/f0",
+     "path": "app/feed.py",
+     "line": 4,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Pagination may skip or duplicate rows when timestamps collide",
+     "explanation": "The query orders only by `created_at DESC`. If multiple posts share the same `created_at` value, their relative order is undefined, which can cause rows to appear on multiple pages or be omitted across pagination. Add a secondary deterministic sort, e.g., `ORDER BY created_at DESC, id DESC`, and adjust the cursor logic accordingly."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "No issues detected in the added code.",
+   "usage": {
+    "input_tokens": 906,
+    "output_tokens": 298,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The new token expiration check uses local time instead of UTC, causing incorrect expiration evaluation.",
+   "usage": {
+    "input_tokens": 605,
+    "output_tokens": 431,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L0/r0/f0",
+     "path": "app/tokens.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Uses local time instead of UTC for expiration check",
+     "explanation": "The function docstring states that `expires_at_utc` is a naive datetime representing UTC, but `datetime.now()` returns the current local time. Comparing a UTC timestamp with a local timestamp can cause tokens to be considered valid or expired incorrectly, potentially leading to security issues. Replace `datetime.now()` with `datetime.utcnow()` (or make both datetimes timezone\u2011aware) to ensure a proper UTC comparison."
+    }
+   ]
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new token expiration check uses local time instead of UTC, causing incorrect expiration logic.",
+   "usage": {
+    "input_tokens": 605,
+    "output_tokens": 440,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L0/r1/f0",
+     "path": "app/tokens.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Uses local time instead of UTC for expiration check",
+     "explanation": "datetime.now() returns a naive datetime in the system's local timezone, but the function expects a naive UTC datetime. This can cause tokens to be considered expired or valid incorrectly, leading to security issues. Replace datetime.now() with datetime.utcnow() or make the function timezone\u2011aware."
+    }
+   ]
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new token expiration check uses local time instead of UTC, causing incorrect expiration logic.",
+   "usage": {
+    "input_tokens": 605,
+    "output_tokens": 440,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L0/r2/f0",
+     "path": "app/tokens.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Uses local time instead of UTC for expiration check",
+     "explanation": "datetime.now() returns a naive datetime in the system's local timezone, but the function expects a naive UTC datetime. This can cause tokens to be considered expired or valid incorrectly, leading to security issues. Replace datetime.now() with datetime.utcnow() or make the function timezone\u2011aware."
+    }
+   ]
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Found timezone handling bug in is_expired",
+   "usage": {
+    "input_tokens": 670,
+    "output_tokens": 366,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L1/r0/f0",
+     "path": "app/tokens.py",
+     "line": 7,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Incorrect timezone handling for expiration check",
+     "explanation": "datetime.now() returns a naive local time, but expires_at_utc is documented as a naive UTC datetime, causing wrong expiration results. Use datetime.utcnow() or make both datetimes timezone-aware (e.g., datetime.now(timezone.utc))."
+    }
+   ]
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The expiration check uses local time instead of UTC, causing incorrect behavior.",
+   "usage": {
+    "input_tokens": 670,
+    "output_tokens": 427,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L1/r1/f0",
+     "path": "app/tokens.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Uses local time instead of UTC for expiration check",
+     "explanation": "The function compares a naive UTC datetime with datetime.now(), which returns the local time. This can cause tokens to be considered expired too early or too late depending on the server's timezone. Replace datetime.now() with datetime.utcnow() or make both datetimes timezone-aware (e.g., use datetime.now(timezone.utc))."
+    }
+   ]
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Found a timezone handling bug in token expiration check.",
+   "usage": {
+    "input_tokens": 670,
+    "output_tokens": 361,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L1/r2/f0",
+     "path": "app/tokens.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect timezone handling for expiration check",
+     "explanation": "The function compares a naive UTC datetime with datetime.now(), which returns the local time. This can cause tokens to be marked expired or valid incorrectly depending on the server's timezone. Use datetime.utcnow() (or make both datetimes timezone\u2011aware) to compare UTC times consistently."
+    }
+   ]
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Found a timezone handling bug in expiration check.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 336,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L2/r0/f0",
+     "path": "app/tokens.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Incorrect timezone handling for expiration check",
+     "explanation": "The function uses `datetime.now()` which returns the local time, but `expires_at_utc` is documented as a naive UTC datetime. Comparing local time to UTC can cause tokens to be considered expired too early or too late depending on the server's timezone. Replace `datetime.now()` with `datetime.utcnow()` (or make both datetimes timezone\u2011aware) to ensure a correct comparison."
+    }
+   ]
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The expiration check uses local time instead of UTC, causing incorrect behavior when the server timezone differs from UTC.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 383,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L2/r1/f0",
+     "path": "app/tokens.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Incorrect timezone handling for expiration check",
+     "explanation": "The function assumes `expires_at_utc` is a naive UTC datetime but calls `datetime.now()`, which returns the local time. This can cause false negatives/positives when the server is not set to UTC. Replace `datetime.now()` with `datetime.utcnow()` to compare like\u2011for\u2011like."
+    }
+   ]
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Found a timezone handling bug in expiration check.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 336,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L2/r2/f0",
+     "path": "app/tokens.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Incorrect timezone handling for expiration check",
+     "explanation": "The function uses `datetime.now()` which returns the local time, but `expires_at_utc` is documented as a naive UTC datetime. Comparing local time to UTC can cause tokens to be considered expired too early or too late depending on the server's timezone. Replace `datetime.now()` with `datetime.utcnow()` (or make both datetimes timezone\u2011aware) to ensure a correct comparison."
+    }
+   ]
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "No issues found",
+   "usage": {
+    "input_tokens": 601,
+    "output_tokens": 162,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "No issues found",
+   "usage": {
+    "input_tokens": 601,
+    "output_tokens": 162,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "No issues found",
+   "usage": {
+    "input_tokens": 601,
+    "output_tokens": 169,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "No issues detected in the added file.",
+   "usage": {
+    "input_tokens": 662,
+    "output_tokens": 154,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "No issues detected in the added file.",
+   "usage": {
+    "input_tokens": 662,
+    "output_tokens": 158,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "No issues detected in the added file.",
+   "usage": {
+    "input_tokens": 662,
+    "output_tokens": 206,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "No issues detected in the added file.",
+   "usage": {
+    "input_tokens": 662,
+    "output_tokens": 158,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "No issues detected in the added file.",
+   "usage": {
+    "input_tokens": 662,
+    "output_tokens": 150,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "No issues detected in the added file.",
+   "usage": {
+    "input_tokens": 662,
+    "output_tokens": 150,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "No issues found",
+   "usage": {
+    "input_tokens": 642,
+    "output_tokens": 142,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "No issues found in the added pagination utility.",
+   "usage": {
+    "input_tokens": 642,
+    "output_tokens": 206,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "No issues found",
+   "usage": {
+    "input_tokens": 642,
+    "output_tokens": 169,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "No issues found in the added pagination function.",
+   "usage": {
+    "input_tokens": 743,
+    "output_tokens": 155,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "No issues found in the added pagination function.",
+   "usage": {
+    "input_tokens": 743,
+    "output_tokens": 155,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "No issues found.",
+   "usage": {
+    "input_tokens": 743,
+    "output_tokens": 192,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "No issues found.",
+   "usage": {
+    "input_tokens": 743,
+    "output_tokens": 190,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "No issues detected in the added pagination function.",
+   "usage": {
+    "input_tokens": 743,
+    "output_tokens": 132,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "No issues detected in the added pagination function.",
+   "usage": {
+    "input_tokens": 743,
+    "output_tokens": 191,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Potential correctness issue: negative quantity can increase stock",
+   "usage": {
+    "input_tokens": 643,
+    "output_tokens": 573,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L0/r0/f0",
+     "path": "app/inventory_safe.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Negative qty allowed, leading to stock inflation",
+     "explanation": "The function only checks that available >= qty. If qty is negative, the condition is always true and stock[item] = available - qty will increase the stock, corrupting inventory data. Add validation to reject non\u2011positive quantities (e.g., if qty <= 0: return False or raise ValueError) before the lock."
+    }
+   ]
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new inventory reservation function lacks validation for the quantity parameter, allowing negative values to increase stock unintentionally.",
+   "usage": {
+    "input_tokens": 643,
+    "output_tokens": 434,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L0/r1/f0",
+     "path": "app/inventory_safe.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for negative quantity",
+     "explanation": "If `qty` is negative, the condition `available >= qty` is always true and the stock is increased (`stock[item] = available - qty`). This can corrupt inventory data. Add a check that `qty` is a positive integer (e.g., `if qty <= 0: return False` or raise `ValueError`)."
+    }
+   ]
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new inventory reservation function lacks input validation, allowing negative quantities to incorrectly increase stock.",
+   "usage": {
+    "input_tokens": 643,
+    "output_tokens": 396,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L0/r2/f0",
+     "path": "app/inventory_safe.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Negative quantity can inflate stock",
+     "explanation": "The `reserve` function does not validate that `qty` is positive. Supplying a negative `qty` will pass the `available >= qty` check and increase the stock value, corrupting inventory data. Add a check `if qty <= 0: return False` (or raise) before acquiring the lock."
     }
    ]
   }

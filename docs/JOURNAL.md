@@ -85,3 +85,27 @@ Append-only. One short entry per working session: what was done, what was learne
 - Tests: refusal cases record every prompt sent and assert the held-out code never appears in
   one. With the guard disabled, 6 of them fail.
 - Next: CVE batch 2 (batch 1 merged in #9).
+
+## 2026-11-20 — CVE batch 2
+- Added py-0028..py-0031, the same method as batch 1:
+  - GitPython CVE-2023-41040 (64ebb9f, the commit titled "Fix CVE-2023-41040": rejects `..` in
+    ref paths)
+  - Django CVE-2021-33203 (dfaba12: `safe_join` in admindocs)
+  - PyJWT CVE-2022-29217 (9c52867: replaces the incomplete HMAC key blocklist)
+  - requests CVE-2023-32681 (74ea7cf: no Proxy-Authorization on HTTPS-tunnelled requests)
+
+  Licenses are BSD-3, BSD-3, MIT and Apache-2.0. The largest prompt is Django at L1/L2 (17,709
+  chars).
+- Decisions:
+  - GitPython: 3.1.37 also has follow-up refname hardening (46d3d05, in #1672). The case pins only
+    the commit named for the CVE.
+  - PyJWT: the fix also touched OKPAlgorithm.prepare_key (key-type checks). That stays in the diff
+    as part of the pinned commit but is not a planted bug.
+  - Difficulty: GitPython and Django are `easy` (the diff removes an explicit `..` check /
+    safe_join); PyJWT and requests are `hard` (you need to know which key formats or which tunnel
+    path the old code missed).
+- Ran the private repo's overlap check against these cases: no overlap with the held-out set,
+  including the PyJWT and Django held-out cases, which change different files.
+- BENCH_VERSION stays 0.1, as for batch 1. The complete cerebras run covers only the 22 synthetic
+  cases; re-running finished models on new cases is #12.
+- Next: CVE batch 3.

@@ -1,0 +1,15 @@
+diff --git a/requests/sessions.py b/requests/sessions.py
+index 15a17a6..745a91e 100644
+--- a/requests/sessions.py
++++ b/requests/sessions.py
+@@ -139,9 +139,7 @@ class SessionRedirectMixin:
+         except KeyError:
+             username, password = None, None
+ 
+-        # urllib3 handles proxy authorization for us in the standard adapter.
+-        # Avoid appending this to TLS tunneled requests where it may be leaked.
+-        if not scheme.startswith('https') and username and password:
++        if username and password:
+             headers["Proxy-Authorization"] = _basic_auth_str(username, password)
+ 
+         return new_proxies

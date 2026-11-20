@@ -5137,6 +5137,408 @@
      "explanation": "The `reserve` function does not validate that `qty` is positive. Supplying a negative `qty` will pass the `available >= qty` check and increase the stock value, corrupting inventory data. Add a check `if qty <= 0: return False` (or raise) before acquiring the lock."
     }
    ]
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The new inventory reservation function lacks validation for reservation quantity, allowing negative values to increase stock.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 454,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L1/r0/f0",
+     "path": "app/inventory_safe.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Negative reservation quantity can corrupt stock",
+     "explanation": "The `reserve` function does not check that `qty` is positive. Supplying a negative `qty` makes the condition `available >= qty` always true and then adds stock (`stock[item] = available - qty`). This can be exploited to inflate inventory. Add a guard that returns False (or raises) when `qty <= 0` before acquiring the lock."
+    }
+   ]
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The new inventory reservation function lacks validation for reservation quantity, allowing negative values to increase stock.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 453,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L1/r1/f0",
+     "path": "app/inventory_safe.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Negative reservation quantity can corrupt stock",
+     "explanation": "The `reserve` function does not check that `qty` is positive. Supplying a negative `qty` will satisfy `available >= qty` and then increase the stock (`stock[item] = available - qty`). Add a validation step (e.g., `if qty <= 0: return False`) before acquiring the lock to prevent this misuse."
+    }
+   ]
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The new inventory reservation function lacks validation for reservation quantity, allowing negative values to increase stock.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 454,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L1/r2/f0",
+     "path": "app/inventory_safe.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Negative reservation quantity can corrupt stock",
+     "explanation": "The `reserve` function does not check that `qty` is positive. Supplying a negative `qty` makes the condition `available >= qty` always true and then adds stock (`stock[item] = available - qty`). This can be exploited to inflate inventory. Add a guard that returns False (or raises) when `qty <= 0` before acquiring the lock."
+    }
+   ]
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The new inventory reservation function allows negative quantities, which can be exploited to increase stock unintentionally.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 465,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L2/r0/f0",
+     "path": "app/inventory_safe.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Negative quantity not validated",
+     "explanation": "If qty is negative, the condition 'available >= qty' is always true and stock[item] = available - qty will increase the stock, enabling abuse. Add a check that qty is positive (e.g., if qty <= 0: return False) before proceeding with the reservation."
+    }
+   ]
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The new inventory reservation function lacks validation for reservation quantity, allowing negative values to increase stock.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 454,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L2/r1/f0",
+     "path": "app/inventory_safe.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Negative reservation quantity can corrupt stock",
+     "explanation": "The `reserve` function does not check that `qty` is positive. Supplying a negative `qty` makes the condition `available >= qty` always true and then adds stock (`stock[item] = available - qty`). This can be exploited to inflate inventory. Add a guard that returns False (or raises) when `qty <= 0` before acquiring the lock."
+    }
+   ]
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The new inventory module lacks validation for reservation quantity, allowing negative values to increase stock.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 506,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L2/r2/f0",
+     "path": "app/inventory_safe.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Negative quantity can corrupt stock",
+     "explanation": "The function `reserve` only checks `available >= qty`. If `qty` is negative, the condition is always true and `stock[item] = available - qty` will increase the stock, effectively allowing arbitrary stock inflation. Add validation to ensure `qty` is a positive integer (e.g., `if qty <= 0: return False`) before performing the reservation."
+    }
+   ]
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Missing environment variable handling can cause import-time crash.",
+   "usage": {
+    "input_tokens": 628,
+    "output_tokens": 452,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0022-clean-compare-digest/L0/r0/f0",
+     "path": "app/webhooks_safe.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "KeyError if WEBHOOK_SECRET is not set",
+     "explanation": "The module reads the secret at import time with `os.environ[\"WEBHOOK_SECRET\"]`. If the environment variable is absent, Python raises a KeyError and the whole application fails to start, leading to a denial\u2011of\u2011service. Fetch the variable safely (e.g., `os.getenv(\"WEBHOOK_SECRET\")`) and raise a clear configuration error or provide a fallback."
+    }
+   ]
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Missing environment variable handling can cause import-time crash.",
+   "usage": {
+    "input_tokens": 628,
+    "output_tokens": 461,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0022-clean-compare-digest/L0/r1/f0",
+     "path": "app/webhooks_safe.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Unprotected access to WEBHOOK_SECRET env var",
+     "explanation": "The module reads os.environ[\"WEBHOOK_SECRET\"] at import time, which raises a KeyError if the variable is unset, causing the entire application to fail to start. Load the secret safely with os.getenv and raise a clear error or provide a fallback.\nFix: replace the line with something like:\n```python\nsecret = os.getenv(\"WEBHOOK_SECRET\")\nif secret is None:\n    raise RuntimeError(\"WEBHOOK_SECRET environment variable is required\")\nWEBHOOK_SECRET = secret.encode()\n```"
+    }
+   ]
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Missing environment variable handling can cause import-time crash.",
+   "usage": {
+    "input_tokens": 628,
+    "output_tokens": 396,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0022-clean-compare-digest/L0/r2/f0",
+     "path": "app/webhooks_safe.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "KeyError if WEBHOOK_SECRET is unset",
+     "explanation": "The module reads the secret at import time with `os.environ[\"WEBHOOK_SECRET\"]`. If the environment variable is not defined, importing the module raises a KeyError and crashes the application. Load the variable lazily inside `verify` or use `os.getenv` with an explicit error message, e.g., `secret = os.getenv(\"WEBHOOK_SECRET\") or raise RuntimeError(\"WEBHOOK_SECRET not set\")`."
+    }
+   ]
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Missing environment variable handling can cause import-time failure.",
+   "usage": {
+    "input_tokens": 711,
+    "output_tokens": 335,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0022-clean-compare-digest/L1/r0/f0",
+     "path": "app/webhooks_safe.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "KeyError if WEBHOOK_SECRET is unset",
+     "explanation": "The module reads os.environ[\"WEBHOOK_SECRET\"] at import time, which raises a KeyError when the variable is not defined, causing the entire application to fail to start. Wrap the access with os.getenv and raise a clear configuration error or provide a fallback."
+    }
+   ]
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The new webhook verification module has a correctness issue that can cause the application to crash if the required environment variable is missing, and it lacks defensive handling of malformed signatures.",
+   "usage": {
+    "input_tokens": 711,
+    "output_tokens": 688,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0022-clean-compare-digest/L1/r1/f0",
+     "path": "app/webhooks_safe.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Unprotected access to required environment variable",
+     "explanation": "The module reads `WEBHOOK_SECRET` at import time using `os.environ[\"WEBHOOK_SECRET\"]`. If the variable is not set, a `KeyError` is raised and the entire application fails to start. Load the secret lazily inside `verify` or provide a clear fallback/error message, e.g., `WEBHOOK_SECRET = os.getenv(\"WEBHOOK_SECRET\")` and raise a custom exception with a helpful message if it is missing."
+    },
+    {
+     "id": "py-0022-clean-compare-digest/L1/r1/f1",
+     "path": "app/webhooks_safe.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for `signature` argument",
+     "explanation": "`hmac.compare_digest` expects both arguments to be of the same type (both `str` or both `bytes`). If `signature` is `None` or another non\u2011string type, a `TypeError` will be raised. Add a guard that returns `False` (or raises a controlled exception) when `signature` is not a non\u2011empty string before calling `compare_digest`."
+    }
+   ]
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Missing environment variable handling may cause runtime crash on import.",
+   "usage": {
+    "input_tokens": 711,
+    "output_tokens": 502,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0022-clean-compare-digest/L1/r2/f0",
+     "path": "app/webhooks_safe.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Uncaught KeyError when WEBHOOK_SECRET is unset",
+     "explanation": "The code accesses os.environ[\"WEBHOOK_SECRET\"] at import time, which raises a KeyError if the variable is not defined, causing the application to fail to start. Retrieve the variable safely (e.g., using os.getenv) and raise a clear configuration error or provide a fallback."
+    }
+   ]
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "No issues found",
+   "usage": {
+    "input_tokens": 791,
+    "output_tokens": 260,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "No issues found.",
+   "usage": {
+    "input_tokens": 791,
+    "output_tokens": 282,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "No issues detected in the added webhook verification module.",
+   "usage": {
+    "input_tokens": 791,
+    "output_tokens": 250,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Security regression: Authorization header may be sent to redirected hosts with different scheme or port.",
+   "usage": {
+    "input_tokens": 667,
+    "output_tokens": 583,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L0/r0/f0",
+     "path": "requests/sessions.py",
+     "line": 200,
+     "category": "security",
+     "severity": "high",
+     "title": "Insufficient auth header removal on redirect",
+     "explanation": "The updated condition only checks hostname changes before deleting the Authorization header. If a redirect changes the scheme (http \u2194 https) or port, credentials could be forwarded to a different endpoint, exposing them. Reinstate checks for scheme and port (or use a more comprehensive comparison) before deleting the header."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Authorization header may be sent to insecure redirects due to reduced hostname check.",
+   "usage": {
+    "input_tokens": 667,
+    "output_tokens": 409,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L0/r1/f0",
+     "path": "requests/sessions.py",
+     "line": 200,
+     "category": "security",
+     "severity": "high",
+     "title": "Insufficient redirect validation removes Authorization header only on hostname change",
+     "explanation": "The updated condition only compares hostnames, ignoring differences in scheme (http vs https) and port. This can cause the Authorization header to be forwarded to a redirect on the same host but a different scheme or port, potentially leaking credentials to an insecure endpoint. Reinstate the original checks for scheme and port, or use a more robust same-origin verification before deleting the header."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Security regression: Authorization header may be sent to redirected URLs with different scheme or port.",
+   "usage": {
+    "input_tokens": 667,
+    "output_tokens": 602,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L0/r2/f0",
+     "path": "requests/sessions.py",
+     "line": 200,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header not cleared on scheme or port change",
+     "explanation": "The updated condition only compares hostnames when deciding to drop the Authorization header on redirects. If a redirect changes the scheme (http \u2194 https) or port, the header will be retained and sent to a potentially untrusted endpoint, leaking credentials. Restore the original check (hostname, port, and scheme) or use a proper same-origin comparison before preserving Authorization."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L1",
+   "run": 0,
+   "error": "rate_limited: retry-after 1337s (quota)",
+   "summary": "",
+   "usage": {},
+   "findings": []
   }
  ]
 }

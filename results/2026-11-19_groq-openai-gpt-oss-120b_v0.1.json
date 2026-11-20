@@ -5535,7 +5535,223 @@
    "case": "py-0023-requests-auth-https-downgrade",
    "level": "L1",
    "run": 0,
-   "error": "rate_limited: retry-after 1337s (quota)",
+   "error": null,
+   "summary": "Authorization header may be leaked on redirects to same host with different scheme or port.",
+   "usage": {
+    "input_tokens": 2878,
+    "output_tokens": 919,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L1/r0/f0",
+     "path": "requests/sessions.py",
+     "line": 197,
+     "category": "security",
+     "severity": "high",
+     "title": "Reduced redirect auth stripping condition",
+     "explanation": "The auth stripping logic now only checks hostname equality, ignoring changes in scheme or port. Redirects to the same host on a different scheme (http\u2192https) or port can leak the Authorization header to an unintended endpoint. Restore the original checks for hostname, port, and scheme, e.g., `if (original_parsed.hostname != redirect_parsed.hostname or original_parsed.port != redirect_parsed.port or original_parsed.scheme != redirect_parsed.scheme):`."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 400 Client Error: Bad Request for url: https://api.groq.com/openai/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Authorization header may be leaked on redirects that change scheme or port",
+   "usage": {
+    "input_tokens": 2878,
+    "output_tokens": 2781,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L1/r2/f0",
+     "path": "requests/sessions.py",
+     "line": 193,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header not stripped on scheme or port change",
+     "explanation": "The rebuild_auth method now only compares hostnames when deciding whether to drop the Authorization header. Redirects that keep the same hostname but change the scheme (http \u2192 https) or port can cause credentials to be sent to a different endpoint, leading to credential leakage. Restore the original check that also compares hostname, port, and scheme (or compare the full netloc) before deleting the header."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Authorization header may be leaked across scheme or port changes due to weakened host comparison",
+   "usage": {
+    "input_tokens": 2878,
+    "output_tokens": 2790,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L2/r0/f0",
+     "path": "requests/sessions.py",
+     "line": 199,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header not stripped on scheme or port change",
+     "explanation": "The original code removed the Authorization header when any of hostname, port, or scheme differed between the original request and the redirect target. The new code only checks hostname, so redirects that change only the scheme (http \u2192 https) or port (e.g., 80 \u2192 443) will retain the Authorization header, potentially leaking credentials to an unintended endpoint. Restore the original comparison (hostname, port, and scheme) or explicitly include scheme and port checks to prevent credential leakage."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Reduced redirect auth stripping may leak credentials",
+   "usage": {
+    "input_tokens": 2878,
+    "output_tokens": 549,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L2/r1/f0",
+     "path": "requests/sessions.py",
+     "line": 260,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header not removed on scheme or port change",
+     "explanation": "The rebuild_auth method now only compares hostnames when deciding to strip the Authorization header. If a redirect changes the scheme (http \u2192 https) or port while keeping the same hostname, the Authorization header will be retained and sent to the new endpoint, potentially leaking credentials. Restore the original checks for hostname, port, and scheme, e.g., `if (original_parsed.hostname != redirect_parsed.hostname or original_parsed.port != redirect_parsed.port or original_parsed.scheme != redirect_parsed.scheme):`."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Authorization header may be leaked on redirects to same host with different scheme or port.",
+   "usage": {
+    "input_tokens": 2878,
+    "output_tokens": 919,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L2/r2/f0",
+     "path": "requests/sessions.py",
+     "line": 197,
+     "category": "security",
+     "severity": "high",
+     "title": "Reduced redirect auth stripping condition",
+     "explanation": "The auth stripping logic now only checks hostname equality, ignoring changes in scheme or port. Redirects to the same host on a different scheme (http\u2192https) or port can leak the Authorization header to an unintended endpoint. Restore the original checks for hostname, port, and scheme, e.g., `if (original_parsed.hostname != redirect_parsed.hostname or original_parsed.port != redirect_parsed.port or original_parsed.scheme != redirect_parsed.scheme):`."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Security regression: removal of Cookie header from default redirect sanitization",
+   "usage": {
+    "input_tokens": 661,
+    "output_tokens": 599,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L0/r0/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 189,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer stripped on redirects",
+     "explanation": "The default set of headers removed on redirects previously included \"Cookie\" to prevent leaking session cookies to third\u2011party hosts. The change drops \"Cookie\" from DEFAULT_REMOVE_HEADERS_ON_REDIRECT, allowing cookies to be forwarded on redirects, which can expose user credentials. Restore \"Cookie\" in the frozenset or make the change configurable with a clear deprecation path."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Removing \"Cookie\" from default headers stripped on redirects introduces a security regression.",
+   "usage": {
+    "input_tokens": 661,
+    "output_tokens": 381,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L0/r1/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 190,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer removed on redirects",
+     "explanation": "The default set of headers stripped during a redirect previously included \"Cookie\" to prevent credential leakage across domains. By removing it, cookies may be sent to redirected hosts, potentially exposing session data to untrusted parties. Restore \"Cookie\" in DEFAULT_REMOVE_HEADERS_ON_REDIRECT or make the default configurable with a safe fallback."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Security regression: Cookie header no longer stripped on redirects, potentially leaking credentials.",
+   "usage": {
+    "input_tokens": 661,
+    "output_tokens": 492,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L0/r2/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 187,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header not removed on redirects",
+     "explanation": "The default set of headers to strip on redirects was reduced to only \"Authorization\", dropping \"Cookie\". This allows cookies to be forwarded to redirected URLs, which can leak session credentials to third\u2011party hosts. Re\u2011add \"Cookie\" to DEFAULT_REMOVE_HEADERS_ON_REDIRECT or require callers to explicitly include it."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Security regression: default removal of Cookie header on redirects was removed.",
+   "usage": {
+    "input_tokens": 4664,
+    "output_tokens": 472,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L1/r0/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 187,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer stripped on redirects",
+     "explanation": "The DEFAULT_REMOVE_HEADERS_ON_REDIRECT constant was changed to only include \"Authorization\". Without \"Cookie\" being removed, redirects to third\u2011party domains may include the original request's cookies, potentially leaking session credentials. Restore the original behavior by adding \"Cookie\" back to the set, e.g., `frozenset([\"Cookie\", \"Authorization\"])`."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 1,
+   "error": "rate_limited: retry-after 1286s (quota)",
    "summary": "",
    "usage": {},
    "findings": []

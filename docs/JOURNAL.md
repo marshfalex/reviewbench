@@ -117,3 +117,4 @@ Append-only. One short entry per working session: what was done, what was learne
 - Next: once #13/#14 merge, CVE batch 3 (requests CVE-2024-35195, urllib3 CVE-2023-45803, Jinja2
   CVE-2024-34064, CVE-2019-10906). Run the private overlap check on it. The urllib3 case touches
   redirect handling, but the held-out urllib3 case has already been replaced.
+- 2026-11-21 (later): still 2 PRs open (#13, #14), unreviewed, green, merge cleanly. No new work.

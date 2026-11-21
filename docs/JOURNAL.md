@@ -85,3 +85,21 @@ Append-only. One short entry per working session: what was done, what was learne
 - Tests: refusal cases record every prompt sent and assert the held-out code never appears in
   one. With the guard disabled, 6 of them fail.
 - Next: CVE batch 2 (batch 1 merged in #9).
+
+## 2026-11-20 — findings report v0.1, first cut
+- Wrote `docs/findings/v0.1.md` from the only complete run, cerebras qwen-3.8-27b, on the 22
+  synthetic cases. The CVE cases were added after it ran. The groq, gemini and openrouter runs are
+  still partial and are left out.
+- Results: recall 18/18 (100%, 82–100) at L0 and L2, 17/18 at L1; hard bugs 6/6 everywhere.
+  That's a ceiling, so the synthetic set doesn't discriminate.
+- Learned:
+  - (1) All 66 (case, level) groups are byte-identical across the 3 runs (temperature 0 on a
+    deterministic provider), so any-of-k = all-of-k says nothing here.
+  - (2) The only miss (py-0004 at L1, 0/3) has a summary naming the bug but no findings, which
+    points to `parse_review` dropping malformed findings. The raw output isn't stored, so it can't
+    be proven.
+  - (3) Precision reads 100% only because nothing is adjudicated. Two controls have plausible-real
+    unadjudicated findings.
+
+  Ideas for (1) and (2) are added under "Ideas (unapproved)".
+- Next: CVE batch 2. Update the report when another run completes.

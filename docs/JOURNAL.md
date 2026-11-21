@@ -109,3 +109,11 @@ Append-only. One short entry per working session: what was done, what was learne
 - BENCH_VERSION stays 0.1, as for batch 1. The complete cerebras run covers only the 22 synthetic
   cases; re-running finished models on new cases is #12.
 - Next: CVE batch 3.
+
+## 2026-11-21 — maintenance only (2 PRs open)
+- #13 (findings report) and #14 (CVE batch 2) are open with green CI, no review comments, and
+  both still merge cleanly into main. Per the 2-open-PR rule, no new roadmap work this session.
+- Scheduled benchmark runs #8–#10 succeeded after #5 and #7 failed; groq keeps adding results.
+- Next: once #13/#14 merge, CVE batch 3 (requests CVE-2024-35195, urllib3 CVE-2023-45803, Jinja2
+  CVE-2024-34064, CVE-2019-10906). Run the private overlap check on it. The urllib3 case touches
+  redirect handling, but the held-out urllib3 case has already been replaced.

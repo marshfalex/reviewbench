@@ -45,7 +45,7 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
 - [x] **Import public CVE cases, batch 1** (reverse the fix commit; pin it; verify license):
       CVE-2018-18074 requests, CVE-2023-43804 urllib3, CVE-2024-22195 Jinja2,
       CVE-2024-23334 aiohttp, CVE-2022-24439 GitPython.
-- [ ] **Import public CVE cases, batch 2:** CVE-2023-41040 GitPython, CVE-2021-33203 Django,
+- [x] **Import public CVE cases, batch 2:** CVE-2023-41040 GitPython, CVE-2021-33203 Django,
       CVE-2022-29217 PyJWT, CVE-2023-32681 requests.
 - [ ] **Import public CVE cases, batch 3:** CVE-2024-35195 requests, CVE-2023-45803 urllib3,
       CVE-2024-34064 Jinja2, CVE-2019-10906 Jinja2.

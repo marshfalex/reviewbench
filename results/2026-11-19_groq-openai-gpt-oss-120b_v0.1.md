@@ -1,20 +1,20 @@
 # groq / openai/gpt-oss-120b — ReviewBench v0.1
 
-Created 2026-11-19T07:36:57+00:00, k=3 runs per case and level, status `partial`. Rates are hits/n (%, Wilson 95% CI).
+Created 2026-11-19T07:36:57+00:00, k=3 runs per case and level, status `complete`. Rates are hits/n (%, Wilson 95% CI).
 
 ## public
 
 | level | difficulty | any-of-k recall | all-of-k recall | per-run recall | precision (adjudicated) | control runs w/ FP | unadjudicated | errors |
 |---|---|---|---|---|---|---|---|---|
-| L0 | all | 15/15 (100%, 80–100) | 15/15 (100%, 80–100) | 45/45 (100%, 92–100) | 60/60 (100%, 94–100) | n/a | 4 | 0 |
-| L0 | easy | 12/12 (100%, 76–100) | 12/12 (100%, 76–100) | 36/36 (100%, 90–100) | 47/47 (100%, 92–100) | n/a | 3 | 0 |
-| L0 | hard | 3/3 (100%, 44–100) | 3/3 (100%, 44–100) | 9/9 (100%, 70–100) | 13/13 (100%, 77–100) | n/a | 1 | 0 |
-| L1 | all | 15/15 (100%, 80–100) | 15/15 (100%, 80–100) | 45/45 (100%, 92–100) | 50/50 (100%, 93–100) | n/a | 4 | 0 |
-| L1 | easy | 12/12 (100%, 76–100) | 12/12 (100%, 76–100) | 36/36 (100%, 90–100) | 40/40 (100%, 91–100) | n/a | 4 | 0 |
-| L1 | hard | 3/3 (100%, 44–100) | 3/3 (100%, 44–100) | 9/9 (100%, 70–100) | 10/10 (100%, 72–100) | n/a | 0 | 0 |
-| L2 | all | 15/15 (100%, 80–100) | 14/15 (93%, 70–99) | 44/45 (98%, 88–100) | 52/52 (100%, 93–100) | n/a | 3 | 0 |
-| L2 | easy | 12/12 (100%, 76–100) | 11/12 (92%, 65–98) | 35/36 (97%, 86–100) | 43/43 (100%, 92–100) | n/a | 3 | 0 |
-| L2 | hard | 3/3 (100%, 44–100) | 3/3 (100%, 44–100) | 9/9 (100%, 70–100) | 9/9 (100%, 70–100) | n/a | 0 | 0 |
+| L0 | all | 21/23 (91%, 73–98) | 17/23 (74%, 54–88) | 58/69 (84%, 74–91) | 83/86 (97%, 90–99) | 3/12 (25%, 9–53) | 12 | 0 |
+| L0 | easy | 15/15 (100%, 80–100) | 13/15 (87%, 62–96) | 43/45 (96%, 85–99) | 59/62 (95%, 87–98) | 3/12 (25%, 9–53) | 7 | 0 |
+| L0 | hard | 6/8 (75%, 41–93) | 4/8 (50%, 22–78) | 15/24 (62%, 43–79) | 24/24 (100%, 86–100) | n/a | 5 | 0 |
+| L1 | all | 18/23 (78%, 58–90) | 16/23 (70%, 49–84) | 51/68 (75%, 64–84) | 62/65 (95%, 87–98) | 3/12 (25%, 9–53) | 19 | 1 |
+| L1 | easy | 12/15 (80%, 55–93) | 12/15 (80%, 55–93) | 36/44 (82%, 68–90) | 43/46 (93%, 82–98) | 3/12 (25%, 9–53) | 15 | 1 |
+| L1 | hard | 6/8 (75%, 41–93) | 4/8 (50%, 22–78) | 15/24 (62%, 43–79) | 19/19 (100%, 83–100) | n/a | 4 | 0 |
+| L2 | all | 21/23 (91%, 73–98) | 15/23 (65%, 45–81) | 53/69 (77%, 66–85) | 69/69 (100%, 95–100) | 0/12 (0%, 0–24) | 16 | 0 |
+| L2 | easy | 13/15 (87%, 62–96) | 11/15 (73%, 48–89) | 36/45 (80%, 66–89) | 49/49 (100%, 93–100) | 0/12 (0%, 0–24) | 11 | 0 |
+| L2 | hard | 8/8 (100%, 68–100) | 4/8 (50%, 22–78) | 17/24 (71%, 51–85) | 20/20 (100%, 84–100) | n/a | 5 | 0 |
 
 ## Per case
 
@@ -65,3 +65,39 @@ Created 2026-11-19T07:36:57+00:00, k=3 runs per case and level, status `partial`
 | py-0015-retry-double-charge | L0 | 3/3 | 7 | 0 | 0 | 0 | 1 | 0 |
 | py-0015-retry-double-charge | L1 | 3/3 | 4 | 0 | 0 | 0 | 0 | 0 |
 | py-0015-retry-double-charge | L2 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
+| py-0016-float-money | L0 | 1/3 | 1 | 0 | 0 | 0 | 0 | 0 |
+| py-0016-float-money | L1 | 0/3 | 0 | 0 | 0 | 0 | 0 | 0 |
+| py-0016-float-money | L2 | 1/3 | 1 | 0 | 0 | 0 | 2 | 0 |
+| py-0017-cursor-pagination-skips | L0 | 2/3 | 2 | 0 | 0 | 0 | 0 | 0 |
+| py-0017-cursor-pagination-skips | L1 | 1/3 | 1 | 0 | 0 | 0 | 2 | 0 |
+| py-0017-cursor-pagination-skips | L2 | 1/3 | 1 | 0 | 0 | 0 | 1 | 0 |
+| py-0018-naive-local-vs-utc | L0 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
+| py-0018-naive-local-vs-utc | L1 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
+| py-0018-naive-local-vs-utc | L2 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
+| py-0019-clean-parameterized-query | L0 | control | 0 | 0 | 0 | 0 | 0 | 0 |
+| py-0019-clean-parameterized-query | L1 | control | 0 | 0 | 0 | 0 | 0 | 0 |
+| py-0019-clean-parameterized-query | L2 | control | 0 | 0 | 0 | 0 | 0 | 0 |
+| py-0020-clean-pagination | L0 | control | 0 | 0 | 0 | 0 | 0 | 0 |
+| py-0020-clean-pagination | L1 | control | 0 | 0 | 0 | 0 | 0 | 0 |
+| py-0020-clean-pagination | L2 | control | 0 | 0 | 0 | 0 | 0 | 0 |
+| py-0021-clean-locked-reserve | L0 | control | 0 | 2 | 0 | 0 | 1 | 0 |
+| py-0021-clean-locked-reserve | L1 | control | 0 | 0 | 0 | 0 | 3 | 0 |
+| py-0021-clean-locked-reserve | L2 | control | 0 | 2 | 0 | 0 | 1 | 0 |
+| py-0022-clean-compare-digest | L0 | control | 0 | 0 | 0 | 3 | 0 | 0 |
+| py-0022-clean-compare-digest | L1 | control | 0 | 0 | 0 | 3 | 1 | 0 |
+| py-0022-clean-compare-digest | L2 | control | 0 | 0 | 0 | 0 | 0 | 0 |
+| py-0023-requests-auth-https-downgrade | L0 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
+| py-0023-requests-auth-https-downgrade | L1 | 0/2 | 0 | 0 | 0 | 0 | 2 | 1 |
+| py-0023-requests-auth-https-downgrade | L2 | 1/3 | 1 | 0 | 0 | 0 | 2 | 0 |
+| py-0024-urllib3-cookie-redirect | L0 | 2/3 | 2 | 0 | 0 | 0 | 1 | 0 |
+| py-0024-urllib3-cookie-redirect | L1 | 0/3 | 0 | 0 | 0 | 0 | 3 | 0 |
+| py-0024-urllib3-cookie-redirect | L2 | 0/3 | 0 | 0 | 0 | 0 | 3 | 0 |
+| py-0025-jinja2-xmlattr-key-injection | L0 | 0/3 | 0 | 0 | 0 | 0 | 3 | 0 |
+| py-0025-jinja2-xmlattr-key-injection | L1 | 2/3 | 2 | 0 | 0 | 0 | 1 | 0 |
+| py-0025-jinja2-xmlattr-key-injection | L2 | 2/3 | 2 | 0 | 0 | 0 | 1 | 0 |
+| py-0026-aiohttp-static-symlink-traversal | L0 | 0/3 | 0 | 5 | 0 | 0 | 1 | 0 |
+| py-0026-aiohttp-static-symlink-traversal | L1 | 0/3 | 0 | 3 | 0 | 0 | 1 | 0 |
+| py-0026-aiohttp-static-symlink-traversal | L2 | 1/3 | 1 | 3 | 0 | 0 | 1 | 0 |
+| py-0027-gitpython-clone-ext-protocol-rce | L0 | 2/3 | 2 | 3 | 0 | 0 | 2 | 0 |
+| py-0027-gitpython-clone-ext-protocol-rce | L1 | 0/3 | 0 | 3 | 0 | 0 | 2 | 0 |
+| py-0027-gitpython-clone-ext-protocol-rce | L2 | 0/3 | 0 | 3 | 0 | 0 | 2 | 0 |

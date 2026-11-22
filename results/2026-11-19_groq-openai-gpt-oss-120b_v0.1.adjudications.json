@@ -1,3 +1,34 @@
 {
- "verdicts": {}
+ "verdicts": {
+  "py-0022-clean-compare-digest/L0/r0/f0": {
+   "verdict": "invalid",
+   "by": "rule",
+   "note": "failing fast at import on a missing secret is intended (see docs/DEPLOY.md in the case repo)"
+  },
+  "py-0022-clean-compare-digest/L0/r1/f0": {
+   "verdict": "invalid",
+   "by": "rule",
+   "note": "failing fast at import on a missing secret is intended (see docs/DEPLOY.md in the case repo)"
+  },
+  "py-0022-clean-compare-digest/L0/r2/f0": {
+   "verdict": "invalid",
+   "by": "rule",
+   "note": "failing fast at import on a missing secret is intended (see docs/DEPLOY.md in the case repo)"
+  },
+  "py-0022-clean-compare-digest/L1/r0/f0": {
+   "verdict": "invalid",
+   "by": "rule",
+   "note": "failing fast at import on a missing secret is intended (see docs/DEPLOY.md in the case repo)"
+  },
+  "py-0022-clean-compare-digest/L1/r1/f0": {
+   "verdict": "invalid",
+   "by": "rule",
+   "note": "failing fast at import on a missing secret is intended (see docs/DEPLOY.md in the case repo)"
+  },
+  "py-0022-clean-compare-digest/L1/r2/f0": {
+   "verdict": "invalid",
+   "by": "rule",
+   "note": "failing fast at import on a missing secret is intended (see docs/DEPLOY.md in the case repo)"
+  }
+ }
 }

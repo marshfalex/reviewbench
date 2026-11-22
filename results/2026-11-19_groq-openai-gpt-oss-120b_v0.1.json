@@ -9,7 +9,7 @@
   "L1",
   "L2"
  ],
- "status": "partial",
+ "status": "complete",
  "cases": {
   "py-0001-sql-injection": {
    "title": "SQL query built with an f-string",
@@ -515,6 +515,145 @@
    ],
    "bugs": [],
    "known_issues": []
+  },
+  "py-0023-requests-auth-https-downgrade": {
+   "title": "Authorization header kept on an https-to-http redirect to the same host",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "credentials",
+    "http",
+    "redirect",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "requests/sessions.py",
+     "lines": [
+      200,
+      201
+     ],
+     "class": "credential_leak_on_redirect",
+     "cwe": "CWE-522",
+     "severity": "high"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0024-urllib3-cookie-redirect": {
+   "title": "Cookie header is forwarded on cross-origin redirects",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "credentials",
+    "http",
+    "redirect",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "src/urllib3/util/retry.py",
+     "lines": [
+      190,
+      190
+     ],
+     "class": "credential_leak_on_redirect",
+     "cwe": "CWE-200",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0025-jinja2-xmlattr-key-injection": {
+   "title": "xmlattr filter accepts attribute keys containing spaces",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "security",
+    "xss",
+    "templating",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "src/jinja2/filters.py",
+     "lines": [
+      88,
+      92
+     ],
+     "class": "attribute_injection",
+     "cwe": "CWE-79",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0026-aiohttp-static-symlink-traversal": {
+   "title": "Static file route skips the path containment check when follow_symlinks is on",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "security",
+    "path-traversal",
+    "web",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "aiohttp/web_urldispatcher.py",
+     "lines": [
+      188,
+      190
+     ],
+     "class": "path_traversal",
+     "cwe": "CWE-22",
+     "severity": "high"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "traversal",
+     "file": "aiohttp/web_urldispatcher.py",
+     "note": "the same missing check in url_for(append_version=True), lines 122-124"
+    }
+   ]
+  },
+  "py-0027-gitpython-clone-ext-protocol-rce": {
+   "title": "Repo.clone/clone_from no longer refuse ext:: URLs and protocol/upload-pack options",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "command-injection",
+    "rce",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "git/repo/base.py",
+     "lines": [
+      236,
+      239
+     ],
+     "class": "command_injection",
+     "cwe": "CWE-94",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "ext::",
+     "file": "git/repo/base.py",
+     "note": "the same unchecked URL in Repo.clone (line ~202)"
+    },
+    {
+     "match": "upload-pack",
+     "file": "git/repo/base.py",
+     "note": "the same unchecked options in Repo.clone (line ~202)"
+    }
+   ]
   }
  },
  "records": [
@@ -4124,6 +4263,2349 @@
      "severity": "medium",
      "title": "No HTTP error handling for payment request",
      "explanation": "The function returns r.json() without checking the HTTP status code or handling JSON decode errors. If the payments service returns a non\u2011200 response or a non\u2011JSON body, r.json() will raise an exception that is not caught, breaking the retry logic. Add a check like r.raise_for_status() and catch requests.exceptions.JSONDecodeError (or ValueError) to return a controlled error or retry."
+    }
+   ]
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "No issues detected in the added cart module.",
+   "usage": {
+    "input_tokens": 611,
+    "output_tokens": 192,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Potential correctness issue due to using floating\u2011point arithmetic for monetary values.",
+   "usage": {
+    "input_tokens": 611,
+    "output_tokens": 396,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0016-float-money/L0/r1/f0",
+     "path": "app/cart.py",
+     "line": 4,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Floating\u2011point rounding can produce inaccurate monetary totals",
+     "explanation": "The function uses `float` arithmetic and `round(total, 2)` to compute a price. Binary floating\u2011point cannot represent decimal fractions exactly, which may lead to off\u2011by\u2011one\u2011cent errors (e.g., 0.1 + 0.2 != 0.3). Replace the calculation with `Decimal` from the `decimal` module and round using `quantize` to ensure exact cent precision."
+    }
+   ]
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "No issues found.",
+   "usage": {
+    "input_tokens": 611,
+    "output_tokens": 269,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "No issues found.",
+   "usage": {
+    "input_tokens": 686,
+    "output_tokens": 201,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "No issues found.",
+   "usage": {
+    "input_tokens": 686,
+    "output_tokens": 208,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "No issues found.",
+   "usage": {
+    "input_tokens": 686,
+    "output_tokens": 208,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Potential rounding inaccuracies due to floating\u2011point arithmetic may cause off\u2011by\u2011one cent errors when converting the rounded total to integer cents.",
+   "usage": {
+    "input_tokens": 764,
+    "output_tokens": 630,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0016-float-money/L2/r0/f0",
+     "path": "app/cart.py",
+     "line": 4,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Floating\u2011point rounding may lose cent precision",
+     "explanation": "The function uses `round(total, 2)` on a float, which can still suffer binary representation errors (e.g., `round(2.675, 2)` yields `2.67`). When the caller multiplies by 100 and casts to `int`, the value may be off by one cent. Replace the float arithmetic with `Decimal` for monetary values, e.g., `from decimal import Decimal, ROUND_HALF_UP; subtotal = sum(Decimal(p) for p in prices); total = (subtotal * (Decimal('1') + Decimal(str(tax_rate)))).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP); return float(total)`."
+    }
+   ]
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Potential monetary rounding error when converting total dollars to integer cents.",
+   "usage": {
+    "input_tokens": 764,
+    "output_tokens": 542,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0016-float-money/L2/r1/f0",
+     "path": "app/checkout.py",
+     "line": 7,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Float-to-int cents conversion may truncate cent due to binary rounding",
+     "explanation": "order_total returns a float rounded to two decimal places, but the binary representation may be slightly less (e.g., 10.24 becomes 10.239999...). Multiplying by 100 and applying int() truncates the fraction, potentially losing a cent (1023 instead of 1024). Use round(total * 100) before converting to int, or perform all calculations in integer cents to avoid floating\u2011point errors."
+    }
+   ]
+  },
+  {
+   "case": "py-0016-float-money",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Potential undercharging due to float rounding when converting dollars to cents.",
+   "usage": {
+    "input_tokens": 764,
+    "output_tokens": 444,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0016-float-money/L2/r2/f0",
+     "path": "app/checkout.py",
+     "line": 7,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Float-to-int conversion can truncate cents",
+     "explanation": "order_total returns a float rounded to two decimals, but due to binary floating\u2011point representation the value may be slightly less (e.g., 10.23 becomes 10.229999...). Multiplying by 100 and applying int() truncates the fraction, causing the customer to be undercharged by one cent. Fix by rounding before converting: `cents = int(round(total * 100))` or compute the total in integer cents throughout."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "No actionable problems detected in the added code.",
+   "usage": {
+    "input_tokens": 631,
+    "output_tokens": 384,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new feed pagination function lacks validation for its parameters, which can lead to unexpected behavior or resource exhaustion.",
+   "usage": {
+    "input_tokens": 631,
+    "output_tokens": 650,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0017-cursor-pagination-skips/L0/r1/f0",
+     "path": "app/feed.py",
+     "line": 4,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Unvalidated `limit` argument can be negative",
+     "explanation": "The function forwards the `limit` value directly to the SQL `LIMIT` clause. In SQLite a negative limit is treated as \"no limit\", potentially returning the entire posts table and causing high memory/CPU usage. Validate that `limit` is a positive integer and cap it to a safe maximum (e.g., 100)."
+    },
+    {
+     "id": "py-0017-cursor-pagination-skips/L0/r1/f1",
+     "path": "app/feed.py",
+     "line": 2,
+     "category": "correctness",
+     "severity": "low",
+     "title": "`after_created_at` may be None, yielding no results",
+     "explanation": "If the caller passes `None` for `after_created_at`, the query `WHERE created_at < NULL` always evaluates to false, returning an empty list instead of the first page. Add a guard that substitutes a suitable default (e.g., current timestamp) or raises a clear error when `after_created_at` is missing."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new feed pagination function lacks validation for its parameters, which can lead to unexpected behavior or resource exhaustion.",
+   "usage": {
+    "input_tokens": 631,
+    "output_tokens": 650,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0017-cursor-pagination-skips/L0/r2/f0",
+     "path": "app/feed.py",
+     "line": 4,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Unvalidated `limit` argument can be negative",
+     "explanation": "The function forwards the `limit` value directly to the SQL `LIMIT` clause. In SQLite a negative limit is treated as \"no limit\", potentially returning the entire posts table and causing high memory/CPU usage. Validate that `limit` is a positive integer and cap it to a safe maximum (e.g., 100)."
+    },
+    {
+     "id": "py-0017-cursor-pagination-skips/L0/r2/f1",
+     "path": "app/feed.py",
+     "line": 2,
+     "category": "correctness",
+     "severity": "low",
+     "title": "`after_created_at` may be None, yielding no results",
+     "explanation": "If the caller passes `None` for `after_created_at`, the query `WHERE created_at < NULL` always evaluates to false, returning an empty list instead of the first page. Add a guard that substitutes a suitable default (e.g., current timestamp) or raises a clear error when `after_created_at` is missing."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Potential pagination correctness issue with duplicate timestamps",
+   "usage": {
+    "input_tokens": 724,
+    "output_tokens": 517,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0017-cursor-pagination-skips/L1/r0/f0",
+     "path": "app/feed.py",
+     "line": 3,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Pagination may skip or duplicate rows when multiple posts share the same created_at",
+     "explanation": "The query only filters on `created_at < ?` and orders by `created_at DESC`. If several rows have identical `created_at` values, the cursor does not uniquely identify the last seen row, causing possible gaps or duplicates across pages. Fix by adding a secondary ordering (e.g., `id`) and extending the cursor condition to include the secondary key."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Potential pagination correctness issue due to non-unique cursor",
+   "usage": {
+    "input_tokens": 724,
+    "output_tokens": 559,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0017-cursor-pagination-skips/L1/r1/f0",
+     "path": "app/feed.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Cursor may skip or duplicate rows when created_at is not unique",
+     "explanation": "The query orders only by `created_at` and uses it as the pagination cursor. If multiple posts share the same `created_at` timestamp, rows can be missed or returned twice across pages. Include a tie\u2011breaker (e.g., `id`) in both the ORDER BY clause and the cursor condition.\nFix: change the SQL to `ORDER BY created_at DESC, id DESC` and adjust the cursor to `(after_created_at, after_id)` with a condition like `WHERE (created_at < ?) OR (created_at = ? AND id < ?)`. Update the function signature accordingly."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Potential pagination correctness issue due to non-unique cursor",
+   "usage": {
+    "input_tokens": 724,
+    "output_tokens": 565,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0017-cursor-pagination-skips/L1/r2/f0",
+     "path": "app/feed.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Cursor may skip or duplicate rows when timestamps are identical",
+     "explanation": "The query only filters on `created_at < ?` and orders by `created_at DESC`. If multiple posts share the same `created_at` value, pagination using only this timestamp can cause rows to be omitted or returned multiple times across pages. Include a secondary unique column (e.g., `id`) in the cursor and ordering to guarantee deterministic pagination.\nFix: change the query to `WHERE (created_at, id) < (?, ?) ORDER BY created_at DESC, id DESC` and pass both `after_created_at` and `after_id` (or adjust the API accordingly)."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Potential correctness issue when cursor is None",
+   "usage": {
+    "input_tokens": 906,
+    "output_tokens": 591,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0017-cursor-pagination-skips/L2/r0/f0",
+     "path": "app/feed.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Function fails when after_created_at is None",
+     "explanation": "The query always includes `WHERE created_at < ?`. If `after_created_at` is passed as `None`, SQLite treats the comparison as unknown and returns no rows, breaking pagination for the first page. Add a guard to handle a `None` cursor (e.g., omit the WHERE clause or use a max timestamp) before executing the query."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Potential nondeterministic pagination due to missing tie-breaker in ORDER BY clause.",
+   "usage": {
+    "input_tokens": 906,
+    "output_tokens": 458,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0017-cursor-pagination-skips/L2/r1/f0",
+     "path": "app/feed.py",
+     "line": 4,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Pagination may skip or duplicate rows when timestamps collide",
+     "explanation": "The query orders only by `created_at DESC`. If multiple posts share the same `created_at` value, their relative order is undefined, which can cause rows to appear on multiple pages or be omitted across pagination. Add a secondary deterministic sort, e.g., `ORDER BY created_at DESC, id DESC`, and adjust the cursor logic accordingly."
+    }
+   ]
+  },
+  {
+   "case": "py-0017-cursor-pagination-skips",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "No issues detected in the added code.",
+   "usage": {
+    "input_tokens": 906,
+    "output_tokens": 298,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The new token expiration check uses local time instead of UTC, causing incorrect expiration evaluation.",
+   "usage": {
+    "input_tokens": 605,
+    "output_tokens": 431,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L0/r0/f0",
+     "path": "app/tokens.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Uses local time instead of UTC for expiration check",
+     "explanation": "The function docstring states that `expires_at_utc` is a naive datetime representing UTC, but `datetime.now()` returns the current local time. Comparing a UTC timestamp with a local timestamp can cause tokens to be considered valid or expired incorrectly, potentially leading to security issues. Replace `datetime.now()` with `datetime.utcnow()` (or make both datetimes timezone\u2011aware) to ensure a proper UTC comparison."
+    }
+   ]
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new token expiration check uses local time instead of UTC, causing incorrect expiration logic.",
+   "usage": {
+    "input_tokens": 605,
+    "output_tokens": 440,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L0/r1/f0",
+     "path": "app/tokens.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Uses local time instead of UTC for expiration check",
+     "explanation": "datetime.now() returns a naive datetime in the system's local timezone, but the function expects a naive UTC datetime. This can cause tokens to be considered expired or valid incorrectly, leading to security issues. Replace datetime.now() with datetime.utcnow() or make the function timezone\u2011aware."
+    }
+   ]
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new token expiration check uses local time instead of UTC, causing incorrect expiration logic.",
+   "usage": {
+    "input_tokens": 605,
+    "output_tokens": 440,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L0/r2/f0",
+     "path": "app/tokens.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Uses local time instead of UTC for expiration check",
+     "explanation": "datetime.now() returns a naive datetime in the system's local timezone, but the function expects a naive UTC datetime. This can cause tokens to be considered expired or valid incorrectly, leading to security issues. Replace datetime.now() with datetime.utcnow() or make the function timezone\u2011aware."
+    }
+   ]
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Found timezone handling bug in is_expired",
+   "usage": {
+    "input_tokens": 670,
+    "output_tokens": 366,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L1/r0/f0",
+     "path": "app/tokens.py",
+     "line": 7,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Incorrect timezone handling for expiration check",
+     "explanation": "datetime.now() returns a naive local time, but expires_at_utc is documented as a naive UTC datetime, causing wrong expiration results. Use datetime.utcnow() or make both datetimes timezone-aware (e.g., datetime.now(timezone.utc))."
+    }
+   ]
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The expiration check uses local time instead of UTC, causing incorrect behavior.",
+   "usage": {
+    "input_tokens": 670,
+    "output_tokens": 427,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L1/r1/f0",
+     "path": "app/tokens.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Uses local time instead of UTC for expiration check",
+     "explanation": "The function compares a naive UTC datetime with datetime.now(), which returns the local time. This can cause tokens to be considered expired too early or too late depending on the server's timezone. Replace datetime.now() with datetime.utcnow() or make both datetimes timezone-aware (e.g., use datetime.now(timezone.utc))."
+    }
+   ]
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Found a timezone handling bug in token expiration check.",
+   "usage": {
+    "input_tokens": 670,
+    "output_tokens": 361,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L1/r2/f0",
+     "path": "app/tokens.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect timezone handling for expiration check",
+     "explanation": "The function compares a naive UTC datetime with datetime.now(), which returns the local time. This can cause tokens to be marked expired or valid incorrectly depending on the server's timezone. Use datetime.utcnow() (or make both datetimes timezone\u2011aware) to compare UTC times consistently."
+    }
+   ]
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Found a timezone handling bug in expiration check.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 336,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L2/r0/f0",
+     "path": "app/tokens.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Incorrect timezone handling for expiration check",
+     "explanation": "The function uses `datetime.now()` which returns the local time, but `expires_at_utc` is documented as a naive UTC datetime. Comparing local time to UTC can cause tokens to be considered expired too early or too late depending on the server's timezone. Replace `datetime.now()` with `datetime.utcnow()` (or make both datetimes timezone\u2011aware) to ensure a correct comparison."
+    }
+   ]
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The expiration check uses local time instead of UTC, causing incorrect behavior when the server timezone differs from UTC.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 383,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L2/r1/f0",
+     "path": "app/tokens.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Incorrect timezone handling for expiration check",
+     "explanation": "The function assumes `expires_at_utc` is a naive UTC datetime but calls `datetime.now()`, which returns the local time. This can cause false negatives/positives when the server is not set to UTC. Replace `datetime.now()` with `datetime.utcnow()` to compare like\u2011for\u2011like."
+    }
+   ]
+  },
+  {
+   "case": "py-0018-naive-local-vs-utc",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Found a timezone handling bug in expiration check.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 336,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0018-naive-local-vs-utc/L2/r2/f0",
+     "path": "app/tokens.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Incorrect timezone handling for expiration check",
+     "explanation": "The function uses `datetime.now()` which returns the local time, but `expires_at_utc` is documented as a naive UTC datetime. Comparing local time to UTC can cause tokens to be considered expired too early or too late depending on the server's timezone. Replace `datetime.now()` with `datetime.utcnow()` (or make both datetimes timezone\u2011aware) to ensure a correct comparison."
+    }
+   ]
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "No issues found",
+   "usage": {
+    "input_tokens": 601,
+    "output_tokens": 162,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "No issues found",
+   "usage": {
+    "input_tokens": 601,
+    "output_tokens": 162,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "No issues found",
+   "usage": {
+    "input_tokens": 601,
+    "output_tokens": 169,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "No issues detected in the added file.",
+   "usage": {
+    "input_tokens": 662,
+    "output_tokens": 154,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "No issues detected in the added file.",
+   "usage": {
+    "input_tokens": 662,
+    "output_tokens": 158,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "No issues detected in the added file.",
+   "usage": {
+    "input_tokens": 662,
+    "output_tokens": 206,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "No issues detected in the added file.",
+   "usage": {
+    "input_tokens": 662,
+    "output_tokens": 158,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "No issues detected in the added file.",
+   "usage": {
+    "input_tokens": 662,
+    "output_tokens": 150,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0019-clean-parameterized-query",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "No issues detected in the added file.",
+   "usage": {
+    "input_tokens": 662,
+    "output_tokens": 150,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "No issues found",
+   "usage": {
+    "input_tokens": 642,
+    "output_tokens": 142,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "No issues found in the added pagination utility.",
+   "usage": {
+    "input_tokens": 642,
+    "output_tokens": 206,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "No issues found",
+   "usage": {
+    "input_tokens": 642,
+    "output_tokens": 169,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "No issues found in the added pagination function.",
+   "usage": {
+    "input_tokens": 743,
+    "output_tokens": 155,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "No issues found in the added pagination function.",
+   "usage": {
+    "input_tokens": 743,
+    "output_tokens": 155,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "No issues found.",
+   "usage": {
+    "input_tokens": 743,
+    "output_tokens": 192,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "No issues found.",
+   "usage": {
+    "input_tokens": 743,
+    "output_tokens": 190,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "No issues detected in the added pagination function.",
+   "usage": {
+    "input_tokens": 743,
+    "output_tokens": 132,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0020-clean-pagination",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "No issues detected in the added pagination function.",
+   "usage": {
+    "input_tokens": 743,
+    "output_tokens": 191,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Potential correctness issue: negative quantity can increase stock",
+   "usage": {
+    "input_tokens": 643,
+    "output_tokens": 573,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L0/r0/f0",
+     "path": "app/inventory_safe.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Negative qty allowed, leading to stock inflation",
+     "explanation": "The function only checks that available >= qty. If qty is negative, the condition is always true and stock[item] = available - qty will increase the stock, corrupting inventory data. Add validation to reject non\u2011positive quantities (e.g., if qty <= 0: return False or raise ValueError) before the lock."
+    }
+   ]
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The new inventory reservation function lacks validation for the quantity parameter, allowing negative values to increase stock unintentionally.",
+   "usage": {
+    "input_tokens": 643,
+    "output_tokens": 434,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L0/r1/f0",
+     "path": "app/inventory_safe.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for negative quantity",
+     "explanation": "If `qty` is negative, the condition `available >= qty` is always true and the stock is increased (`stock[item] = available - qty`). This can corrupt inventory data. Add a check that `qty` is a positive integer (e.g., `if qty <= 0: return False` or raise `ValueError`)."
+    }
+   ]
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The new inventory reservation function lacks input validation, allowing negative quantities to incorrectly increase stock.",
+   "usage": {
+    "input_tokens": 643,
+    "output_tokens": 396,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L0/r2/f0",
+     "path": "app/inventory_safe.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Negative quantity can inflate stock",
+     "explanation": "The `reserve` function does not validate that `qty` is positive. Supplying a negative `qty` will pass the `available >= qty` check and increase the stock value, corrupting inventory data. Add a check `if qty <= 0: return False` (or raise) before acquiring the lock."
+    }
+   ]
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The new inventory reservation function lacks validation for reservation quantity, allowing negative values to increase stock.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 454,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L1/r0/f0",
+     "path": "app/inventory_safe.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Negative reservation quantity can corrupt stock",
+     "explanation": "The `reserve` function does not check that `qty` is positive. Supplying a negative `qty` makes the condition `available >= qty` always true and then adds stock (`stock[item] = available - qty`). This can be exploited to inflate inventory. Add a guard that returns False (or raises) when `qty <= 0` before acquiring the lock."
+    }
+   ]
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The new inventory reservation function lacks validation for reservation quantity, allowing negative values to increase stock.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 453,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L1/r1/f0",
+     "path": "app/inventory_safe.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Negative reservation quantity can corrupt stock",
+     "explanation": "The `reserve` function does not check that `qty` is positive. Supplying a negative `qty` will satisfy `available >= qty` and then increase the stock (`stock[item] = available - qty`). Add a validation step (e.g., `if qty <= 0: return False`) before acquiring the lock to prevent this misuse."
+    }
+   ]
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The new inventory reservation function lacks validation for reservation quantity, allowing negative values to increase stock.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 454,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L1/r2/f0",
+     "path": "app/inventory_safe.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Negative reservation quantity can corrupt stock",
+     "explanation": "The `reserve` function does not check that `qty` is positive. Supplying a negative `qty` makes the condition `available >= qty` always true and then adds stock (`stock[item] = available - qty`). This can be exploited to inflate inventory. Add a guard that returns False (or raises) when `qty <= 0` before acquiring the lock."
+    }
+   ]
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The new inventory reservation function allows negative quantities, which can be exploited to increase stock unintentionally.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 465,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L2/r0/f0",
+     "path": "app/inventory_safe.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Negative quantity not validated",
+     "explanation": "If qty is negative, the condition 'available >= qty' is always true and stock[item] = available - qty will increase the stock, enabling abuse. Add a check that qty is positive (e.g., if qty <= 0: return False) before proceeding with the reservation."
+    }
+   ]
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The new inventory reservation function lacks validation for reservation quantity, allowing negative values to increase stock.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 454,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L2/r1/f0",
+     "path": "app/inventory_safe.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Negative reservation quantity can corrupt stock",
+     "explanation": "The `reserve` function does not check that `qty` is positive. Supplying a negative `qty` makes the condition `available >= qty` always true and then adds stock (`stock[item] = available - qty`). This can be exploited to inflate inventory. Add a guard that returns False (or raises) when `qty <= 0` before acquiring the lock."
+    }
+   ]
+  },
+  {
+   "case": "py-0021-clean-locked-reserve",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The new inventory module lacks validation for reservation quantity, allowing negative values to increase stock.",
+   "usage": {
+    "input_tokens": 736,
+    "output_tokens": 506,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0021-clean-locked-reserve/L2/r2/f0",
+     "path": "app/inventory_safe.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Negative quantity can corrupt stock",
+     "explanation": "The function `reserve` only checks `available >= qty`. If `qty` is negative, the condition is always true and `stock[item] = available - qty` will increase the stock, effectively allowing arbitrary stock inflation. Add validation to ensure `qty` is a positive integer (e.g., `if qty <= 0: return False`) before performing the reservation."
+    }
+   ]
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Missing environment variable handling can cause import-time crash.",
+   "usage": {
+    "input_tokens": 628,
+    "output_tokens": 452,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0022-clean-compare-digest/L0/r0/f0",
+     "path": "app/webhooks_safe.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "KeyError if WEBHOOK_SECRET is not set",
+     "explanation": "The module reads the secret at import time with `os.environ[\"WEBHOOK_SECRET\"]`. If the environment variable is absent, Python raises a KeyError and the whole application fails to start, leading to a denial\u2011of\u2011service. Fetch the variable safely (e.g., `os.getenv(\"WEBHOOK_SECRET\")`) and raise a clear configuration error or provide a fallback."
+    }
+   ]
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Missing environment variable handling can cause import-time crash.",
+   "usage": {
+    "input_tokens": 628,
+    "output_tokens": 461,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0022-clean-compare-digest/L0/r1/f0",
+     "path": "app/webhooks_safe.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Unprotected access to WEBHOOK_SECRET env var",
+     "explanation": "The module reads os.environ[\"WEBHOOK_SECRET\"] at import time, which raises a KeyError if the variable is unset, causing the entire application to fail to start. Load the secret safely with os.getenv and raise a clear error or provide a fallback.\nFix: replace the line with something like:\n```python\nsecret = os.getenv(\"WEBHOOK_SECRET\")\nif secret is None:\n    raise RuntimeError(\"WEBHOOK_SECRET environment variable is required\")\nWEBHOOK_SECRET = secret.encode()\n```"
+    }
+   ]
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Missing environment variable handling can cause import-time crash.",
+   "usage": {
+    "input_tokens": 628,
+    "output_tokens": 396,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0022-clean-compare-digest/L0/r2/f0",
+     "path": "app/webhooks_safe.py",
+     "line": 6,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "KeyError if WEBHOOK_SECRET is unset",
+     "explanation": "The module reads the secret at import time with `os.environ[\"WEBHOOK_SECRET\"]`. If the environment variable is not defined, importing the module raises a KeyError and crashes the application. Load the variable lazily inside `verify` or use `os.getenv` with an explicit error message, e.g., `secret = os.getenv(\"WEBHOOK_SECRET\") or raise RuntimeError(\"WEBHOOK_SECRET not set\")`."
+    }
+   ]
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Missing environment variable handling can cause import-time failure.",
+   "usage": {
+    "input_tokens": 711,
+    "output_tokens": 335,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0022-clean-compare-digest/L1/r0/f0",
+     "path": "app/webhooks_safe.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "KeyError if WEBHOOK_SECRET is unset",
+     "explanation": "The module reads os.environ[\"WEBHOOK_SECRET\"] at import time, which raises a KeyError when the variable is not defined, causing the entire application to fail to start. Wrap the access with os.getenv and raise a clear configuration error or provide a fallback."
+    }
+   ]
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The new webhook verification module has a correctness issue that can cause the application to crash if the required environment variable is missing, and it lacks defensive handling of malformed signatures.",
+   "usage": {
+    "input_tokens": 711,
+    "output_tokens": 688,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0022-clean-compare-digest/L1/r1/f0",
+     "path": "app/webhooks_safe.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Unprotected access to required environment variable",
+     "explanation": "The module reads `WEBHOOK_SECRET` at import time using `os.environ[\"WEBHOOK_SECRET\"]`. If the variable is not set, a `KeyError` is raised and the entire application fails to start. Load the secret lazily inside `verify` or provide a clear fallback/error message, e.g., `WEBHOOK_SECRET = os.getenv(\"WEBHOOK_SECRET\")` and raise a custom exception with a helpful message if it is missing."
+    },
+    {
+     "id": "py-0022-clean-compare-digest/L1/r1/f1",
+     "path": "app/webhooks_safe.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for `signature` argument",
+     "explanation": "`hmac.compare_digest` expects both arguments to be of the same type (both `str` or both `bytes`). If `signature` is `None` or another non\u2011string type, a `TypeError` will be raised. Add a guard that returns `False` (or raises a controlled exception) when `signature` is not a non\u2011empty string before calling `compare_digest`."
+    }
+   ]
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Missing environment variable handling may cause runtime crash on import.",
+   "usage": {
+    "input_tokens": 711,
+    "output_tokens": 502,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0022-clean-compare-digest/L1/r2/f0",
+     "path": "app/webhooks_safe.py",
+     "line": 5,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Uncaught KeyError when WEBHOOK_SECRET is unset",
+     "explanation": "The code accesses os.environ[\"WEBHOOK_SECRET\"] at import time, which raises a KeyError if the variable is not defined, causing the application to fail to start. Retrieve the variable safely (e.g., using os.getenv) and raise a clear configuration error or provide a fallback."
+    }
+   ]
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "No issues found",
+   "usage": {
+    "input_tokens": 791,
+    "output_tokens": 260,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "No issues found.",
+   "usage": {
+    "input_tokens": 791,
+    "output_tokens": 282,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0022-clean-compare-digest",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "No issues detected in the added webhook verification module.",
+   "usage": {
+    "input_tokens": 791,
+    "output_tokens": 250,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Security regression: Authorization header may be sent to redirected hosts with different scheme or port.",
+   "usage": {
+    "input_tokens": 667,
+    "output_tokens": 583,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L0/r0/f0",
+     "path": "requests/sessions.py",
+     "line": 200,
+     "category": "security",
+     "severity": "high",
+     "title": "Insufficient auth header removal on redirect",
+     "explanation": "The updated condition only checks hostname changes before deleting the Authorization header. If a redirect changes the scheme (http \u2194 https) or port, credentials could be forwarded to a different endpoint, exposing them. Reinstate checks for scheme and port (or use a more comprehensive comparison) before deleting the header."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Authorization header may be sent to insecure redirects due to reduced hostname check.",
+   "usage": {
+    "input_tokens": 667,
+    "output_tokens": 409,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L0/r1/f0",
+     "path": "requests/sessions.py",
+     "line": 200,
+     "category": "security",
+     "severity": "high",
+     "title": "Insufficient redirect validation removes Authorization header only on hostname change",
+     "explanation": "The updated condition only compares hostnames, ignoring differences in scheme (http vs https) and port. This can cause the Authorization header to be forwarded to a redirect on the same host but a different scheme or port, potentially leaking credentials to an insecure endpoint. Reinstate the original checks for scheme and port, or use a more robust same-origin verification before deleting the header."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Security regression: Authorization header may be sent to redirected URLs with different scheme or port.",
+   "usage": {
+    "input_tokens": 667,
+    "output_tokens": 602,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L0/r2/f0",
+     "path": "requests/sessions.py",
+     "line": 200,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header not cleared on scheme or port change",
+     "explanation": "The updated condition only compares hostnames when deciding to drop the Authorization header on redirects. If a redirect changes the scheme (http \u2194 https) or port, the header will be retained and sent to a potentially untrusted endpoint, leaking credentials. Restore the original check (hostname, port, and scheme) or use a proper same-origin comparison before preserving Authorization."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Authorization header may be leaked on redirects to same host with different scheme or port.",
+   "usage": {
+    "input_tokens": 2878,
+    "output_tokens": 919,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L1/r0/f0",
+     "path": "requests/sessions.py",
+     "line": 197,
+     "category": "security",
+     "severity": "high",
+     "title": "Reduced redirect auth stripping condition",
+     "explanation": "The auth stripping logic now only checks hostname equality, ignoring changes in scheme or port. Redirects to the same host on a different scheme (http\u2192https) or port can leak the Authorization header to an unintended endpoint. Restore the original checks for hostname, port, and scheme, e.g., `if (original_parsed.hostname != redirect_parsed.hostname or original_parsed.port != redirect_parsed.port or original_parsed.scheme != redirect_parsed.scheme):`."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 400 Client Error: Bad Request for url: https://api.groq.com/openai/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Authorization header may be leaked on redirects that change scheme or port",
+   "usage": {
+    "input_tokens": 2878,
+    "output_tokens": 2781,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L1/r2/f0",
+     "path": "requests/sessions.py",
+     "line": 193,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header not stripped on scheme or port change",
+     "explanation": "The rebuild_auth method now only compares hostnames when deciding whether to drop the Authorization header. Redirects that keep the same hostname but change the scheme (http \u2192 https) or port can cause credentials to be sent to a different endpoint, leading to credential leakage. Restore the original check that also compares hostname, port, and scheme (or compare the full netloc) before deleting the header."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Authorization header may be leaked across scheme or port changes due to weakened host comparison",
+   "usage": {
+    "input_tokens": 2878,
+    "output_tokens": 2790,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L2/r0/f0",
+     "path": "requests/sessions.py",
+     "line": 199,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header not stripped on scheme or port change",
+     "explanation": "The original code removed the Authorization header when any of hostname, port, or scheme differed between the original request and the redirect target. The new code only checks hostname, so redirects that change only the scheme (http \u2192 https) or port (e.g., 80 \u2192 443) will retain the Authorization header, potentially leaking credentials to an unintended endpoint. Restore the original comparison (hostname, port, and scheme) or explicitly include scheme and port checks to prevent credential leakage."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Reduced redirect auth stripping may leak credentials",
+   "usage": {
+    "input_tokens": 2878,
+    "output_tokens": 549,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L2/r1/f0",
+     "path": "requests/sessions.py",
+     "line": 260,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header not removed on scheme or port change",
+     "explanation": "The rebuild_auth method now only compares hostnames when deciding to strip the Authorization header. If a redirect changes the scheme (http \u2192 https) or port while keeping the same hostname, the Authorization header will be retained and sent to the new endpoint, potentially leaking credentials. Restore the original checks for hostname, port, and scheme, e.g., `if (original_parsed.hostname != redirect_parsed.hostname or original_parsed.port != redirect_parsed.port or original_parsed.scheme != redirect_parsed.scheme):`."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Authorization header may be leaked on redirects to same host with different scheme or port.",
+   "usage": {
+    "input_tokens": 2878,
+    "output_tokens": 919,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L2/r2/f0",
+     "path": "requests/sessions.py",
+     "line": 197,
+     "category": "security",
+     "severity": "high",
+     "title": "Reduced redirect auth stripping condition",
+     "explanation": "The auth stripping logic now only checks hostname equality, ignoring changes in scheme or port. Redirects to the same host on a different scheme (http\u2192https) or port can leak the Authorization header to an unintended endpoint. Restore the original checks for hostname, port, and scheme, e.g., `if (original_parsed.hostname != redirect_parsed.hostname or original_parsed.port != redirect_parsed.port or original_parsed.scheme != redirect_parsed.scheme):`."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Security regression: removal of Cookie header from default redirect sanitization",
+   "usage": {
+    "input_tokens": 661,
+    "output_tokens": 599,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L0/r0/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 189,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer stripped on redirects",
+     "explanation": "The default set of headers removed on redirects previously included \"Cookie\" to prevent leaking session cookies to third\u2011party hosts. The change drops \"Cookie\" from DEFAULT_REMOVE_HEADERS_ON_REDIRECT, allowing cookies to be forwarded on redirects, which can expose user credentials. Restore \"Cookie\" in the frozenset or make the change configurable with a clear deprecation path."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Removing \"Cookie\" from default headers stripped on redirects introduces a security regression.",
+   "usage": {
+    "input_tokens": 661,
+    "output_tokens": 381,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L0/r1/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 190,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer removed on redirects",
+     "explanation": "The default set of headers stripped during a redirect previously included \"Cookie\" to prevent credential leakage across domains. By removing it, cookies may be sent to redirected hosts, potentially exposing session data to untrusted parties. Restore \"Cookie\" in DEFAULT_REMOVE_HEADERS_ON_REDIRECT or make the default configurable with a safe fallback."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Security regression: Cookie header no longer stripped on redirects, potentially leaking credentials.",
+   "usage": {
+    "input_tokens": 661,
+    "output_tokens": 492,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L0/r2/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 187,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header not removed on redirects",
+     "explanation": "The default set of headers to strip on redirects was reduced to only \"Authorization\", dropping \"Cookie\". This allows cookies to be forwarded to redirected URLs, which can leak session credentials to third\u2011party hosts. Re\u2011add \"Cookie\" to DEFAULT_REMOVE_HEADERS_ON_REDIRECT or require callers to explicitly include it."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Security regression: default removal of Cookie header on redirects was removed.",
+   "usage": {
+    "input_tokens": 4664,
+    "output_tokens": 472,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L1/r0/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 187,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer stripped on redirects",
+     "explanation": "The DEFAULT_REMOVE_HEADERS_ON_REDIRECT constant was changed to only include \"Authorization\". Without \"Cookie\" being removed, redirects to third\u2011party domains may include the original request's cookies, potentially leaking session credentials. Restore the original behavior by adding \"Cookie\" back to the set, e.g., `frozenset([\"Cookie\", \"Authorization\"])`."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Security regression: Cookie header no longer stripped on redirects",
+   "usage": {
+    "input_tokens": 4664,
+    "output_tokens": 475,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L1/r1/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 187,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing removal of Cookie header on redirects",
+     "explanation": "The DEFAULT_REMOVE_HEADERS_ON_REDIRECT constant was changed to only include \"Authorization\", omitting \"Cookie\". This allows cookies to be sent to redirected hosts, potentially leaking session credentials. Restore the original behavior by including \"Cookie\" in the set, e.g., frozenset([\"Cookie\", \"Authorization\"])."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Security regression: default removal of Cookie header on redirects was removed, risking credential leakage.",
+   "usage": {
+    "input_tokens": 4664,
+    "output_tokens": 637,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L1/r2/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 71,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer stripped on redirects",
+     "explanation": "The DEFAULT_REMOVE_HEADERS_ON_REDIRECT constant was changed to only include \"Authorization\". Without \"Cookie\" being removed, cookies may be forwarded to redirected domains, potentially leaking session credentials. Restore the original behavior by including \"Cookie\" in the frozenset, e.g., `frozenset([\"Cookie\", \"Authorization\"])`."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Security regression: Cookie header no longer stripped on cross-host redirects, risking credential leakage.",
+   "usage": {
+    "input_tokens": 5367,
+    "output_tokens": 731,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L2/r0/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 71,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header not removed on cross-host redirects",
+     "explanation": "The default `DEFAULT_REMOVE_HEADERS_ON_REDIRECT` was changed to only include \"Authorization\". Previously it also contained \"Cookie\", which is removed when a redirect leads to a different host. Without stripping cookies, sensitive session data can be forwarded to third\u2011party domains, creating a credential\u2011leakage vulnerability. Restore the original default or make the omission explicit with a deprecation warning. Fix: change the line back to `DEFAULT_REMOVE_HEADERS_ON_REDIRECT = frozenset([\"Cookie\", \"Authorization\"])` or add a comment explaining the security impact if the change is intentional."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Security regression: Cookie header no longer stripped on cross-host redirects, risking credential leakage.",
+   "usage": {
+    "input_tokens": 5367,
+    "output_tokens": 731,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L2/r1/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 71,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header not removed on cross-host redirects",
+     "explanation": "The default `DEFAULT_REMOVE_HEADERS_ON_REDIRECT` was changed to only include \"Authorization\". Previously it also contained \"Cookie\", which is removed when a redirect leads to a different host. Without stripping cookies, sensitive session data can be forwarded to third\u2011party domains, creating a credential\u2011leakage vulnerability. Restore the original default or make the omission explicit with a deprecation warning. Fix: change the line back to `DEFAULT_REMOVE_HEADERS_ON_REDIRECT = frozenset([\"Cookie\", \"Authorization\"])` or add a comment explaining the security impact if the change is intentional."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Security regression: Cookie header no longer stripped on cross-host redirects",
+   "usage": {
+    "input_tokens": 5367,
+    "output_tokens": 414,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L2/r2/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 187,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header not removed on cross-host redirects",
+     "explanation": "The default set of headers removed during a redirect was reduced to only \"Authorization\", dropping \"Cookie\". When a request is redirected to a different host, the Cookie header may be forwarded, leaking session credentials to an unintended domain. Re\u2011add \"Cookie\" to DEFAULT_REMOVE_HEADERS_ON_REDIRECT (e.g., frozenset([\"Cookie\", \"Authorization\"])) or ensure the header is stripped elsewhere."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Regression in XML attribute filter allowing spaces in attribute names, leading to malformed markup.",
+   "usage": {
+    "input_tokens": 965,
+    "output_tokens": 554,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L0/r0/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 84,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Attribute names with spaces are no longer rejected",
+     "explanation": "The previous implementation raised a ValueError when a key contained whitespace, preventing generation of invalid XML/HTML attribute strings. The new implementation silently includes such keys, producing output like `foo bar=\"value\"` which is not a valid attribute and can break rendering or enable injection attacks. Reinstate validation (e.g., using the original regex check) or sanitize keys before inclusion."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The XML attribute filter no longer validates attribute names, allowing spaces which can produce malformed markup.",
+   "usage": {
+    "input_tokens": 965,
+    "output_tokens": 731,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L0/r1/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 84,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Attribute names with spaces are no longer rejected",
+     "explanation": "The previous implementation raised a ValueError when a dict key contained whitespace, preventing generation of invalid XML/HTML. The new implementation removes this check, so keys like \"data id\" will be rendered as `data id=\"value\"`, which is not a valid attribute name and can break rendering or cause security issues. Re\u2011introduce validation (e.g., using the original regex) and raise an error for keys containing spaces, or sanitize/transform such keys before rendering."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The xmlattr filter now permits keys with spaces, generating malformed attribute strings.",
+   "usage": {
+    "input_tokens": 965,
+    "output_tokens": 842,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L0/r2/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 84,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Attribute names with spaces are no longer rejected",
+     "explanation": "The previous implementation raised a ValueError when a dict key contained whitespace, preventing generation of invalid XML/HTML. The new implementation removes that check and includes such keys in the output, producing attribute strings like `foo bar=\"value\"` which are not valid markup and can break templates or enable injection attacks. Reinstate validation (e.g., using the original regex) and raise an error for keys containing spaces, or explicitly sanitize/strip spaces before rendering."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Removal of key-space validation in xmlattr filter introduces malformed attribute names and potential injection issues.",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 495,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L1/r0/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 84,
+     "category": "correctness",
+     "severity": "high",
+     "title": "xmlattr now allows keys with spaces, producing invalid HTML/XML",
+     "explanation": "The previous implementation rejected attribute names containing spaces with a ValueError, ensuring generated markup is syntactically valid. The new implementation removes this check, allowing keys like \"data foo\" to be emitted as `data foo=\"value\"`. Browsers may interpret this as separate attributes or malformed markup, leading to broken templates and possible attribute injection attacks. Re\u2011introduce validation (e.g., using a regex similar to the removed `_space_re`) and raise a clear error when a key contains whitespace."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Removed validation for spaces in XML attribute names, allowing malformed markup and potential injection.",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 952,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L1/r1/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 94,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Missing validation for spaces in attribute keys",
+     "explanation": "The previous implementation raised a ValueError when a dict key contained whitespace, preventing generation of invalid SGML/XML attributes. The new code removes this check, so keys like \"data id\" produce output such as `data id=\"value\"`, which is not valid HTML/XML and can be exploited for attribute injection or XSS. Re\u2011introduce the whitespace validation (e.g., using a compiled regex) and raise a clear error for keys containing spaces, or sanitize the key before rendering."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Removed validation that attribute names must not contain spaces, allowing generation of invalid XML/HTML attributes.",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 717,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L1/r2/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 92,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Attribute names with spaces are no longer rejected",
+     "explanation": "The previous implementation raised a ValueError when a key contained whitespace, preventing malformed SGML/XML attributes. The new implementation silently includes such keys, producing output like `foo bar=\"value\"` which is invalid markup and can lead to attribute injection or rendering errors. Re\u2011introduce the whitespace check (e.g., using the original `_space_re` regex) and raise a clear exception for keys containing spaces."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Removed validation that attribute names must not contain spaces, allowing generation of invalid XML/HTML attributes.",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 717,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L2/r0/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 92,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Attribute names with spaces are no longer rejected",
+     "explanation": "The previous implementation raised a ValueError when a key contained whitespace, preventing malformed SGML/XML attributes. The new implementation silently includes such keys, producing output like `foo bar=\"value\"` which is invalid markup and can lead to attribute injection or rendering errors. Re\u2011introduce the whitespace check (e.g., using the original `_space_re` regex) and raise a clear exception for keys containing spaces."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Removed validation that attribute names must not contain spaces, allowing generation of invalid XML/HTML attributes.",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 717,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L2/r1/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 92,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Attribute names with spaces are no longer rejected",
+     "explanation": "The previous implementation raised a ValueError when a key contained whitespace, preventing malformed SGML/XML attributes. The new implementation silently includes such keys, producing output like `foo bar=\"value\"` which is invalid markup and can lead to attribute injection or rendering errors. Re\u2011introduce the whitespace check (e.g., using the original `_space_re` regex) and raise a clear exception for keys containing spaces."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Allowing spaces in XML/HTML attribute names reintroduces attribute injection risk.",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 638,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L2/r2/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 84,
+     "category": "security",
+     "severity": "high",
+     "title": "Attribute name validation removed, enabling injection via spaces",
+     "explanation": "The previous implementation rejected keys containing spaces, preventing malformed attribute names that could be used to inject extra attributes (e.g., `foo bar=\"value\"` becomes two attributes `foo` and `bar=\"value\"`). The new code no longer checks for spaces, allowing user\u2011controlled keys to break out of the intended attribute context and potentially introduce XSS or other injection attacks. Re\u2011introduce the space check (e.g., using the original `_space_re` regex) and raise a `ValueError` when a key contains whitespace."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Missing directory traversal protection when following symlinks in static file handling",
+   "usage": {
+    "input_tokens": 899,
+    "output_tokens": 1003,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r0/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 124,
+     "category": "security",
+     "severity": "high",
+     "title": "Bypassing directory containment check when follow_symlinks=True",
+     "explanation": "The refactor resolves the file path before checking that it is inside the static directory, but only performs the `relative_to` check when `self._follow_symlinks` is false. When `self._follow_symlinks` is true, a malicious symlink can point outside the static root, allowing path traversal and exposure of arbitrary files. Restore the containment check for both cases, e.g., always call `filepath.relative_to(self._directory)` after `resolve()` and raise HTTPForbidden on failure."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r0/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 197,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing containment validation for symlinked static files",
+     "explanation": "In the request handling block the same logic is applied: the path is resolved before the `relative_to` check, and the check is skipped when `self._follow_symlinks` is true. This re\u2011introduces the same symlink escape vulnerability. Ensure the `relative_to` validation runs regardless of the `follow_symlinks` flag, or perform a safe check before following symlinks."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Security regression: symlink handling no longer validates resolved paths, allowing directory traversal.",
+   "usage": {
+    "input_tokens": 899,
+    "output_tokens": 771,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r1/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 124,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing directory containment check when following symlinks",
+     "explanation": "The refactor removed the normalization and relative path check for the case where `self._follow_symlinks` is True. Now `filepath = self._directory.joinpath(filename).resolve()` is performed and no `relative_to` validation is applied, so a symlink inside the static directory that points outside can be served, leading to a directory\u2011traversal vulnerability. Fix by validating that the resolved path is still within `self._directory` (e.g., `resolved_path = self._directory.joinpath(filename).resolve(); resolved_path.relative_to(self._directory)`), regardless of the `follow_symlinks` flag, or by performing the same normalization logic as before."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r1/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 197,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing directory containment check when following symlinks (second occurrence)",
+     "explanation": "Same issue as above in the later block: when `self._follow_symlinks` is True the code resolves the path without ensuring it stays inside the static directory, allowing symlink\u2011based traversal. Reinstate the `relative_to` check for both branches or perform a post\u2011resolve containment validation."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Security issue: symlink handling now bypasses directory traversal protection when follow_symlinks is enabled.",
+   "usage": {
+    "input_tokens": 899,
+    "output_tokens": 930,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r2/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 124,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing directory traversal check for symlinked files",
+     "explanation": "When `self._follow_symlinks` is True the code resolves the path before verifying it stays inside `self._directory`. This allows a symlink inside the static directory to point outside, exposing files outside the intended static root. Re\u2011introduce the `relative_to` check (or equivalent) for the symlink case, e.g. resolve the path, then if `self._follow_symlinks` is False enforce `filepath.relative_to(self._directory)`, otherwise still enforce the check after resolution to prevent escape."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r2/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 197,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing directory traversal check in request handling for symlinks",
+     "explanation": "The same issue appears in the request\u2011handling block: when `self._follow_symlinks` is True the code resolves the file path without confirming it is a sub\u2011path of the static directory, allowing symlink attacks. Add a `filepath.relative_to(self._directory)` validation (or equivalent) regardless of the `follow_symlinks` flag, or perform the check after resolution for both branches."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Symlink handling in url_for can expose hashes of files outside the static directory.",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 1168,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L1/r0/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 150,
+     "category": "security",
+     "severity": "high",
+     "title": "Symlink traversal in version hash generation",
+     "explanation": "When `append_version` is True, the code resolves the target path before checking `self._follow_symlinks`. `Path.resolve()` follows symlinks, so a malicious symlink inside the static directory can point to an arbitrary file outside the directory. The resolver then reads that external file to compute a version hash, leaking information about files the server should not expose. Fix by performing the symlink check *before* calling `resolve()`, e.g., use `Path(self._directory, filename).absolute()` or `Path(...).resolve(strict=False)` only when `self._follow_symlinks` is True, and skip hash generation when symlinks are disallowed."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Symlink handling in url_for can expose hashes of files outside the static directory.",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 1168,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L1/r1/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 150,
+     "category": "security",
+     "severity": "high",
+     "title": "Symlink traversal in version hash generation",
+     "explanation": "When `append_version` is True, the code resolves the target path before checking `self._follow_symlinks`. `Path.resolve()` follows symlinks, so a malicious symlink inside the static directory can point to an arbitrary file outside the directory. The resolver then reads that external file to compute a version hash, leaking information about files the server should not expose. Fix by performing the symlink check *before* calling `resolve()`, e.g., use `Path(self._directory, filename).absolute()` or `Path(...).resolve(strict=False)` only when `self._follow_symlinks` is True, and skip hash generation when symlinks are disallowed."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Security regression: path traversal allowed when follow_symlinks is True due to missing directory containment check.",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 2115,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L1/r2/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 138,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing directory containment check in url_for",
+     "explanation": "When `self._follow_symlinks` is True the code resolves the requested file path without first verifying that the normalized path stays inside `self._directory`. An attacker can use \"..\" segments (e.g., \"../secret.txt\") to escape the static directory and obtain a version hash for files outside the intended root, potentially leading to unauthorized access when the file is later served. Fix by normalizing the path and calling `relative_to(self._directory)` before `resolve()`, similar to the original implementation."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L1/r2/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 197,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing directory containment check in _handle",
+     "explanation": "The request handler resolves the file path with `self._directory.joinpath(filename).resolve()` without first ensuring the path (after normalisation) is within the static directory when `self._follow_symlinks` is True. This re\u2011introduces a path\u2011traversal vulnerability via \"..\" components. Add a `Path(os.path.normpath(...)).relative_to(self._directory)` check before calling `resolve()`, or perform the containment check after resolution for both symlink modes."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Symlink handling in url_for can expose hashes of files outside the static directory.",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 1168,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r0/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 150,
+     "category": "security",
+     "severity": "high",
+     "title": "Symlink traversal in version hash generation",
+     "explanation": "When `append_version` is True, the code resolves the target path before checking `self._follow_symlinks`. `Path.resolve()` follows symlinks, so a malicious symlink inside the static directory can point to an arbitrary file outside the directory. The resolver then reads that external file to compute a version hash, leaking information about files the server should not expose. Fix by performing the symlink check *before* calling `resolve()`, e.g., use `Path(self._directory, filename).absolute()` or `Path(...).resolve(strict=False)` only when `self._follow_symlinks` is True, and skip hash generation when symlinks are disallowed."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Symlink traversal vulnerability introduced by simplifying path resolution logic",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 1800,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r1/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 158,
+     "category": "security",
+     "severity": "high",
+     "title": "Symlink escape allowed when follow_symlinks=True in url_for",
+     "explanation": "The new code resolves the file path before checking whether it stays inside the static directory. When `self._follow_symlinks` is True the subsequent `filepath.relative_to(self._directory)` check is skipped, allowing a symlink inside the static directory to point outside and be served. This can lead to directory traversal and exposure of arbitrary files. Fix by always verifying that the resolved path is a sub\u2011path of `self._directory`, e.g.:\n```python\nfilepath = (self._directory / filename).resolve()\nfilepath.relative_to(self._directory)  # always enforce\n```\nand then apply the symlink\u2011following logic only to the decision of whether to follow the symlink during resolution."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r1/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 210,
+     "category": "security",
+     "severity": "high",
+     "title": "Symlink escape allowed when follow_symlinks=True in request handling",
+     "explanation": "In `_handle` the path is resolved before any directory containment check, and the containment check (`filepath.relative_to(self._directory)`) is performed only when `self._follow_symlinks` is False. With `follow_symlinks=True` a malicious symlink can cause the server to read files outside the configured static directory. Apply the same containment verification regardless of the `follow_symlinks` flag, e.g.:\n```python\nfilepath = (self._directory / filename).resolve()\nfilepath.relative_to(self._directory)  # enforce for all cases\n```\nThis restores the original security guarantee."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Path traversal vulnerability introduced when follow_symlinks=True",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 1633,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r2/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 150,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal possible in url_for when follow_symlinks=True",
+     "explanation": "The code resolves the requested filename with `Path.resolve()` before verifying that the resulting path is inside the static directory. When `follow_symlinks` is True, a crafted filename like \"../secret.txt\" (or a symlink that points outside) will be resolved to a location outside the configured directory and then used to generate a versioned URL, exposing files outside the static root. The original implementation performed a `relative_to` check before calling `resolve()` for the follow\u2011symlinks case. Fix by restoring the pre\u2011resolve check: for `self._follow_symlinks` compute a normalized path, call `relative_to(self._directory)`, then resolve; otherwise keep the existing logic."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r2/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 190,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal possible in _handle when follow_symlinks=True",
+     "explanation": "The request handler builds the file path with `self._directory.joinpath(filename).resolve()` and only checks `relative_to` when `follow_symlinks` is False. With `follow_symlinks=True` an attacker can request \"../secret.txt\" or a symlink that points outside the static directory, causing the server to serve files outside the intended root. Reinstate the original safety check: if `self._follow_symlinks` is True, first normalize the path and verify it is within `self._directory` before calling `resolve()`; otherwise keep the existing resolve\u2011then\u2011check logic."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks introduces a security risk and breaks the public API.",
+   "usage": {
+    "input_tokens": 1595,
+    "output_tokens": 810,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r0/f0",
+     "path": "git/repo/base.py",
+     "line": 210,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing validation for unsafe clone options",
+     "explanation": "The previous implementation rejected URLs or clone options that used unsafe protocols (e.g., `ext::`) unless the caller explicitly set `unsafe_protocols=True`. The recent changes removed the `unsafe_options` check, allowing potentially dangerous protocols to be used silently, which can lead to remote code execution. Re\u2011introduce the validation (or a safer alternative) before invoking `_clone` and raise `UnsafeOptionsUsedError` when unsafe options are detected."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r0/f1",
+     "path": "git/repo/base.py",
+     "line": 240,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Public API change: removed `unsafe_protocols` parameter and exception",
+     "explanation": "The `clone` and `clone_from` methods previously accepted an `unsafe_protocols` flag and could raise `UnsafeOptionsUsedError`. Removing these breaks backward compatibility for callers that rely on the flag or catch the exception. Add deprecation warnings and retain the parameters (or provide a compatibility shim) to avoid breaking existing code."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks introduces a security risk and breaks the public API.",
+   "usage": {
+    "input_tokens": 1595,
+    "output_tokens": 810,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r1/f0",
+     "path": "git/repo/base.py",
+     "line": 210,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing validation for unsafe clone options",
+     "explanation": "The previous implementation rejected URLs or clone options that used unsafe protocols (e.g., `ext::`) unless the caller explicitly set `unsafe_protocols=True`. The recent changes removed the `unsafe_options` check, allowing potentially dangerous protocols to be used silently, which can lead to remote code execution. Re\u2011introduce the validation (or a safer alternative) before invoking `_clone` and raise `UnsafeOptionsUsedError` when unsafe options are detected."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r1/f1",
+     "path": "git/repo/base.py",
+     "line": 240,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Public API change: removed `unsafe_protocols` parameter and exception",
+     "explanation": "The `clone` and `clone_from` methods previously accepted an `unsafe_protocols` flag and could raise `UnsafeOptionsUsedError`. Removing these breaks backward compatibility for callers that rely on the flag or catch the exception. Add deprecation warnings and retain the parameters (or provide a compatibility shim) to avoid breaking existing code."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks and related API elements introduces security risk and breaks backward compatibility.",
+   "usage": {
+    "input_tokens": 1595,
+    "output_tokens": 1085,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r2/f0",
+     "path": "git/repo/base.py",
+     "line": 215,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe protocol options no longer validated",
+     "explanation": "The previous implementation rejected clone operations that used unsafe protocols or config options unless the caller set `unsafe_protocols=True`. The recent change removes this validation, allowing URLs like `ext::` or `--config protocol.xxx` to be used unchecked, which can lead to arbitrary command execution. Re\u2011introduce the validation (or a safer alternative) and raise an appropriate exception when unsafe options are detected."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r2/f1",
+     "path": "git/repo/base.py",
+     "line": 190,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Removed `unsafe_protocols` parameter from `clone` method",
+     "explanation": "The method signature no longer accepts the `unsafe_protocols` flag. Existing callers that pass this argument will now receive a `TypeError`, breaking the public API. Restore the parameter (with default `False`) and forward it to the internal validation logic, or document the breaking change and provide a compatibility shim."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r2/f2",
+     "path": "git/repo/base.py",
+     "line": 40,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Deleted `UnsafeOptionsUsedError` exception class",
+     "explanation": "External code may import or catch `UnsafeOptionsUsedError` from `git.exc`. Removing the class causes `ImportError` or `NameError` at runtime. Re\u2011add the exception class (even as a subclass of `GitError`) or provide a backward\u2011compatible alias to preserve the public interface."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks reintroduces a security risk allowing unsafe Git options without explicit permission.",
+   "usage": {
+    "input_tokens": 5127,
+    "output_tokens": 816,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r0/f0",
+     "path": "git/repo/base.py",
+     "line": 215,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing unsafe protocol validation in Repo.clone",
+     "explanation": "The previous implementation validated `multi_options` and the URL for unsafe protocols (e.g., `ext::`) and raised `UnsafeOptionsUsedError` unless `unsafe_protocols` was explicitly allowed. The recent change removed this validation, allowing callers to pass potentially dangerous options to `git clone` without restriction, which can lead to command injection or execution of arbitrary code. Re\u2011introduce the validation (or keep the `unsafe_options` method and the `unsafe_protocols` flag) and raise `UnsafeOptionsUsedError` when unsafe options are detected."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r0/f1",
+     "path": "git/repo/base.py",
+     "line": 257,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing unsafe protocol validation in Repo.clone_from",
+     "explanation": "Similar to `Repo.clone`, the `clone_from` class method previously checked for unsafe options and raised `UnsafeOptionsUsedError` when needed. The check has been removed, permitting unsafe URLs or `--config` options to be used silently. This re\u2011exposes the repository to the same security issues. Restore the validation logic and raise `UnsafeOptionsUsedError` when unsafe protocols or options are present."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks introduces security risk and breaks API compatibility.",
+   "usage": {
+    "input_tokens": 5127,
+    "output_tokens": 970,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r1/f0",
+     "path": "git/repo/base.py",
+     "line": 215,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe protocol options no longer validated",
+     "explanation": "The previous implementation rejected URLs or clone options that used unsafe protocols (e.g., \"ext::\") unless the caller explicitly set `unsafe_protocols=True`. The recent change removed the `unsafe_options` check, allowing potentially dangerous protocols to be used silently, which can lead to command injection or arbitrary code execution. Re\u2011introduce the validation (or a safer whitelist) and raise `UnsafeOptionsUsedError` when unsafe options are detected."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r1/f1",
+     "path": "git/repo/base.py",
+     "line": 242,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "API break: removed `unsafe_protocols` parameter from `clone_from`",
+     "explanation": "`clone_from` previously accepted an `unsafe_protocols` keyword argument; after the change this argument is no longer in the signature, causing `TypeError` for existing callers that pass it. Restore the parameter (defaulting to `False`) and forward it to the internal safety check, or document the breaking change and provide a compatibility shim."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks allows potentially dangerous Git options without explicit authorization.",
+   "usage": {
+    "input_tokens": 5127,
+    "output_tokens": 656,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r2/f0",
+     "path": "git/repo/base.py",
+     "line": 191,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe Git protocols/options no longer validated",
+     "explanation": "The previous implementation prevented use of unsafe protocols (e.g., `ext::`) and dangerous `--config protocol.*` options unless the caller set `unsafe_protocols=True`. The recent changes removed the `UnsafeOptionsUsedError` class, the `unsafe_options` helper, and the validation checks in `clone` and `clone_from`. This re\u2011enables execution of potentially malicious commands via crafted URLs or options, exposing the application to command injection or arbitrary code execution. Re\u2011introduce the validation logic (or a safer alternative) and raise an explicit exception when unsafe options are detected."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Removal of unsafe protocol validation introduces a security risk allowing potentially dangerous git options without explicit consent.",
+   "usage": {
+    "input_tokens": 5127,
+    "output_tokens": 848,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r0/f0",
+     "path": "git/repo/base.py",
+     "line": 215,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe git protocols/options no longer validated in Repo.clone",
+     "explanation": "The recent changes removed the `unsafe_options` check and the `UnsafeOptionsUsedError` raise in `Repo.clone`. This permits callers to pass unsafe protocols (e.g., `ext::`) or configuration options that can execute arbitrary commands on the host, re\u2011introducing a known security vulnerability. Re\u2011add the validation logic (or a safer whitelist) and raise `UnsafeOptionsUsedError` when unsafe options are detected."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r0/f1",
+     "path": "git/repo/base.py",
+     "line": 242,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe git protocols/options no longer validated in Repo.clone_from",
+     "explanation": "Similarly, `Repo.clone_from` no longer checks for unsafe options before invoking `_clone`, allowing the same class of attacks via the class method. Restore the `unsafe_options` validation and raise `UnsafeOptionsUsedError` when needed."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Removal of unsafe protocol validation and exception introduces security risk and breaks public API.",
+   "usage": {
+    "input_tokens": 5127,
+    "output_tokens": 843,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r1/f0",
+     "path": "git/repo/base.py",
+     "line": 184,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe protocol options no longer validated",
+     "explanation": "The previous implementation checked for unsafe protocols (e.g., \"ext::\") and config options that could be used to execute arbitrary commands, raising `UnsafeOptionsUsedError` unless the caller explicitly set `unsafe_protocols=True`. The recent changes removed this validation, allowing callers to clone repositories with unsafe options without any warning or restriction, which can lead to command injection or other security issues. Re\u2011introduce the validation logic (or a safer alternative) and raise an appropriate exception when unsafe options are detected."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r1/f1",
+     "path": "git/exc.py",
+     "line": 37,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Public exception class removed, breaking API compatibility",
+     "explanation": "`UnsafeOptionsUsedError` was part of the public `git.exc` module and could be imported by user code or internal modules that catch it. Its removal causes `ImportError` for existing callers and may break error\u2011handling logic. Restore the class (possibly marked as deprecated) to maintain backward compatibility, or provide an alias to the new exception type."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks reintroduces security risk",
+   "usage": {
+    "input_tokens": 7687,
+    "output_tokens": 751,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r2/f0",
+     "path": "git/repo/base.py",
+     "line": 226,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe Git protocols/options no longer validated",
+     "explanation": "The previous implementation prevented use of unsafe protocols (e.g., `ext::`) and dangerous `--config protocol.*` options unless an explicit `unsafe_protocols` flag was set, raising `UnsafeOptionsUsedError`. The recent changes removed the `UnsafeOptionsUsedError` class, the `unsafe_options` helper, and the validation checks in `clone` and `clone_from`. This re\u2011enables potentially dangerous options, allowing remote code execution or configuration injection when cloning untrusted repositories. Re\u2011introduce the validation logic (or a safer alternative) and keep the `UnsafeOptionsUsedError` exception to require an explicit opt\u2011in for unsafe operations."
     }
    ]
   }

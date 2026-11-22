@@ -1,20 +1,20 @@
 # gemini / gemini-3-flash-preview — ReviewBench v0.1
 
-Created 2026-11-19T17:36:19+00:00, k=3 runs per case and level, status `partial`. Rates are hits/n (%, Wilson 95% CI).
+Created 2026-11-19T17:36:19+00:00, k=3 runs per case and level, status `complete`. Rates are hits/n (%, Wilson 95% CI).
 
 ## public
 
 | level | difficulty | any-of-k recall | all-of-k recall | per-run recall | precision (adjudicated) | control runs w/ FP | unadjudicated | errors |
 |---|---|---|---|---|---|---|---|---|
-| L0 | all | 5/5 (100%, 57–100) | 5/5 (100%, 57–100) | 9/9 (100%, 70–100) | 10/10 (100%, 72–100) | n/a | 3 | 36 |
-| L0 | easy | 5/5 (100%, 57–100) | 5/5 (100%, 57–100) | 9/9 (100%, 70–100) | 10/10 (100%, 72–100) | n/a | 3 | 27 |
-| L0 | hard | n/a | n/a | n/a | n/a | n/a | 0 | 9 |
-| L1 | all | 3/3 (100%, 44–100) | 3/3 (100%, 44–100) | 7/7 (100%, 65–100) | 7/7 (100%, 65–100) | n/a | 2 | 37 |
-| L1 | easy | 3/3 (100%, 44–100) | 3/3 (100%, 44–100) | 7/7 (100%, 65–100) | 7/7 (100%, 65–100) | n/a | 2 | 29 |
-| L1 | hard | n/a | n/a | n/a | n/a | n/a | 0 | 8 |
-| L2 | all | 3/3 (100%, 44–100) | 3/3 (100%, 44–100) | 6/6 (100%, 61–100) | 7/7 (100%, 65–100) | n/a | 1 | 36 |
-| L2 | easy | 3/3 (100%, 44–100) | 3/3 (100%, 44–100) | 6/6 (100%, 61–100) | 7/7 (100%, 65–100) | n/a | 1 | 30 |
-| L2 | hard | n/a | n/a | n/a | n/a | n/a | 0 | 6 |
+| L0 | all | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 12/12 (100%, 76–100) | 16/16 (100%, 81–100) | n/a | 3 | 69 |
+| L0 | easy | 5/5 (100%, 57–100) | 5/5 (100%, 57–100) | 9/9 (100%, 70–100) | 10/10 (100%, 72–100) | n/a | 3 | 48 |
+| L0 | hard | 1/1 (100%, 21–100) | 1/1 (100%, 21–100) | 3/3 (100%, 44–100) | 6/6 (100%, 61–100) | n/a | 0 | 21 |
+| L1 | all | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 10/10 (100%, 72–100) | 12/12 (100%, 76–100) | n/a | 2 | 71 |
+| L1 | easy | 3/3 (100%, 44–100) | 3/3 (100%, 44–100) | 7/7 (100%, 65–100) | 7/7 (100%, 65–100) | n/a | 2 | 50 |
+| L1 | hard | 3/3 (100%, 44–100) | 3/3 (100%, 44–100) | 3/3 (100%, 44–100) | 5/5 (100%, 57–100) | n/a | 0 | 21 |
+| L2 | all | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 11/11 (100%, 74–100) | 20/20 (100%, 84–100) | n/a | 2 | 70 |
+| L2 | easy | 3/3 (100%, 44–100) | 3/3 (100%, 44–100) | 6/6 (100%, 61–100) | 7/7 (100%, 65–100) | n/a | 1 | 51 |
+| L2 | hard | 3/3 (100%, 44–100) | 3/3 (100%, 44–100) | 5/5 (100%, 57–100) | 13/13 (100%, 77–100) | n/a | 1 | 19 |
 
 ## Per case
 
@@ -63,4 +63,41 @@ Created 2026-11-19T17:36:19+00:00, k=3 runs per case and level, status `partial`
 | py-0014-cache-leaks-across-users | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
 | py-0014-cache-leaks-across-users | L2 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
 | py-0015-retry-double-charge | L0 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
-| py-0015-retry-double-charge | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 2 |
+| py-0015-retry-double-charge | L1 | 1/1 | 3 | 0 | 0 | 0 | 0 | 2 |
+| py-0015-retry-double-charge | L2 | 3/3 | 9 | 0 | 0 | 0 | 0 | 0 |
+| py-0016-float-money | L0 | 3/3 | 6 | 0 | 0 | 0 | 0 | 0 |
+| py-0016-float-money | L1 | 1/1 | 1 | 0 | 0 | 0 | 0 | 2 |
+| py-0016-float-money | L2 | 1/1 | 2 | 0 | 0 | 0 | 1 | 2 |
+| py-0017-cursor-pagination-skips | L0 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0017-cursor-pagination-skips | L1 | 1/1 | 1 | 0 | 0 | 0 | 0 | 2 |
+| py-0017-cursor-pagination-skips | L2 | 1/1 | 2 | 0 | 0 | 0 | 0 | 2 |
+| py-0018-naive-local-vs-utc | L0 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0018-naive-local-vs-utc | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0018-naive-local-vs-utc | L2 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0019-clean-parameterized-query | L0 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0019-clean-parameterized-query | L1 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0019-clean-parameterized-query | L2 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0020-clean-pagination | L0 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0020-clean-pagination | L1 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0020-clean-pagination | L2 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0021-clean-locked-reserve | L0 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0021-clean-locked-reserve | L1 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0021-clean-locked-reserve | L2 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0022-clean-compare-digest | L0 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0022-clean-compare-digest | L1 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0022-clean-compare-digest | L2 | control | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0023-requests-auth-https-downgrade | L0 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0023-requests-auth-https-downgrade | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0023-requests-auth-https-downgrade | L2 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0024-urllib3-cookie-redirect | L0 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0024-urllib3-cookie-redirect | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0024-urllib3-cookie-redirect | L2 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0025-jinja2-xmlattr-key-injection | L0 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0025-jinja2-xmlattr-key-injection | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0025-jinja2-xmlattr-key-injection | L2 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0026-aiohttp-static-symlink-traversal | L0 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0026-aiohttp-static-symlink-traversal | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0026-aiohttp-static-symlink-traversal | L2 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0027-gitpython-clone-ext-protocol-rce | L0 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0027-gitpython-clone-ext-protocol-rce | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0027-gitpython-clone-ext-protocol-rce | L2 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |

@@ -103,3 +103,11 @@ Append-only. One short entry per working session: what was done, what was learne
 
   Ideas for (1) and (2) are added under "Ideas (unapproved)".
 - Next: CVE batch 2. Update the report when another run completes.
+
+## 2026-11-22 — findings report: Groq added (maintenance on #13)
+- Still 2 PRs open, so no new roadmap work. Groq's run completed on 27 cases, which made #13's
+  "only complete run" wrong, so I updated the report in #13.
+- Learned: most Groq CVE "misses" are the right bug flagged just outside the ±2 window, or at the
+  second call site (scored `known`). The batch 1 bug ranges I wrote are too narrow. Also, Gemini and
+  OpenRouter are `complete` with ~80% HTTP 429 errors, because 429 isn't classed as `rate_limited`.
+  Both are added as ideas and both need the owner.

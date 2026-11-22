@@ -72,6 +72,11 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
 
 ## Ideas (unapproved)
 <!-- Sessions add ideas here; the owner promotes them above. -->
+- Widen CVE bug ranges (or allow several ranges per bug). In the Groq run, most CVE "misses" were
+  the right vulnerability flagged a few lines outside ±2 (e.g. urllib3 line 187 vs 190) or at the
+  second call site. Changes ground truth, so it needs a BENCH_VERSION decision.
+- Treat HTTP 429 from any adapter as `rate_limited`, so `--resume` retries it. Gemini and OpenRouter
+  runs were marked `complete` with 210 and 190 rate-limited reviews out of 243.
 - Store each review's raw model response, or at least count findings `parse_review` drops. The only
   miss in the first complete run (py-0004 at L1) looks like dropped findings: the summary names the
   bug but the findings list is empty. Today that can't be confirmed.

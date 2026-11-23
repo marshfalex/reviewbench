@@ -99,3 +99,20 @@ Append-only. One short entry per working session: what was done, what was learne
   committed result mentions held-out cases, so they very likely never left the private repo; the
   owner will confirm from the run logs.
 - Next: the ceiling write-up, then the provider data-use table.
+
+## 2026-11-23 — provider errors were being counted as finished runs
+- While pulling numbers for the ceiling write-up: gemini and nemotron results are marked `complete`
+  but ~200 of their 243 reviews each are `exception: HTTPError: 429` (plus a few 503s). Their
+  leaderboard rows (6/6, 100%) rest on the few cases that got through, and the scheduler would
+  never rerun them.
+- Cause: on the last retry, a 429 fell through to `raise_for_status()`. The runner recorded it as a
+  generic exception, which resume treats as done, and the run kept going instead of stopping.
+- Fix: a final 429 is `rate_limited`; 5xx is retried, then recorded as `transient`. `retryable()`
+  also recognizes the old `HTTPError: 429/5xx` strings, so the existing files are repaired: a file
+  holding retryable errors is `partial`, `find_resumable` picks it up, and `lineup.completed` no
+  longer counts it. The next scheduled runs will redo only the failed reviews.
+- Ceiling check so far (L0, public, per-run recall, Wilson lower bound): cerebras 54/54 (93.4%),
+  groq 58/69 (73.7%). gemini and nemotron can't be judged until they rerun. Groq also had control
+  false alarms in 3/12 runs (25%), which is over the 20% noise flag.
+- Next: the leaderboard should mark partial results. Then the ceiling write-up, once gemini and
+  nemotron finish.

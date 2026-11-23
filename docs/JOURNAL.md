@@ -175,3 +175,14 @@ Append-only. One short entry per working session: what was done, what was learne
   prints agreement and Cohen's kappa. The second rater could later be an LLM, labeled as such.
 - Caught my own arithmetic error in the kappa test (assumed pe = .5); the code was right.
 - Doing the pass is an `[owner]` item (it's human judgment). Next: large noisy-diff cases.
+
+## 2026-11-23 — first noisy-diff cases
+- py-0031: a 154-line typing/docstring refactor of 12 views; delete_project alone loses
+  @login_required. py-0032: a 116-line typing refactor of a listing module; paginate's offset
+  changes from (page - 1) * size to page * size, so page 1 shows the second page.
+- Caught a dud before shipping: in my first py-0031 draft the unprotected view read
+  `request.user.id`, so an anonymous call crashed with AttributeError before deleting anything. The
+  "bug" wasn't exploitable. Now the store relies on the decorator and deletes by project id. Lesson
+  for future cases: trace the planted bug to its actual harm, don't stop at "looks wrong".
+- Both are `since: "0.2"`.
+- Next: ceiling write-up once gemini/nemotron finish; more controls; more noisy diffs.

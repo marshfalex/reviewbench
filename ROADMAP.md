@@ -76,7 +76,9 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
       files), then `--rater second` (by a second person, or the owner a few days later), then
       `python -m reviewbench agreement results/*_v0.1.json`.
 - [ ] **Controls to ≥36,** labeled "no known defect" (real merged PRs, provenance recorded).
-- [ ] **Large noisy-diff cases:** planted bugs buried in big, realistic diffs.
+- [x] **Large noisy-diff cases, first 2:** planted bugs buried in big, realistic diffs (py-0031, py-0032).
+- [ ] **More noisy-diff cases (3+),** including one noisy-diff *control* and one real-world refactor
+      PR (reversed CVE fix inside a larger change).
 - [ ] **Data-driven hardness labels** from v0.1 results, after the v0.1 lineup completes.
 - [ ] **Matching-rule defect check** plus a hand-audited sample of matches.
 - [ ] **Prompt sensitivity check:** 2–3 paraphrased prompts × 1 free model.

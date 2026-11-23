@@ -141,3 +141,16 @@ Append-only. One short entry per working session: what was done, what was learne
 - Uses `workflow_run`, which always runs the copy on `main`, so a PR can't weaken its own gate.
 - Merges done with GITHUB_TOKEN don't trigger other workflows; the push-to-main `ci` run won't fire
   for them. That's acceptable: the same commit already passed `ci` on the PR.
+
+## 2026-11-23 — first cross-file (L2-only) cases
+- py-0028 (authz bypass: `if not can_edit(...)` where can_edit returns an always-truthy Decision),
+  py-0029 (seconds TTL added to a millisecond clock: sessions last 28.8 s), and py-0030 (control:
+  f-string ORDER BY whose column is an Enum whitelisted in another file). Checked that the fact
+  needed to judge each one appears in the prompt at L2 only, never at L0/L1.
+- New case.yaml field `since: "0.2"`. These cases are validated now but not run until
+  BENCH_VERSION is 0.2, so v0.1's 27-case set stays frozen while gemini/nemotron finish.
+  Bumping BENCH_VERSION is gated (owner).
+- Expected signal: a model that "catches" py-0028/29 at L0 is guessing; py-0030 at L0 should tempt
+  SQL-injection false alarms that L2 removes. That's the context hypothesis in one table.
+- Commits are now authored as the owner (their GitHub noreply address), with Claude as co-author.
+- Next: large noisy-diff cases, then more controls toward 36.

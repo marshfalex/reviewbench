@@ -10,7 +10,7 @@ from pathlib import Path
 from reviewbench import BENCH_VERSION
 from reviewbench.adapters import ADAPTERS, get_adapter
 from reviewbench.adjudicate import apply_rules, interactive, load_rules, load_verdicts, save_verdicts
-from reviewbench.cases import discover, validate_case
+from reviewbench.cases import active, discover, validate_case
 from reviewbench.context import LEVELS
 from reviewbench.heldout import attach_summary, heldout_allowed, heldout_dir, leaks, raw_path, redacting_log
 from reviewbench.report import leaderboard, run_report
@@ -25,6 +25,8 @@ def _cases(args):
     if held:
         dirs.append((held, "heldout"))
     cases = discover(*dirs)
+    if getattr(args, "cmd", None) != "validate":  # validate checks every case, future ones too
+        cases = active(cases)
     if args.only:
         wanted = set(args.only.split(","))
         cases = [c for c in cases if c.id in wanted]
@@ -157,7 +159,7 @@ def cmd_leaderboard(args) -> int:
 def cmd_lineup(args) -> int:
     from reviewbench.lineup import plan
 
-    public = {c.id for c in discover((Path(args.cases), "public"))}
+    public = {c.id for c in active(discover((Path(args.cases), "public")))}
     entries = plan(Path(args.lineup), Path(args.results_dir), log=lambda m: print(m, file=sys.stderr),
                    case_ids=public)
     print(json.dumps(entries))

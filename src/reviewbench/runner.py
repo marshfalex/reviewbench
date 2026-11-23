@@ -49,8 +49,10 @@ def results_path(out_dir: Path, provider: str, model: str, today: dt.date | None
     return path
 
 
-def find_resumable(out_dir: Path, provider: str, model: str, k: int, levels: list[str]) -> Path | None:
-    """Newest partial results file for the same reviewer and settings, if any."""
+def find_resumable(out_dir: Path, provider: str, model: str, k: int, levels: list[str],
+                   case_ids: set[str] | None = None) -> Path | None:
+    """Newest partial results file for the same reviewer and settings, if any. A complete file
+    that lacks some of case_ids (cases added since it ran) also counts, so only new cases run."""
     for path in sorted(out_dir.glob("*.json"), reverse=True):
         if path.name.endswith(".adjudications.json"):
             continue
@@ -59,6 +61,7 @@ def find_resumable(out_dir: Path, provider: str, model: str, k: int, levels: lis
         except (OSError, json.JSONDecodeError):
             continue
         partial = doc.get("status") == "partial" or (doc.get("heldout") or {}).get("status") == "partial"
+        partial = partial or bool((case_ids or set()) - set(doc.get("cases") or {}))
         if (partial and doc.get("bench_version") == BENCH_VERSION
                 and doc.get("provider") == provider and doc.get("model") == model
                 and doc.get("k") == k and doc.get("levels") == levels):

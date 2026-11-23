@@ -254,3 +254,17 @@ def test_lineup_plan_skips_missing_keys_and_complete(tmp_path, monkeypatch):
     monkeypatch.setenv("MISTRAL_API_KEY", "m")
     entries = plan(tmp_path / "lineup.yaml", res, lister=lambda p: ["models/gemini-3.0-flash"], log=lambda m: None)
     assert entries == [{"provider": "gemini", "model": "gemini-3.0-flash", "k": "3", "levels": "L0,L1,L2"}]
+
+
+def test_complete_run_missing_new_cases_is_resumed(tmp_path):
+    from reviewbench import BENCH_VERSION
+    from reviewbench.lineup import completed
+    from reviewbench.runner import find_resumable
+
+    doc = {"bench_version": BENCH_VERSION, "status": "complete", "provider": "p", "model": "m",
+           "k": 3, "levels": ["L0"], "cases": {"a": {}}, "records": []}
+    (tmp_path / "r.json").write_text(json.dumps(doc))
+    assert completed(tmp_path, "p", "m", 3, ["L0"], {"a"})
+    assert find_resumable(tmp_path, "p", "m", 3, ["L0"], {"a"}) is None
+    assert not completed(tmp_path, "p", "m", 3, ["L0"], {"a", "b"})
+    assert find_resumable(tmp_path, "p", "m", 3, ["L0"], {"a", "b"}) == tmp_path / "r.json"

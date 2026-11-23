@@ -86,7 +86,8 @@ def cmd_run(args) -> int:
         return 2
     out = Path(args.out) if args.out else None
     if out is None and args.resume:
-        out = find_resumable(Path(args.results_dir), reviewer.provider, reviewer.model, args.k, levels)
+        out = find_resumable(Path(args.results_dir), reviewer.provider, reviewer.model, args.k, levels,
+                             {c.id for c in cases if c.split == "public"})
     if out is None:
         out = results_path(Path(args.results_dir), reviewer.provider, reviewer.model)
     public = [c for c in cases if c.split == "public"]
@@ -156,7 +157,9 @@ def cmd_leaderboard(args) -> int:
 def cmd_lineup(args) -> int:
     from reviewbench.lineup import plan
 
-    entries = plan(Path(args.lineup), Path(args.results_dir), log=lambda m: print(m, file=sys.stderr))
+    public = {c.id for c in discover((Path(args.cases), "public"))}
+    entries = plan(Path(args.lineup), Path(args.results_dir), log=lambda m: print(m, file=sys.stderr),
+                   case_ids=public)
     print(json.dumps(entries))
     return 0
 
@@ -211,6 +214,7 @@ def main(argv: list[str] | None = None) -> int:
     p.set_defaults(fn=cmd_report)
     p = sub.add_parser("lineup", help="print (JSON) the lineup entries to run now: key set, not complete")
     p.add_argument("--lineup", default="lineup.yaml")
+    p.add_argument("--cases", default="cases")
     p.add_argument("--results-dir", default="results")
     p.set_defaults(fn=cmd_lineup)
     p = sub.add_parser("leaderboard", help="regenerate results/LEADERBOARD.md")

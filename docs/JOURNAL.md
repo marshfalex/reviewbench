@@ -197,3 +197,13 @@ Append-only. One short entry per working session: what was done, what was learne
   `git log -L` check.
 - Next: keep adding upstream controls (requests, urllib3, Jinja2, Flask all permissive) in batches
   of ~5; ceiling write-up once gemini/nemotron finish.
+
+## 2026-11-23 — risk register
+- Owner asked for realism. Wrote `docs/RISKS.md`: what could make the numbers wrong, most serious
+  first. The headline: **0 of ~750 v0.1 findings have a human verdict**, so every precision figure
+  on the leaderboard is meaningless today, and groq's noise flag rests on 6 rule verdicts.
+- Other big ones: n = 23 bugs can't rank models; synthetic cases are LLM-written (and Claude
+  wrote the recent ones: a self-grading risk); held-out (5) is too small to detect contamination.
+- Added four roadmap items that fix the reporting side now, without waiting for the owner.
+- Next session: "stop reporting unmeasured precision" first; it's the most misleading number we
+  publish.

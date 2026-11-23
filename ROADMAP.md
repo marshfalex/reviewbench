@@ -88,6 +88,17 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
 - [ ] **Rewrite the README problem statement** to say ReviewBench compares models behind a
       standard prompt; review products are a later, paid phase.
 
+- [ ] **Stop reporting unmeasured precision** (RISKS §1): when fewer than ~80% of a slice's
+      non-hit findings are adjudicated, the leaderboard and reports show "not measured (N
+      unjudged)" instead of a precision rate, and the noise flag says which half it rests on.
+- [ ] **Refuse to resume across a served-model change** (RISKS §6): `run --resume` stops if the
+      provider reports a different served model id than the file's earlier records.
+- [ ] **Report real and synthetic cases separately** (RISKS §3), and note in each table which
+      model family wrote the synthetic cases.
+- [ ] **Shift the case mix toward real bugs:** CVE batches 2–3, plus upstream reverted or
+      later-fixed commits (the "bug introduced by PR X, fixed by PR Y" pattern), aiming for
+      at least half real cases in v0.2.
+
 ## v0.2 — breadth and contributors
 - [ ] **Modify-existing-file synthetic cases (8):** PRs that edit existing code so L1 differs from
       L0 (e.g. a refactor that drops an authz check, a changed default, a removed lock).

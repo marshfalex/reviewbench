@@ -371,3 +371,34 @@ def test_leaderboard_sorts_by_per_run_recall_and_flags_noise(tmp_path):
     strong = next(line for line in md.splitlines() if "`strong`" in line)
     weak = next(line for line in md.splitlines() if "`weak`" in line)
     assert "⚠ noisy: 5.0 findings/review" in strong and "noisy" not in weak
+
+
+def test_blind_adjudication_hides_model_and_second_rater_gives_kappa(tmp_path):
+    from reviewbench.adjudicate import (
+        agreement,
+        in_second_sample,
+        interactive_blind,
+        load_second,
+        load_verdicts,
+    )
+
+    cases = [c for c in discover((CASES, "public")) if c.id == "py-0001-sql-injection"]
+    noise = [Finding("app/users.py", 100 + i, "style", "medium", f"nit {i}", "x") for i in range(10)]
+    paths = []
+    for name in ("secret-model-a", "secret-model-b"):
+        p = tmp_path / f"{name}.json"
+        run(cases, ReplayReviewer(model=name, fn=lambda _: noise), ["L0"], 1, p, log=lambda m: None)
+        paths.append(p)
+    shown = []
+    n = interactive_blind(paths, ask=lambda _: "i", show=shown.append)
+    assert n == 20
+    text = "\n".join(shown)
+    assert "secret-model" not in text and "replay" not in text and "/r0/f" not in text
+    v = load_verdicts(paths[0])
+    assert len(v) == 10 and all(x["blind"] and x["verdict"] == "invalid" for x in v.values())
+
+    sampled = sum(in_second_sample(k) for p in paths for k in load_verdicts(p))
+    assert interactive_blind(paths, rater="second", ask=lambda _: "i", show=lambda _: None) == sampled
+    assert sum(len(load_second(p)) for p in paths) == sampled
+    a = agreement(paths)
+    assert a["n"] == sampled and a["agree"] == sampled

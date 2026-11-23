@@ -60,7 +60,7 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
 - [ ] **Write up the ceiling finding and the redesign plan** (`docs/findings/ceiling.md`): the
       Cerebras result (54/54 per-run at L0, lower bound ~93%; 0/12 control FPs), why it can't rank
       models, and the SPEC §10 plan. Apply the ceiling rule once groq, gemini and nemotron finish.
-- [ ] **Provider data-use table** (`docs/providers.md`): for every lineup provider, whether API
+- [x] **Provider data-use table** (`docs/providers.md`): for every lineup provider, whether API
       inputs may be used for training, a link to the terms and the date checked. Until it exists,
       no held-out runs; then set `heldout_ok` in `lineup.yaml` only for providers that forbid
       training (that change goes to the owner).

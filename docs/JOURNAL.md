@@ -154,3 +154,14 @@ Append-only. One short entry per working session: what was done, what was learne
   SQL-injection false alarms that L2 removes. That's the context hypothesis in one table.
 - Commits are now authored as the owner (their GitHub noreply address), with Claude as co-author.
 - Next: large noisy-diff cases, then more controls toward 36.
+
+## 2026-11-23 — leaderboard: per-run recall first, noise flag, prompt hash
+- Leaderboard rows are sorted by per-run recall within each context level, with unfinished
+  results last (otherwise gemini's 12/12 on a sliver of cases outranked groq's 58/69).
+- Noise flag (SPEC §10): groq is flagged at L0 and L1 (control FPR 3/12 = 25%); nobody exceeds
+  3 counted findings per review.
+- New results files store `prompt_sha256` (prompt + output schema). Resuming a file made with a
+  different prompt is refused, so one result never mixes prompts. Older files have no hash;
+  resuming them stamps the current one (the prompt hasn't changed since v0.1 started).
+- Split the roadmap item: blind adjudication + κ is still open.
+- Next: blind adjudication, then large noisy-diff cases.

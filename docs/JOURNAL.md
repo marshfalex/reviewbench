@@ -165,3 +165,13 @@ Append-only. One short entry per working session: what was done, what was learne
   resuming them stamps the current one (the prompt hasn't changed since v0.1 started).
 - Split the roadmap item: blind adjudication + κ is still open.
 - Next: blind adjudication, then large noisy-diff cases.
+
+## 2026-11-23 — blind adjudication and a second rater
+- `reviewbench adjudicate-blind <results...>` pools findings across results files, shuffles them
+  (seeded) and shows only the case title and the finding: no model, provider, file name or finding
+  id. Verdicts carry `"blind": true` and are saved after each answer, so quitting loses nothing.
+- `--rater second` re-judges a fixed 20% sample (hash of the finding id, so it's stable as results
+  grow) of the primary *human* verdicts into a separate `.second.json`; `reviewbench agreement`
+  prints agreement and Cohen's kappa. The second rater could later be an LLM, labeled as such.
+- Caught my own arithmetic error in the kappa test (assumed pe = .5); the code was right.
+- Doing the pass is an `[owner]` item (it's human judgment). Next: large noisy-diff cases.

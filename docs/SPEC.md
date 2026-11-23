@@ -163,6 +163,13 @@ Automatic scoring cannot tell a real unplanted issue from a false positive
 * `reviewbench adjudicate <results.json>` applies rules, then asks a human
   about each remaining finding.
 
+`reviewbench adjudicate-blind <results...>` pools the unadjudicated findings of
+several results files, shuffles them and hides the model, provider and finding
+id; verdicts are marked `"blind": true`. With `--rater second` it re-judges a
+fixed 20% sample (by hash of the finding id) of the primary human verdicts into
+`<stem>.adjudications.second.json`, and `reviewbench agreement` reports Cohen's
+kappa between the two raters (SPEC §10).
+
 When a verdict is "this is a real issue in the case", prefer adding it to the
 case's `known_issues` (and bumping the benchmark version) so every future
 reviewer gets the same ruling.

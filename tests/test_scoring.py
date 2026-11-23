@@ -101,3 +101,15 @@ def test_levels_and_splits_are_separate_slices():
     assert s["heldout/L0/hard"]["any_of_k"]["hits"] == 1
     assert s["heldout/L2/hard"]["any_of_k"]["hits"] == 0
     assert not any(k.startswith("public/") for k in s)
+
+
+def test_cohen_kappa_known_values():
+    from reviewbench.adjudicate import cohen_kappa
+
+    assert cohen_kappa([]) is None
+    assert cohen_kappa([("valid", "valid"), ("invalid", "invalid")]) == 1.0
+    # 20 findings: agree on 15 (10 valid, 5 invalid), disagree on 5. po = .75;
+    # rater A says valid 13/20, B 12/20, so pe = .65*.6 + .35*.4 = .53 and kappa = .22/.47
+    pairs = [("valid", "valid")] * 10 + [("invalid", "invalid")] * 5 \
+        + [("valid", "invalid")] * 3 + [("invalid", "valid")] * 2
+    assert abs(cohen_kappa(pairs) - (0.75 - 0.53) / (1 - 0.53)) < 1e-9

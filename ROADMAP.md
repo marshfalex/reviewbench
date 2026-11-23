@@ -70,7 +70,11 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
       (L2), not from the diff or changed files alone.
 - [x] **Score/report changes, part 1:** per-run recall as the leaderboard sort key; the noise
       flag; a prompt hash in results.
-- [ ] **Blind adjudication:** hide the model while adjudicating; a second-rater sample and κ.
+- [x] **Blind adjudication:** hide the model while adjudicating; a second-rater sample and κ.
+- [ ] [owner] **Do a blind adjudication pass** over all v0.1 results:
+      `python -m reviewbench adjudicate-blind results/*_v0.1.json` (skip the `.adjudications`
+      files), then `--rater second` (by a second person, or the owner a few days later), then
+      `python -m reviewbench agreement results/*_v0.1.json`.
 - [ ] **Controls to ≥36,** labeled "no known defect" (real merged PRs, provenance recorded).
 - [ ] **Large noisy-diff cases:** planted bugs buried in big, realistic diffs.
 - [ ] **Data-driven hardness labels** from v0.1 results, after the v0.1 lineup completes.

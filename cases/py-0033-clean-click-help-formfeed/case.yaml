@@ -1,0 +1,17 @@
+id: py-0033-clean-click-help-formfeed
+title: "click: truncate help text at the form feed before adding the deprecation prefix"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/pallets/click/commit/589ca314ae8d200ff55263a2c49c8ae6341866f3
+  license: BSD-3-Clause
+  notes: Merged 2022-10. The changed lines are unchanged on click main as of 2026-11-23, so no later
+    fix is known. repo/ holds only Command.format_help_text from src/click/core.py at the parent
+    commit, plus the imports it uses. Label is "no known defect", not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

@@ -26,7 +26,7 @@ cases/py-0017-cursor-pagination-skips/
 | `difficulty` | yes | `easy` (textbook pattern) or `hard` (logic / context-dependent; no "dangerous function" to pattern-match) |
 | `tags` | no | free-form |
 | `since` | no | first benchmark version that includes the case (default `"0.1"`). Cases for a later version are validated but not run until `BENCH_VERSION` reaches it, so a frozen version's case set never changes |
-| `source.kind` | yes | `synthetic`, `cve` or `postmortem` |
+| `source.kind` | yes | `synthetic`, `cve`, `postmortem` or `upstream` (a real merged PR, used as-is; controls are labeled "no known defect") |
 | `source.ref` | yes | provenance: commit URL / CVE id / repo@sha path |
 | `source.license` | yes | license of the code in `repo/` and `pr.diff` (permissive only) |
 | `bugs` | yes | list of planted bugs; **empty list = clean control** |

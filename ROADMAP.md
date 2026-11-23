@@ -76,6 +76,9 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
       files), then `--rater second` (by a second person, or the owner a few days later), then
       `python -m reviewbench agreement results/*_v0.1.json`.
 - [ ] **Controls to ≥36,** labeled "no known defect" (real merged PRs, provenance recorded).
+      Progress: 7 of 36 (4 v0.1 synthetic, py-0030 synthetic, py-0033/34 from click). Method that
+      works: pick small single-file behavior changes ≥2 years old whose lines are unchanged on
+      upstream main today; excerpt just the enclosing method so the upstream diff applies as-is.
 - [x] **Large noisy-diff cases, first 2:** planted bugs buried in big, realistic diffs (py-0031, py-0032).
 - [ ] **More noisy-diff cases (3+),** including one noisy-diff *control* and one real-world refactor
       PR (reversed CVE fix inside a larger change).

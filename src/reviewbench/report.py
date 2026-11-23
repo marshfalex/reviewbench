@@ -7,6 +7,7 @@ from pathlib import Path
 
 from reviewbench.adjudicate import load_verdicts
 from reviewbench.heldout import all_slices, leaks
+from reviewbench.runner import retryable
 from reviewbench.scoring import per_case_table
 
 
@@ -76,7 +77,12 @@ def leaderboard(results_dir: Path) -> str:
                     if not a:
                         continue
                     hard = (_r(h["any_of_k"]) + " / " + _r(h["all_of_k"])) if h else "n/a"
-                    status = "" if doc["status"] == "complete" else " (partial)"
+                    # Status alone isn't enough: files written before retryable errors were tracked
+                    # say "complete" while most reviews failed. Name the gap so 6/6 can't pass as done.
+                    failed = sum(1 for r in doc["records"] if r["level"] == level and retryable(r.get("error")))
+                    status = "" if doc["status"] == "complete" and not failed else " (partial)"
+                    if failed:
+                        status += f" ({failed} reviews failed, to retry)"
                     rows.append(f"| {doc['provider']} / `{doc['model']}`{status} | {level} | {doc['k']} | "
                                 f"{_r(a['any_of_k'])} | {_r(a['all_of_k'])} | {hard} | "
                                 f"{_r(a['precision_adjudicated'])} | {_r(a['control_runs_with_confirmed_fp'])} | "

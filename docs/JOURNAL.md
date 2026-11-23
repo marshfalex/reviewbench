@@ -116,3 +116,9 @@ Append-only. One short entry per working session: what was done, what was learne
   false alarms in 3/12 runs (25%), which is over the 20% noise flag.
 - Next: the leaderboard should mark partial results. Then the ceiling write-up, once gemini and
   nemotron finish.
+
+## 2026-11-23 — leaderboard marks results with failed reviews
+- The leaderboard now marks a row `(partial) (N reviews failed, to retry)` whenever its level holds
+  retryable errors, even if the file says `complete` (the pre-#16 files do). Gemini and Nemotron
+  no longer read as finished 6/6 results.
+- Next: the ceiling write-up, once the scheduled runs have retried gemini and nemotron.

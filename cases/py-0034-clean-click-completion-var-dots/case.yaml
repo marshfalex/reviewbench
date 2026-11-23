@@ -1,0 +1,17 @@
+id: py-0034-clean-click-completion-var-dots
+title: "click: replace dots with underscores in the shell-completion environment variable name"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/pallets/click/commit/36e3765f792d9619ab2d63faefd4382b9f450d84
+  license: BSD-3-Clause
+  notes: Merged 2022-05. The changed lines are unchanged on click main as of 2026-11-23, so no later
+    fix is known. repo/ holds only BaseCommand._main_shell_completion from src/click/core.py at the
+    parent commit, plus the imports it uses. Label is "no known defect", not "proven clean".
+bugs: []
+context:
+  related: []
+known_issues: []

@@ -186,3 +186,14 @@ Append-only. One short entry per working session: what was done, what was learne
   for future cases: trace the planted bug to its actual harm, don't stop at "looks wrong".
 - Both are `since: "0.2"`.
 - Next: ceiling write-up once gemini/nemotron finish; more controls; more noisy diffs.
+
+## 2026-11-23 — first upstream controls (click)
+- py-0033 (click 589ca31, help text form-feed truncation) and py-0034 (click 36e3765, dots in the
+  completion env var name): real merged PRs, BSD-3-Clause, used as-is. New `source.kind: upstream`.
+- "No later fix" check: the changed lines are unchanged on click main today. Dropped b36e3ed
+  (multiple flags): its lines were rewritten later, so it may have needed fixing.
+- Dead end: `git log -S` on a `--filter=blob:none` clone fetches blobs one by one and timed out.
+  Grepping upstream main for the changed lines is a cheap proxy; a full clone would allow a real
+  `git log -L` check.
+- Next: keep adding upstream controls (requests, urllib3, Jinja2, Flask all permissive) in batches
+  of ~5; ceiling write-up once gemini/nemotron finish.

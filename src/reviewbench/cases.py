@@ -12,7 +12,7 @@ from pathlib import Path
 import yaml
 
 DIFFICULTIES = {"easy", "hard"}
-SOURCE_KINDS = {"synthetic", "cve", "postmortem"}
+SOURCE_KINDS = {"synthetic", "cve", "postmortem", "upstream"}
 SEVERITIES = ["critical", "high", "medium", "low"]
 ID_RE = re.compile(r"^py-\d{4}-[a-z0-9-]+$")
 

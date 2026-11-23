@@ -10,9 +10,15 @@ ALL = discover((CASES, "public"))
 
 
 def test_case_counts():
-    assert len(ALL) == 27
-    assert sum(c.is_control for c in ALL) == 4
-    bugs = [c for c in ALL if not c.is_control]
+    from reviewbench.cases import active
+
+    assert len(ALL) == 30 and len(active(ALL, "0.1")) == 27  # v0.1 stays frozen at 27
+    assert {c.id for c in ALL if c.since == "0.2"} == {
+        "py-0028-truthy-permission-decision", "py-0029-ttl-seconds-vs-ms-clock",
+        "py-0030-clean-sort-column-whitelist"}
+    ALL_V01 = active(ALL, "0.1")
+    assert sum(c.is_control for c in ALL_V01) == 4
+    bugs = [c for c in ALL_V01 if not c.is_control]
     assert sum(c.difficulty == "easy" for c in bugs) == 15
     assert sum(c.difficulty == "hard" for c in bugs) == 8
     cves = [c for c in ALL if c.source["kind"] == "cve"]
@@ -49,3 +55,25 @@ def test_validate_catches_out_of_range_lines(tmp_path):
     text = (d / "case.yaml").read_text().replace("- 6\n  - 6", "- 6\n  - 60")
     (d / "case.yaml").write_text(text)
     assert any("out of range" in e for e in validate_case(load_case(d)))
+
+
+def test_cases_for_a_later_version_are_held_back():
+    from reviewbench import BENCH_VERSION
+    from reviewbench.cases import active
+
+    cases = discover((CASES, "public"))
+    later = [c for c in cases if c.since != "0.1"]
+    assert later, "expected some cases marked since: 0.2"
+    now = {c.id for c in active(cases)}
+    assert BENCH_VERSION != "0.1" or not any(c.id in now for c in later)
+    assert {c.id for c in active(cases, "0.2")} == {c.id for c in cases}
+
+
+def test_lineup_case_ids_exclude_later_cases(tmp_path, monkeypatch, capsys):
+    from reviewbench import cli
+
+    seen = {}
+    monkeypatch.setattr("reviewbench.lineup.plan", lambda *a, **k: seen.setdefault("ids", k["case_ids"]) and [])
+    cli.main(["lineup", "--results-dir", str(tmp_path)])
+    assert "py-0028-truthy-permission-decision" not in seen["ids"]
+    assert "py-0001" not in seen["ids"] and len(seen["ids"]) == 27

@@ -1,0 +1,14 @@
+id: py-0030-clean-sort-column-whitelist
+title: ORDER BY interpolates a column that is whitelisted by an Enum in another file
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, sql, cross-file]
+source:
+  kind: synthetic
+  ref: reviewbench v0.2 cross-file proof of concept
+  license: MIT
+bugs: []
+context:
+  related: [app/sorting.py]
+known_issues: []

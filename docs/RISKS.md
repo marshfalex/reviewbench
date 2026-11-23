@@ -9,8 +9,9 @@ that still apply. Last reviewed 2026-11-23.
 **Status:** 0 of ~750 v0.1 findings have a human verdict. Groq has 6 rule verdicts, and these
 produce its "3/12 control runs with FP". The leaderboard's "precision 100%" only counts findings
 that hit a planted bug, because unjudged findings are excluded. It is not evidence of low noise.
-**Fix:** the owner's blind adjudication pass (roadmap). Until then, reports must say "precision
-not yet measured" instead of showing a rate, and the noise flag must say which half it rests on.
+**Fix:** the owner's blind adjudication pass (roadmap). Meanwhile (done 2026-11-23) reports show
+"not measured (N of M unjudged)" until 80% of the findings needing a verdict have one, and the
+noise flag marks the control FPR as a lower bound while control findings are unjudged.
 
 ## 2. n is far too small to rank models
 **Breaks:** any claim that model A beats model B.

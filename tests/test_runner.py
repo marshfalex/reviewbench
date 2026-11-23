@@ -402,3 +402,19 @@ def test_blind_adjudication_hides_model_and_second_rater_gives_kappa(tmp_path):
     assert sum(len(load_second(p)) for p in paths) == sampled
     a = agreement(paths)
     assert a["n"] == sampled and a["agree"] == sampled
+
+
+def test_precision_hidden_until_findings_are_judged(tmp_path):
+    from reviewbench.adjudicate import save_verdicts
+
+    cases = [c for c in discover((CASES, "public")) if c.id == "py-0001-sql-injection"]
+    hit = Finding("app/users.py", 6, "security", "critical", "SQL injection", "f-string")
+    extra = [Finding("app/users.py", 100 + i, "style", "medium", f"nit {i}", "x") for i in range(5)]
+    p = tmp_path / "a.json"
+    doc = run(cases, ReplayReviewer(model="m", fn=lambda _: [hit, *extra]), ["L0"], 1, p, log=lambda m: None)
+    row = next(line for line in leaderboard(tmp_path).splitlines() if "`m`" in line)
+    assert "| not measured (5 of 5 unjudged) |" in row
+    ids = [f["id"] for f in doc["records"][0]["findings"][1:]]
+    save_verdicts(p, {i: {"verdict": "invalid", "by": "human", "note": ""} for i in ids})
+    row = next(line for line in leaderboard(tmp_path).splitlines() if "`m`" in line)
+    assert "1/6 (17%" in row and "not measured" not in row

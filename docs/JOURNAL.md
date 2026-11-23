@@ -122,3 +122,22 @@ Append-only. One short entry per working session: what was done, what was learne
   retryable errors, even if the file says `complete` (the pre-#16 files do). Gemini and Nemotron
   no longer read as finished 6/6 results.
 - Next: the ceiling write-up, once the scheduled runs have retried gemini and nemotron.
+
+## 2026-11-23 — provider data-use table
+- Added `docs/providers.md`. No lineup provider qualifies for held-out cases today: Gemini free and
+  Mistral Experiment train on inputs (Mistral by default, with an opt-out); OpenRouter free depends
+  on the host; Groq and Cerebras say they don't retain data, but neither public text forbids
+  training. Groq's no-training clause reportedly sits in its Services Agreement, which we couldn't read.
+- Groq was `heldout_ok: true`; it's now `false`. A held-out run approval now needs a "yes" row.
+- Decision: "not stated" counts as no. The point of held-out cases is that nobody can train on
+  them, so the burden is on the terms.
+- Next: owner checks Groq's agreement and/or switches off Mistral training if they want a held-out
+  model; sessions continue with cross-file L2 cases.
+## 2026-11-23 — automerge workflow (owner request)
+- The owner wants merges automatic. `.github/workflows/automerge.yml` merges a Claude-branch PR
+  when `ci` passes on its current head, unless it's gated (.github/, pyproject.toml, prompt/schema,
+  matcher, BENCH_VERSION, or adding `heldout_ok: true`). Gated PRs get `needs-owner` and wait.
+  The owner can hold any PR by adding that label.
+- Uses `workflow_run`, which always runs the copy on `main`, so a PR can't weaken its own gate.
+- Merges done with GITHUB_TOKEN don't trigger other workflows; the push-to-main `ci` run won't fire
+  for them. That's acceptable: the same commit already passed `ci` on the PR.

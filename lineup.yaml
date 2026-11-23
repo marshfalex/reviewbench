@@ -12,7 +12,7 @@ levels: L0,L1,L2
 models:
   - provider: groq
     model: openai/gpt-oss-120b
-    heldout_ok: true
+    heldout_ok: false  # see docs/providers.md: no-training terms unverified
   - provider: gemini
     model: gemini-3-flash-preview  # auto:flash picked a model outside the free tier; this one answers
     heldout_ok: false

@@ -1,0 +1,59 @@
+# Merges Claude's PRs automatically once `ci` passes, so the owner doesn't have to click merge.
+#
+# Safety:
+# - workflow_run always runs this file from `main`, so a PR can't edit the gate to merge itself.
+# - Only PRs from this repo (no forks) on a Claude branch (claude/*, seneca/*) are considered.
+# - CI must have passed on the PR's *current* head commit.
+# - Gated PRs wait for the owner: they get the `needs-owner` label and a reason in the job log.
+#   A PR is gated if it touches .github/, pyproject.toml (dependencies), the reviewer prompt or
+#   output schema (adapters/base.py), the matching rule (scoring.py) or BENCH_VERSION
+#   (src/reviewbench/__init__.py), or adds `heldout_ok: true` anywhere.
+# - The owner can stop any PR from merging by adding the `needs-owner` label.
+name: automerge
+on:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  merge:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      (startsWith(github.event.workflow_run.head_branch, 'claude/') ||
+       startsWith(github.event.workflow_run.head_branch, 'seneca/'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge unless gated
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          pr=$(gh pr list -R "$REPO" --head "$BRANCH" --state open --json number,headRefOid,labels \
+               --jq ".[] | select(.headRefOid == \"$SHA\")")
+          if [ -z "$pr" ]; then echo "No open PR at $SHA (newer push or already merged)."; exit 0; fi
+          num=$(jq -r .number <<<"$pr")
+          if jq -e '.labels[] | select(.name == "needs-owner")' <<<"$pr" >/dev/null; then
+            echo "PR #$num is labeled needs-owner; leaving it for the owner."; exit 0
+          fi
+          files=$(gh api --paginate "repos/$REPO/pulls/$num/files" --jq '.[].filename')
+          added=$(gh api --paginate "repos/$REPO/pulls/$num/files" --jq '.[].patch // ""' | grep '^+' || true)
+          reason=""
+          grep -qE '^(\.github/|pyproject\.toml$|src/reviewbench/(__init__|scoring)\.py$|src/reviewbench/adapters/base\.py$)' \
+            <<<"$files" && reason="touches a gated file: $(grep -E '^(\.github/|pyproject|src/reviewbench/(__init__|scoring)\.py|src/reviewbench/adapters/base\.py)' <<<"$files" | tr '\n' ' ')"
+          grep -qE 'heldout_ok:[[:space:]]*true' <<<"$added" && reason="$reason adds heldout_ok: true"
+          if [ -n "$reason" ]; then
+            echo "PR #$num is gated ($reason); labeling needs-owner."
+            gh label create needs-owner -R "$REPO" --color B60205 \
+              --description "Waits for the owner; automerge skips it" 2>/dev/null || true
+            gh pr edit "$num" -R "$REPO" --add-label needs-owner
+            exit 0
+          fi
+          gh pr merge "$num" -R "$REPO" --merge --match-head-commit "$SHA"
+          echo "Merged PR #$num."

@@ -207,3 +207,10 @@ Append-only. One short entry per working session: what was done, what was learne
 - Added four roadmap items that fix the reporting side now, without waiting for the owner.
 - Next session: "stop reporting unmeasured precision" first; it's the most misleading number we
   publish.
+
+## 2026-11-23 — precision hidden until it's measured
+- Leaderboard and per-run reports now print "not measured (N of M unjudged)" for precision until
+  80% of the findings that need a human verdict have one. Every v0.1 row now says "not measured".
+- The noise flag's control-FPR reason says "≥" when control findings are unjudged (confirmed
+  false positives are only a lower bound).
+- Done in report.py on purpose: scoring.py is gated under automerge, and this didn't need it.

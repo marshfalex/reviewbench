@@ -85,3 +85,17 @@ Append-only. One short entry per working session: what was done, what was learne
 - Tests: refusal cases record every prompt sent and assert the held-out code never appears in
   one. With the guard disabled, 6 of them fail.
 - Next: CVE batch 2 (batch 1 merged in #9).
+
+## 2026-11-23 — design review with the owner (v0.2 decisions)
+- A structured grilling of the plan with the owner. The decisions are in SPEC §10 and a new
+  "v0.2 redesign" roadmap section; nothing is implemented yet.
+- Main finding: the benchmark looks too easy. Cerebras qwen-3.8-27b caught 54/54 per-run at L0
+  (Wilson lower bound ~93%) with 0/12 control false alarms, including every author-labeled "hard"
+  case. A pre-registered ceiling rule decides it once groq, gemini and nemotron finish.
+- Corrected during the review: a noise flag on the control-FPR *upper* bound would flag every
+  model (0/12 already gives ~24%), so the flag uses the point estimate, and controls go to ≥36.
+- Held-out: `heldout_ok` was set without checking providers' training terms. Held-out runs are
+  paused until a dated data-use table exists. No workflow references `REVIEWBENCH_HELDOUT` and no
+  committed result mentions held-out cases, so they very likely never left the private repo; the
+  owner will confirm from the run logs.
+- Next: the ceiling write-up, then the provider data-use table.

@@ -55,6 +55,29 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
 - [ ] **Launch post draft:** `docs/posts/v0.1.md` — a short thread-style write-up (headline
       finding, one chart, one concrete missed bug, link to method). The owner posts it.
 
+## v0.2 redesign — make the benchmark discriminate (decided 2026-11-23, see SPEC §10)
+Do these before the v0.2 items below. They come before remaining v0.1 items except the owner ones.
+- [ ] **Write up the ceiling finding and the redesign plan** (`docs/findings/ceiling.md`): the
+      Cerebras result (54/54 per-run at L0, lower bound ~93%; 0/12 control FPs), why it can't rank
+      models, and the SPEC §10 plan. Apply the ceiling rule once groq, gemini and nemotron finish.
+- [ ] **Provider data-use table** (`docs/providers.md`): for every lineup provider, whether API
+      inputs may be used for training, a link to the terms and the date checked. Until it exists,
+      no held-out runs; then set `heldout_ok` in `lineup.yaml` only for providers that forbid
+      training (that change goes to the owner).
+- [ ] [owner] **Confirm from the benchmark run logs that no held-out case was ever sent** to a
+      provider (no workflow loads `REVIEWBENCH_HELDOUT` today). Retire any case that was.
+- [ ] **Cross-file L2 cases, proof of concept (2–3):** bugs visible only with the related files
+      (L2), not from the diff or changed files alone.
+- [ ] **Score/report changes:** per-run recall as the leaderboard sort key; the noise flag; a
+      prompt hash in results; blind adjudication (hide the model) with a second-rater sample and κ.
+- [ ] **Controls to ≥36,** labeled "no known defect" (real merged PRs, provenance recorded).
+- [ ] **Large noisy-diff cases:** planted bugs buried in big, realistic diffs.
+- [ ] **Data-driven hardness labels** from v0.1 results, after the v0.1 lineup completes.
+- [ ] **Matching-rule defect check** plus a hand-audited sample of matches.
+- [ ] **Prompt sensitivity check:** 2–3 paraphrased prompts × 1 free model.
+- [ ] **Rewrite the README problem statement** to say ReviewBench compares models behind a
+      standard prompt; review products are a later, paid phase.
+
 ## v0.2 — breadth and contributors
 - [ ] **Modify-existing-file synthetic cases (8):** PRs that edit existing code so L1 differs from
       L0 (e.g. a refactor that drops an authz check, a changed default, a removed lock).

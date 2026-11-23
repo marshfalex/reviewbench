@@ -181,3 +181,56 @@ model id). Next to it: `<stem>.md` (per-run report) and
 on output tokens (4,000 per review, including reasoning) without calling any
 API. `reviewbench run` on a paid provider refuses to start unless given
 `--yes` or `--max-usd` at or above the estimate.
+
+## 10. v0.2 decisions (pre-registered)
+
+Agreed with the owner on 2026-11-23, **before** the remaining v0.1 runs
+finished. They are not yet implemented; the roadmap tracks the work. Where they
+conflict with sections 1–9, they apply from v0.2 on, and v0.1 keeps its rules.
+
+**Scope.** ReviewBench measures *models as reviewers behind one standard
+prompt*. It does not compare review products (CodeRabbit, Copilot review);
+that is a later phase that needs money.
+
+**Ceiling rule.** The v0.1 case set is judged *too easy* if at least 3 of the
+first 4 lineup models (cerebras qwen-3.8-27b, groq gpt-oss-120b, gemini
+3-flash-preview, openrouter nemotron-3-ultra) reach a per-run recall Wilson 95%
+lower bound of at least 80% on the public split at L0. If so, v0.2 prioritizes
+discriminating cases over more cases of the existing kind.
+
+**Versions are never mixed.** v0.1 is frozen once its lineup is complete.
+v0.2 hardness labels come from v0.1 results only (`hard` = missed in per-run
+recall by most v0.1 models), and the labeling rule is published with them.
+
+**Frozen per version.** The matching rule, the reviewer prompt
+(`SYSTEM_PROMPT`) and the output schema. Changing any of them is a new benchmark
+version, and every results file records a hash of the prompt. v0.2 adds a
+defect check to the matching rule (file + line window + the finding names the
+defect), and a hand-audited sample of matches is published with each version.
+
+**Headline metric.** Leaderboards sort by per-run recall. Precision and the
+control false-positive rate sit next to it; any-of-k is secondary.
+
+**Noise flag.** A model is flagged as noisy if its control FPR *point
+estimate* exceeds 20%, or if it averages more than 3 counted findings per
+case. The upper bound is never used: at 0/12 it is already ~24%.
+
+**Controls.** At least 36 controls (at 0 false alarms the Wilson upper bound
+≈ 3.84 / (n + 3.84) drops under 10% at n ≈ 35), mostly real merged PRs with
+no later fix commit, under the same license and provenance rules as CVE
+cases. They are labeled *no known defect*, not *clean*. Findings on controls
+go through adjudication; a confirmed real bug moves that case out of the
+controls and becomes a new case.
+
+**Adjudication.** Blind to the model that produced each finding. A second
+rater judges a ~20% sample and Cohen's κ is reported; until a second human is
+available the second rater is an LLM, labeled as such.
+
+**Held-out.** Held-out runs are paused. A provider may receive held-out cases
+only after a dated table of its data-use terms shows it forbids training on
+API inputs. Any held-out case that reached a provider that allows training is
+retired. Held-out and public scores are reported side by side as a
+contamination signal.
+
+**Prompt sensitivity.** v0.2 reports 2–3 paraphrased prompts on one free
+model, so readers can see how much of a score comes from the prompt.

@@ -68,8 +68,9 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
       provider (no workflow loads `REVIEWBENCH_HELDOUT` today). Retire any case that was.
 - [x] **Cross-file L2 cases, proof of concept (2–3):** bugs visible only with the related files
       (L2), not from the diff or changed files alone.
-- [ ] **Score/report changes:** per-run recall as the leaderboard sort key; the noise flag; a
-      prompt hash in results; blind adjudication (hide the model) with a second-rater sample and κ.
+- [x] **Score/report changes, part 1:** per-run recall as the leaderboard sort key; the noise
+      flag; a prompt hash in results.
+- [ ] **Blind adjudication:** hide the model while adjudicating; a second-rater sample and κ.
 - [ ] **Controls to ≥36,** labeled "no known defect" (real merged PRs, provenance recorded).
 - [ ] **Large noisy-diff cases:** planted bugs buried in big, realistic diffs.
 - [ ] **Data-driven hardness labels** from v0.1 results, after the v0.1 lineup completes.

@@ -9,7 +9,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 from reviewbench import BENCH_VERSION
-from reviewbench.adapters.base import SYSTEM_PROMPT, Reviewer
+from reviewbench.adapters.base import OUTPUT_SCHEMA, SYSTEM_PROMPT, Reviewer
 from reviewbench.cases import Case
 from reviewbench.context import build_request
 
@@ -54,6 +54,13 @@ def results_path(out_dir: Path, provider: str, model: str, today: dt.date | None
 _RETRYABLE = re.compile(r"^(rate_limited|transient)|HTTPError: (429|5\d\d) ")
 
 
+def prompt_hash() -> str:
+    """Fingerprint of the reviewer prompt and output schema (SPEC §10: frozen per version)."""
+    import hashlib
+    blob = SYSTEM_PROMPT + "\n" + json.dumps(OUTPUT_SCHEMA, sort_keys=True)
+    return hashlib.sha256(blob.encode()).hexdigest()[:16]
+
+
 def retryable(error: str | None) -> bool:
     return bool(error) and bool(_RETRYABLE.search(error))
 
@@ -95,6 +102,11 @@ def run(cases: list[Case], reviewer: Reviewer, levels: list[str], k: int, out_pa
         done = {(r["case"], r["level"], r["run"]) for r in doc["records"]
                 if not retryable(r.get("error"))}
         doc["records"] = [r for r in doc["records"] if (r["case"], r["level"], r["run"]) in done]
+        old = doc.get("prompt_sha256")
+        if old and old != prompt_hash():
+            raise ValueError(f"{out_path.name} was run with a different prompt ({old}); "
+                             f"resuming it with {prompt_hash()} would mix prompts in one result")
+        doc.setdefault("prompt_sha256", prompt_hash())
         doc["cases"].update({c.id: case_truth(c) for c in cases})
         log(f"resuming {out_path.name}: {len(done)} reviews already done")
     else:
@@ -103,6 +115,7 @@ def run(cases: list[Case], reviewer: Reviewer, levels: list[str], k: int, out_pa
             "created": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
             "provider": reviewer.provider, "model": reviewer.model, "k": k, "levels": levels,
             "status": "partial",
+            "prompt_sha256": prompt_hash(),
             "cases": {c.id: case_truth(c) for c in cases},
             "records": [],
         }

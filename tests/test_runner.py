@@ -341,3 +341,33 @@ def test_leaderboard_marks_results_with_failed_reviews(tmp_path):
     doc["records"][0]["error"] = "exception: HTTPError: 429 Client Error: Too Many Requests for url: x"
     (tmp_path / "a.json").write_text(json.dumps(doc))  # still says status "complete", like the old files
     assert "(partial) (1 reviews failed, to retry)" in leaderboard(tmp_path)
+
+
+def test_results_record_prompt_hash_and_refuse_to_mix(tmp_path, monkeypatch):
+    import pytest
+
+    from reviewbench import runner
+
+    cases = discover((CASES, "public"))[:1]
+    out = tmp_path / "r.json"
+    doc = run(cases, ReplayReviewer(fn=_oracle), ["L0"], 1, out, log=lambda m: None)
+    assert doc["prompt_sha256"] == runner.prompt_hash() and len(doc["prompt_sha256"]) == 16
+    monkeypatch.setattr(runner, "SYSTEM_PROMPT", runner.SYSTEM_PROMPT + " changed")
+    assert runner.prompt_hash() != doc["prompt_sha256"]
+    with pytest.raises(ValueError, match="different prompt"):
+        run(cases, ReplayReviewer(fn=_oracle), ["L0"], 2, out, log=lambda m: None)
+
+
+def test_leaderboard_sorts_by_per_run_recall_and_flags_noise(tmp_path):
+    cases = [c for c in discover((CASES, "public")) if c.id == "py-0001-sql-injection"]
+    hit = Finding("app/users.py", 6, "security", "critical", "SQL injection", "f-string")
+    noise = [Finding("app/users.py", 100 + i, "style", "medium", "nit", "x") for i in range(4)]
+    run(cases, ReplayReviewer(model="weak", fn=lambda p: []), ["L0"], 1, tmp_path / "a.json",
+        log=lambda m: None)
+    run(cases, ReplayReviewer(model="strong", fn=lambda p: [hit, *noise]), ["L0"], 1,
+        tmp_path / "b.json", log=lambda m: None)
+    md = leaderboard(tmp_path)
+    assert md.index("`strong`") < md.index("`weak`")
+    strong = next(line for line in md.splitlines() if "`strong`" in line)
+    weak = next(line for line in md.splitlines() if "`weak`" in line)
+    assert "⚠ noisy: 5.0 findings/review" in strong and "noisy" not in weak

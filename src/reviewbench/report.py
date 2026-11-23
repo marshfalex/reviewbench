@@ -8,7 +8,25 @@ from pathlib import Path
 from reviewbench.adjudicate import load_verdicts
 from reviewbench.heldout import all_slices, leaks
 from reviewbench.runner import retryable
-from reviewbench.scoring import per_case_table
+from reviewbench.scoring import COUNTED, per_case_table
+
+# SPEC §10 noise flag: control FPR point estimate above this, or more counted findings per review.
+NOISE_FPR = 0.20
+NOISE_FINDINGS_PER_REVIEW = 3.0
+
+
+def noise_reasons(doc: dict, level: str, ctrl: dict) -> list[str]:
+    """Why a reviewer is flagged noisy at this level (empty = not flagged)."""
+    reasons = []
+    if ctrl["n"] and ctrl["hits"] / ctrl["n"] > NOISE_FPR:
+        reasons.append(f"control FPR {ctrl['hits'] / ctrl['n']:.0%}")
+    runs = [r for r in doc["records"] if r["level"] == level and not r.get("error")
+            and doc["cases"].get(r["case"], {}).get("split", "public") == "public"]
+    if runs:
+        per = sum(1 for r in runs for f in r["findings"] if f["severity"] in COUNTED) / len(runs)
+        if per > NOISE_FINDINGS_PER_REVIEW:
+            reasons.append(f"{per:.1f} findings/review")
+    return reasons
 
 
 def _r(d: dict) -> str:
@@ -83,14 +101,23 @@ def leaderboard(results_dir: Path) -> str:
                     status = "" if doc["status"] == "complete" and not failed else " (partial)"
                     if failed:
                         status += f" ({failed} reviews failed, to retry)"
-                    rows.append(f"| {doc['provider']} / `{doc['model']}`{status} | {level} | {doc['k']} | "
-                                f"{_r(a['any_of_k'])} | {_r(a['all_of_k'])} | {hard} | "
-                                f"{_r(a['precision_adjudicated'])} | {_r(a['control_runs_with_confirmed_fp'])} | "
-                                f"{a['unadjudicated_findings']} | [{p.stem}]({p.name}) |")
+                    noisy = noise_reasons(doc, level, a["control_runs_with_confirmed_fp"]) if split == "public" else []
+                    flag = f" ⚠ noisy: {', '.join(noisy)}" if noisy else ""
+                    pr = a["per_run_recall"]
+                    # Unfinished results go last: 12/12 on a sliver of the cases must not outrank a full run.
+                    sort_key = (level, bool(status), -(pr["rate"] if pr["n"] else -1), doc["provider"], doc["model"])
+                    rows.append((sort_key,
+                                 f"| {doc['provider']} / `{doc['model']}`{status}{flag} | {level} | {doc['k']} | "
+                                 f"**{_r(pr)}** | {_r(a['any_of_k'])} | {_r(a['all_of_k'])} | {hard} | "
+                                 f"{_r(a['precision_adjudicated'])} | {_r(a['control_runs_with_confirmed_fp'])} | "
+                                 f"{a['unadjudicated_findings']} | [{p.stem}]({p.name}) |"))
             if not rows:
                 continue
             out += [f"## v{version} — {split} cases", "",
-                    "| reviewer | context | k | recall any-of-k | recall all-of-k | hard: any / all | "
-                    "precision | control runs w/ FP | unadj. | results |",
-                    "|---|---|---|---|---|---|---|---|---|---|", *rows, ""]
+                    "Sorted by per-run recall within each context level, unfinished results last. "
+                    "⚠ noisy = control false-positive "
+                    f"rate over {NOISE_FPR:.0%} or more than {NOISE_FINDINGS_PER_REVIEW:g} findings per review.", "",
+                    "| reviewer | context | k | **per-run recall** | recall any-of-k | recall all-of-k | "
+                    "hard: any / all | precision | control runs w/ FP | unadj. | results |",
+                    "|---|---|---|---|---|---|---|---|---|---|---|", *[r for _, r in sorted(rows)], ""]
     return "\n".join(out) + "\n"

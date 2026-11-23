@@ -332,3 +332,12 @@ def test_complete_file_with_provider_errors_is_resumed(tmp_path):
     doc2 = run(cases, ReplayReviewer(fn=flaky), ["L0"], 1, out, log=lambda m: None)
     assert doc2["status"] == "complete" and not any(r["error"] for r in doc2["records"])
     assert len(calls) == 3  # only the errored review was repeated
+
+
+def test_leaderboard_marks_results_with_failed_reviews(tmp_path):
+    cases = discover((CASES, "public"))[:2]
+    doc = run(cases, ReplayReviewer(fn=_oracle), ["L0"], 2, tmp_path / "a.json", log=lambda m: None)
+    assert "(partial)" not in leaderboard(tmp_path)
+    doc["records"][0]["error"] = "exception: HTTPError: 429 Client Error: Too Many Requests for url: x"
+    (tmp_path / "a.json").write_text(json.dumps(doc))  # still says status "complete", like the old files
+    assert "(partial) (1 reviews failed, to retry)" in leaderboard(tmp_path)

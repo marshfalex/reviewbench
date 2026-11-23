@@ -268,3 +268,67 @@ def test_complete_run_missing_new_cases_is_resumed(tmp_path):
     assert find_resumable(tmp_path, "p", "m", 3, ["L0"], {"a"}) is None
     assert not completed(tmp_path, "p", "m", 3, ["L0"], {"a", "b"})
     assert find_resumable(tmp_path, "p", "m", 3, ["L0"], {"a", "b"}) == tmp_path / "r.json"
+
+
+def _fake_post(monkeypatch, statuses):
+    import requests
+
+    from reviewbench.adapters import openai_compat
+
+    class Resp:
+        def __init__(self, code):
+            self.status_code, self.headers, self.text = code, {"retry-after": "1"}, ""
+
+        def raise_for_status(self):
+            raise requests.HTTPError(f"{self.status_code} Error")
+
+    seq = iter(statuses)
+    monkeypatch.setattr(openai_compat.time, "sleep", lambda s: None)
+    monkeypatch.setattr(requests, "post", lambda *a, **k: Resp(next(seq)))
+    monkeypatch.setenv("GROQ_API_KEY", "gsk_test")
+    return openai_compat.GroqReviewer()
+
+
+def test_last_429_is_rate_limited_not_an_exception(monkeypatch):
+    reviewer = _fake_post(monkeypatch, [429] * 6)
+    assert reviewer._review("prompt").error == "rate_limited: retries exhausted"
+
+
+def test_5xx_is_retried_then_recorded_as_transient(monkeypatch):
+    reviewer = _fake_post(monkeypatch, [503] * 6)
+    assert reviewer._review("prompt").error == "transient: HTTP 503"
+
+
+def test_retryable_covers_legacy_http_errors():
+    from reviewbench.runner import retryable
+
+    assert retryable("exception: HTTPError: 429 Client Error: Too Many Requests for url: x")
+    assert retryable("exception: HTTPError: 503 Server Error: Service Unavailable for url: x")
+    assert retryable("transient: HTTP 502") and retryable("rate_limited: quota")
+    assert not retryable("exception: HTTPError: 400 Client Error: Bad Request for url: x")
+    assert not retryable("unparseable_output: x") and not retryable(None)
+
+
+def test_complete_file_with_provider_errors_is_resumed(tmp_path):
+    from reviewbench.lineup import completed
+    from reviewbench.runner import find_resumable
+
+    cases = discover((CASES, "public"))[:2]
+    out = tmp_path / "r.json"
+    calls = []
+
+    def flaky(request):
+        calls.append(request)
+        if len(calls) == 1:
+            raise RuntimeError("HTTPError: 429 Client Error: Too Many Requests")
+        return _oracle(request)
+
+    doc = run(cases, ReplayReviewer(fn=flaky), ["L0"], 1, out, log=lambda m: None)
+    assert doc["status"] == "partial"  # a provider error left behind is not a finished run
+    args = (doc["provider"], doc["model"], 1, ["L0"])
+    # Mimic a file written by the old runner, which marked such runs complete.
+    out.write_text(json.dumps({**doc, "status": "complete"}))
+    assert find_resumable(tmp_path, *args) == out and not completed(tmp_path, *args)
+    doc2 = run(cases, ReplayReviewer(fn=flaky), ["L0"], 1, out, log=lambda m: None)
+    assert doc2["status"] == "complete" and not any(r["error"] for r in doc2["records"])
+    assert len(calls) == 3  # only the errored review was repeated

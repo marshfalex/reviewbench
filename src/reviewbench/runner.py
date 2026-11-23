@@ -49,6 +49,19 @@ def results_path(out_dir: Path, provider: str, model: str, today: dt.date | None
     return path
 
 
+# Errors that say nothing about the model, only that the provider didn't answer: resume
+# re-runs these records. The HTTPError forms are what older adapter versions recorded.
+_RETRYABLE = re.compile(r"^(rate_limited|transient)|HTTPError: (429|5\d\d) ")
+
+
+def retryable(error: str | None) -> bool:
+    return bool(error) and bool(_RETRYABLE.search(error))
+
+
+def has_retryable(doc: dict) -> bool:
+    return any(retryable(r.get("error")) for r in doc.get("records") or [])
+
+
 def find_resumable(out_dir: Path, provider: str, model: str, k: int, levels: list[str],
                    case_ids: set[str] | None = None) -> Path | None:
     """Newest partial results file for the same reviewer and settings, if any. A complete file
@@ -61,7 +74,7 @@ def find_resumable(out_dir: Path, provider: str, model: str, k: int, levels: lis
         except (OSError, json.JSONDecodeError):
             continue
         partial = doc.get("status") == "partial" or (doc.get("heldout") or {}).get("status") == "partial"
-        partial = partial or bool((case_ids or set()) - set(doc.get("cases") or {}))
+        partial = partial or bool((case_ids or set()) - set(doc.get("cases") or {})) or has_retryable(doc)
         if (partial and doc.get("bench_version") == BENCH_VERSION
                 and doc.get("provider") == provider and doc.get("model") == model
                 and doc.get("k") == k and doc.get("levels") == levels):
@@ -80,7 +93,7 @@ def run(cases: list[Case], reviewer: Reviewer, levels: list[str], k: int, out_pa
     if out_path.exists():
         doc = json.loads(out_path.read_text())
         done = {(r["case"], r["level"], r["run"]) for r in doc["records"]
-                if not (r.get("error") or "").startswith("rate_limited")}
+                if not retryable(r.get("error"))}
         doc["records"] = [r for r in doc["records"] if (r["case"], r["level"], r["run"]) in done]
         doc["cases"].update({c.id: case_truth(c) for c in cases})
         log(f"resuming {out_path.name}: {len(done)} reviews already done")
@@ -125,6 +138,6 @@ def run(cases: list[Case], reviewer: Reviewer, levels: list[str], k: int, out_pa
                     # Every later call would hit the same quota; stop and let --resume retry it.
                     log("rate limited (quota); stopping with status partial. Resume later.")
                     return doc
-    doc["status"] = "complete"
+    doc["status"] = "partial" if has_retryable(doc) else "complete"
     out_path.write_text(json.dumps(doc, indent=1))
     return doc

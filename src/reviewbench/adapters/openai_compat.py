@@ -53,6 +53,14 @@ class OpenAICompatReviewer(Reviewer):
                 if attempt < self.retries - 1:
                     time.sleep(wait)
                     continue
+                # Out of attempts: record it as retryable. Letting raise_for_status() turn it into
+                # a generic exception made resume treat it as done and the run kept burning quota.
+                return ReviewResult("", [], error="rate_limited: retries exhausted")
+            if r.status_code >= 500:  # provider overloaded or down: transient, retry with backoff
+                if attempt < self.retries - 1:
+                    time.sleep(10 * (attempt + 1))
+                    continue
+                return ReviewResult("", [], error=f"transient: HTTP {r.status_code}")
             if r.status_code == 400 and "response_format" in payload and "response_format" in r.text:
                 payload.pop("response_format")  # endpoint has no JSON mode; the prompt still asks for JSON
                 continue

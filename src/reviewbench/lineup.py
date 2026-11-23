@@ -9,6 +9,7 @@ import yaml
 
 from reviewbench import BENCH_VERSION
 from reviewbench.adapters import ADAPTERS
+from reviewbench.runner import has_retryable
 
 EXCLUDE = ("preview", "exp", "lite", "tts", "image", "audio", "live", "embed", "vision", "guard")
 
@@ -41,7 +42,7 @@ def completed(results_dir: Path, provider: str, model: str, k: int, levels: list
             doc = json.loads(path.read_text())
         except (OSError, json.JSONDecodeError):
             continue
-        if (doc.get("status") == "complete" and doc.get("bench_version") == BENCH_VERSION
+        if (doc.get("status") == "complete" and not has_retryable(doc) and doc.get("bench_version") == BENCH_VERSION
                 and doc.get("provider") == provider and doc.get("model") == model
                 and doc.get("k") == k and doc.get("levels") == levels
                 and not (case_ids or set()) - set(doc.get("cases") or {})):

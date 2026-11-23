@@ -1,0 +1,116 @@
+diff --git a/app/listing.py b/app/listing.py
+index b07adce..ddab34e 100644
+--- a/app/listing.py
++++ b/app/listing.py
+@@ -1,64 +1,87 @@
++"""List endpoints: filtering, sorting and 1-based page numbers."""
++from __future__ import annotations
++
+ import math
++from typing import Any, Iterable, Sequence
++from urllib.parse import urlencode
++
++Item = dict[str, Any]
+ 
+ DEFAULT_PER_PAGE = 20
+ MAX_PER_PAGE = 100
+ 
+ 
+-def clamp_per_page(per_page):
++def clamp_per_page(per_page: int | str | None) -> int:
++    """Per-page size from the query string, defaulted and kept within 1..MAX_PER_PAGE."""
+     if per_page is None:
+         return DEFAULT_PER_PAGE
+     return max(1, min(int(per_page), MAX_PER_PAGE))
+ 
+ 
+-def page_count(total, per_page):
++def page_count(total: int, per_page: int) -> int:
++    """Number of pages; an empty listing still has one (empty) page."""
+     return max(1, math.ceil(total / per_page))
+ 
+ 
+-def paginate(items, page, per_page):
+-    # pages are 1-based: page 1 is the first page
+-    per_page = clamp_per_page(per_page)
+-    start = (page - 1) * per_page
+-    return items[start:start + per_page]
++def paginate(items: Sequence[Item], page: int, per_page: int | None) -> list[Item]:
++    """The items on a 1-based page."""
++    size = clamp_per_page(per_page)
++    offset = page * size
++    return list(items[offset:offset + size])
++
++
++def _url(base_url: str, page: int) -> str:
++    return f"{base_url}?{urlencode({'page': page})}"
+ 
+ 
+-def page_links(base_url, page, total, per_page):
++def page_links(base_url: str, page: int, total: int, per_page: int) -> dict[str, str]:
++    """self/prev/next/last links for a page."""
+     last = page_count(total, per_page)
+-    links = {"self": base_url + "?page=" + str(page)}
++    links = {"self": _url(base_url, page)}
+     if page > 1:
+-        links["prev"] = base_url + "?page=" + str(page - 1)
++        links["prev"] = _url(base_url, page - 1)
+     if page < last:
+-        links["next"] = base_url + "?page=" + str(page + 1)
+-    links["last"] = base_url + "?page=" + str(last)
++        links["next"] = _url(base_url, page + 1)
++    links["last"] = _url(base_url, last)
+     return links
+ 
+ 
+-def parse_page(raw):
++def parse_page(raw: str | None) -> int:
++    """Page number from the query string; anything invalid or below 1 means page 1."""
+     try:
+-        page = int(raw)
++        page = int(raw)  # type: ignore[arg-type]
+     except (TypeError, ValueError):
+         return 1
+-    return page if page >= 1 else 1
++    return max(page, 1)
+ 
+ 
+-def sort_items(items, key, descending):
++def sort_items(items: Iterable[Item], key: str, descending: bool) -> list[Item]:
+     return sorted(items, key=lambda item: item[key], reverse=descending)
+ 
+ 
+-def filter_items(items, field, value):
++def filter_items(items: Iterable[Item], field: str, value: Any) -> list[Item]:
+     if value is None:
+-        return items
++        return list(items)
+     return [item for item in items if item.get(field) == value]
+ 
+ 
+-def listing(items, raw_page, raw_per_page, base_url, sort_key="id", descending=False, status=None):
+-    items = filter_items(items, "status", status)
+-    items = sort_items(items, sort_key, descending)
++def listing(
++    items: Iterable[Item],
++    raw_page: str | None,
++    raw_per_page: str | None,
++    base_url: str,
++    sort_key: str = "id",
++    descending: bool = False,
++    status: str | None = None,
++) -> dict[str, Any]:
++    """One page of a filtered, sorted listing plus navigation links."""
++    rows = sort_items(filter_items(items, "status", status), sort_key, descending)
+     page = parse_page(raw_page)
+     per_page = clamp_per_page(raw_per_page)
+     return {
+-        "items": paginate(items, page, per_page),
++        "items": paginate(rows, page, per_page),
+         "page": page,
+         "per_page": per_page,
+-        "total": len(items),
+-        "links": page_links(base_url, page, len(items), per_page),
++        "total": len(rows),
++        "links": page_links(base_url, page, len(rows), per_page),
+     }

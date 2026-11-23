@@ -1,0 +1,154 @@
+diff --git a/app/http.py b/app/http.py
+new file mode 100644
+index 0000000..16f51a5
+--- /dev/null
++++ b/app/http.py
+@@ -0,0 +1,7 @@
++class Request:
++    user = None
++    json = None
++
++
++def json_response(key, value) -> dict:
++    return {key: value}
+diff --git a/app/views.py b/app/views.py
+index 77a559a..44a7ab2 100644
+--- a/app/views.py
++++ b/app/views.py
+@@ -1,91 +1,106 @@
++"""Project views. Every view requires a signed-in user."""
++from __future__ import annotations
++
+ from app.auth import login_required
++from app.http import Request, json_response
+ from app.store import store
+ 
+ 
+ @login_required
+-def list_projects(request):
++def list_projects(request: Request) -> dict:
++    """GET handler: list projects."""
+     user = request.user
+     result = store.projects_for(user.id)
+-    return {'projects': result}
++    return json_response('projects', result)
+ 
+ 
+ @login_required
+-def get_project(request, project_id):
++def get_project(request: Request, project_id: str) -> dict:
++    """GET handler: get project."""
+     user = request.user
+     result = store.project(user.id, project_id)
+-    return {'project': result}
++    return json_response('project', result)
+ 
+ 
+ @login_required
+-def create_project(request):
++def create_project(request: Request) -> dict:
++    """POST handler: create project."""
+     user = request.user
+-    body = request.json
++    body = request.json or {}
+     result = store.create_project(user.id, body)
+-    return {'project': result}
++    return json_response('project', result)
+ 
+ 
+ @login_required
+-def rename_project(request, project_id):
++def rename_project(request: Request, project_id: str) -> dict:
++    """POST handler: rename project."""
+     user = request.user
+-    body = request.json
++    body = request.json or {}
+     result = store.rename_project(user.id, project_id, body['name'])
+-    return {'project': result}
++    return json_response('project', result)
+ 
+ 
+ @login_required
+-def archive_project(request, project_id):
++def archive_project(request: Request, project_id: str) -> dict:
++    """POST handler: archive project."""
+     user = request.user
+     result = store.archive_project(user.id, project_id)
+-    return {'project': result}
++    return json_response('project', result)
+ 
+ 
+ @login_required
+-def list_members(request, project_id):
++def list_members(request: Request, project_id: str) -> dict:
++    """GET handler: list members."""
+     user = request.user
+     result = store.members(user.id, project_id)
+-    return {'members': result}
++    return json_response('members', result)
+ 
+ 
+ @login_required
+-def invite_member(request, project_id):
++def invite_member(request: Request, project_id: str) -> dict:
++    """POST handler: invite member."""
+     user = request.user
+-    body = request.json
++    body = request.json or {}
+     result = store.invite(user.id, project_id, body['email'])
+-    return {'invite': result}
++    return json_response('invite', result)
+ 
+ 
+ @login_required
+-def remove_member(request, project_id):
++def remove_member(request: Request, project_id: str) -> dict:
++    """POST handler: remove member."""
+     user = request.user
+-    body = request.json
++    body = request.json or {}
+     result = store.remove_member(user.id, project_id, body['user_id'])
+-    return {'member': result}
++    return json_response('member', result)
+ 
+ 
+ @login_required
+-def export_project(request, project_id):
++def export_project(request: Request, project_id: str) -> dict:
++    """GET handler: export project."""
+     user = request.user
+     result = store.export(user.id, project_id)
+-    return {'export': result}
++    return json_response('export', result)
+ 
+ 
+-@login_required
+-def delete_project(request, project_id):
++def delete_project(request: Request, project_id: str) -> dict:
++    """POST handler: delete project."""
+     user = request.user
+     result = store.delete_project(project_id)
+-    return {'deleted': result}
++    return json_response('deleted', result)
+ 
+ 
+ @login_required
+-def update_profile(request):
++def update_profile(request: Request) -> dict:
++    """POST handler: update profile."""
+     user = request.user
+-    body = request.json
++    body = request.json or {}
+     result = store.update_profile(user.id, body)
+-    return {'profile': result}
++    return json_response('profile', result)
+ 
+ 
+ @login_required
+-def list_api_keys(request):
++def list_api_keys(request: Request) -> dict:
++    """GET handler: list api keys."""
+     user = request.user
+     result = store.api_keys(user.id)
+-    return {'keys': result}
++    return json_response('keys', result)

@@ -1,0 +1,18 @@
+id: py-0044-clean-flask-untag-without-object-hook
+title: "flask: untag session JSON recursively after loading instead of via object_hook"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/pallets/flask/commit/700fc7d928b7a625b04e6865b3eb282043e90f7d
+  license: BSD-3-Clause
+  notes: Merged 2024-01. Every line the commit added is still present in src/flask/json/tag.py on flask main as of
+    2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and only
+    TaggedJSONSerializer.loads/_untag_scan; pr.diff has exactly the upstream commit's changed lines. Label is "no known defect",
+    not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

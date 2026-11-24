@@ -55,11 +55,16 @@ def excerpt(text: str, lines: list[int], path: str) -> str:
     imports = [n for n in tree.body if isinstance(n, (ast.Import, ast.ImportFrom))]
     body = [f"# Excerpt of {path} from an upstream project; code outside the functions below is omitted."]
     body += [line for n in imports for line in src[n.lineno - 1:n.end_lineno]] + [""]
+    prev_cls = None
     for start, end, cls in sorted({f for f in functions(tree) if any(f[0] <= x <= f[1] for x in lines)}):
-        body += ["", ""]
-        if cls:
-            body += [f"class {cls}:", "    # [... omitted ...]", ""]
+        if cls and cls == prev_cls:  # another method of the same class: one header for all of them
+            body += [""]
+        else:
+            body += ["", ""]
+            if cls:
+                body += [f"class {cls}:", "    # [... omitted ...]", ""]
         body += src[start - 1:end]
+        prev_cls = cls
     return "\n".join(body) + "\n"
 
 

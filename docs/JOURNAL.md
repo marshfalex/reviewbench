@@ -321,3 +321,13 @@ Append-only. One short entry per working session: what was done, what was learne
   the scheduled job fails visibly instead of silently mixing models (RISKS §6).
 - All four current v0.1 files have exactly one served id each, so nothing existing trips it.
 - Next: upstream controls from projects other than click.
+
+## 2026-11-24 — five upstream controls from Flask and Jinja2
+- py-0044..0046 (Flask 700fc7d9, 5050a18a, b10b6d4a) and py-0047/48 (Jinja2 051df10c, e8da6267).
+- Skipped security fixes and anything in the same file as one, so no control sits next to a CVE
+  case. Added that rule to the roadmap.
+- Fixed `scripts/upstream_excerpt.py`: when a commit touches two methods of one class it emitted
+  two class headers, so the diff gained a fake `class` line. Same-class methods now share one
+  header; the excerpt check (+/- lines identical to upstream) caught it, and the click cases
+  re-excerpt identically.
+- Controls: 17 of 36.

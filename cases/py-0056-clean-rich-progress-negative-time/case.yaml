@@ -1,0 +1,18 @@
+id: py-0056-clean-rich-progress-negative-time
+title: "rich: progress time columns no longer show negative times"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/Textualize/rich/commit/368e8ad77c95a6bef8f9d332039091d1417296bc
+  license: MIT
+  notes: Merged 2023-07. Every line the commit added is still present in rich/progress.py on upstream main as
+    of 2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and the
+    changed functions; pr.diff has exactly the upstream commit's changed lines. Label is "no known
+    defect", not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

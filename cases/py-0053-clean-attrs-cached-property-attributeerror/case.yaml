@@ -1,0 +1,18 @@
+id: py-0053-clean-attrs-cached-property-attributeerror
+title: "attrs: let AttributeError raised inside a cached_property propagate in slotted classes"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/python-attrs/attrs/commit/88e2896ca9351cd48711bd320571a832ae122cd5
+  license: MIT
+  notes: Merged 2024-04. Every line the commit added is still present in src/attr/_make.py on upstream main as
+    of 2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and the
+    changed functions; pr.diff has exactly the upstream commit's changed lines. Label is "no known
+    defect", not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

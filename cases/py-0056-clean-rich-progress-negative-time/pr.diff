@@ -1,0 +1,36 @@
+diff --git a/rich/progress.py b/rich/progress.py
+--- a/rich/progress.py
++++ b/rich/progress.py
+@@ -47,7 +47,6 @@ from .text import Text, TextType
+ 
+ 
+ if __name__ == "__main__":  # pragma: no coverage
+-
+     import random
+     import time
+ 
+@@ -100,7 +99,6 @@ if __name__ == "__main__":  # pragma: no coverage
+         console=console,
+         transient=False,
+     ) as progress:
+-
+         task1 = progress.add_task("[red]Downloading", total=1000)
+         task2 = progress.add_task("[green]Processing", total=1000)
+         task3 = progress.add_task("[yellow]Thinking", total=None)
+@@ -121,7 +119,7 @@ class TimeElapsedColumn:
+         elapsed = task.finished_time if task.finished else task.elapsed
+         if elapsed is None:
+             return Text("-:--:--", style="progress.elapsed")
+-        delta = timedelta(seconds=int(elapsed))
++        delta = timedelta(seconds=max(0, int(elapsed)))
+         return Text(str(delta), style="progress.elapsed")
+ 
+ 
+@@ -139,7 +137,6 @@ class TaskProgressColumn:
+         table_column: Optional[Column] = None,
+         show_speed: bool = False,
+     ) -> None:
+-
+         self.text_format_no_percentage = text_format_no_percentage
+         self.show_speed = show_speed
+         super().__init__(

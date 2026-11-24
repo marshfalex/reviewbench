@@ -105,7 +105,9 @@ def _pr(d: dict, by_bug) -> str:
     if not d["n"] or by_bug is None:
         return _r(d)
     rate, lo, hi, n = by_bug
-    return f"{d['hits']}/{d['n']} runs ({rate:.0%}; 95% CI {lo:.0f}–{hi:.0f} over {n} bugs)"
+    # The % is the mean of per-bug catch rates, which matches hits/n only when every bug has the
+    # same number of usable runs; label it so nobody divides the run counts and gets another number.
+    return f"{d['hits']}/{d['n']} runs; per-bug mean {rate:.0%} (95% CI {lo:.0f}–{hi:.0f}, {n} bugs)"
 
 
 def _r(d: dict) -> str:

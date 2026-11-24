@@ -13,6 +13,23 @@ from reviewbench.adapters.base import OUTPUT_SCHEMA, SYSTEM_PROMPT, Reviewer, Re
 MAX_RETRY_WAIT_S = 1200
 
 
+def _retry_after_seconds(value: str | None, default: float) -> float:
+    """Retry-After is either delta-seconds or an HTTP date (RFC 9110 §10.2.3)."""
+    if not value:
+        return default
+    try:
+        return max(0.0, float(value))
+    except ValueError:
+        pass
+    try:
+        import datetime as dt
+        from email.utils import parsedate_to_datetime
+        when = parsedate_to_datetime(value)
+        return max(0.0, (when - dt.datetime.now(when.tzinfo or dt.timezone.utc)).total_seconds())
+    except (TypeError, ValueError, IndexError):
+        return default
+
+
 class OpenAICompatReviewer(Reviewer):
     url: str = ""
     key_env: str | None = None
@@ -43,9 +60,17 @@ class OpenAICompatReviewer(Reviewer):
         }
         headers = self._headers()
         for attempt in range(self.retries):
-            r = requests.post(self.url, headers=headers, json=payload, timeout=300)
+            try:
+                r = requests.post(self.url, headers=headers, json=payload, timeout=300)
+            except requests.RequestException as e:  # connection, timeout, SSL, dropped mid-body...
+                # The network, not the model: retry, then record as retryable so resume redoes it
+                # (a generic exception would count as a finished review and shrink n silently).
+                if attempt < self.retries - 1:
+                    time.sleep(10 * (attempt + 1))
+                    continue
+                return ReviewResult("", [], error=f"transient: {type(e).__name__}")
             if r.status_code == 429:  # free-tier rate limit
-                wait = float(r.headers.get("retry-after", 10 * (attempt + 1)))
+                wait = _retry_after_seconds(r.headers.get("retry-after"), 10 * (attempt + 1))
                 # A long retry-after means a daily quota, not a per-minute burst: waiting it out
                 # would burn the job's time limit and lose the run. Record it and move on.
                 if wait > MAX_RETRY_WAIT_S:
@@ -67,7 +92,13 @@ class OpenAICompatReviewer(Reviewer):
             if r.status_code == 413:  # bigger than this tier allows, despite our budget
                 return ReviewResult("", [], error="too_large: HTTP 413")
             r.raise_for_status()
-            body = r.json()
+            try:
+                body = r.json()
+            except ValueError:  # truncated or non-JSON body on a 2xx: the transport, not the model
+                if attempt < self.retries - 1:
+                    time.sleep(10 * (attempt + 1))
+                    continue
+                return ReviewResult("", [], error="transient: unreadable response body")
             try:
                 summary, findings = parse_review(body["choices"][0]["message"]["content"])
             except (json.JSONDecodeError, KeyError, IndexError, TypeError) as e:

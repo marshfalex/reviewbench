@@ -2,7 +2,7 @@
 
 An honest list, most serious first. Each item says what it breaks, where it stands, and what fixes
 it. Sessions should treat these as standing priorities, and the findings report must repeat any
-that still apply. Last reviewed 2026-11-23.
+that still apply. Last reviewed 2026-11-24.
 
 ## 1. Precision is unmeasured
 **Breaks:** every precision number and the noise flag's control-FPR half.
@@ -26,7 +26,7 @@ differences whose intervals don't overlap, and say so.
 **Breaks:** external validity: planted bugs may be "LLM-shaped" (textbook, well-commented,
 small) and easier for LLMs than real bugs. Also a conflict of interest: Claude wrote the synthetic
 cases since py-0028, so evaluating Claude models on them would be self-grading.
-**Status:** 9 of 38 cases are real CVEs (4 of them held back for v0.2); 2 are real upstream controls; the rest are synthetic.
+**Status:** of 62 cases, 13 are real CVEs (8 held for v0.2) and 22 are real upstream controls (all v0.2); 27 are synthetic. v0.1 itself is 22 synthetic + 5 CVE.
 **Fix:** shift the mix toward real bugs (CVE fixes, upstream postmortems, reverted commits). The
 leaderboard reports synthetic and real cases separately (since 2026-11-24). First signal: groq
 gpt-oss-120b catches 94% of synthetic bugs but 47% of real ones at L0 (5 real bugs; partly matcher

@@ -431,7 +431,7 @@ def test_per_run_interval_counts_bugs_not_runs(tmp_path):
     rate, lo, hi, n = per_run_by_bug(doc, "L0")
     assert (rate, n) == (1.0, 1)  # 3 identical runs of one bug are one observation, not three
     assert (lo, hi) == wilson_interval(1, 1) and lo < wilson_interval(3, 3)[0]
-    assert "3/3 runs (100%; 95% CI 21–100 over 1 bugs)" in leaderboard(tmp_path)
+    assert "3/3 runs; per-bug mean 100% (95% CI 21–100, 1 bugs)" in leaderboard(tmp_path)
 
 
 def test_resume_refuses_when_served_model_changes(tmp_path):
@@ -476,3 +476,59 @@ def test_origin_table_splits_real_and_synthetic(tmp_path):
     row = next(line for line in leaderboard(tmp_path).split("### Per-run recall by case origin")[1]
                .splitlines() if "`m`" in line)
     assert "| 100% (95% CI 21–100, 1 bugs) | 0% (95% CI 0–79, 1 bugs) |" in row
+
+
+def test_network_errors_are_retried_then_recorded_as_retryable(monkeypatch):
+    import requests
+
+    from reviewbench.adapters import openai_compat
+    from reviewbench.runner import retryable
+
+    def boom(*a, **k):
+        raise requests.ConnectionError("reset by peer")
+
+    monkeypatch.setattr(openai_compat.time, "sleep", lambda s: None)
+    monkeypatch.setattr(requests, "post", boom)
+    monkeypatch.setenv("GROQ_API_KEY", "gsk_test")
+    result = openai_compat.GroqReviewer()._review("prompt")
+    assert result.error == "transient: ConnectionError" and retryable(result.error)
+
+
+def test_retry_after_accepts_http_dates():
+    import datetime as dt
+    from email.utils import format_datetime
+
+    from reviewbench.adapters.openai_compat import _retry_after_seconds
+
+    assert _retry_after_seconds("120", 5) == 120
+    assert _retry_after_seconds(None, 5) == 5 and _retry_after_seconds("garbage", 5) == 5
+    soon = format_datetime(dt.datetime.now(dt.timezone.utc) + dt.timedelta(seconds=90), usegmt=True)
+    assert 80 <= _retry_after_seconds(soon, 5) <= 91
+
+
+def test_mid_body_drops_and_garbled_bodies_are_retryable(monkeypatch):
+    import requests
+
+    from reviewbench.adapters import openai_compat
+    from reviewbench.runner import retryable
+
+    monkeypatch.setattr(openai_compat.time, "sleep", lambda s: None)
+    monkeypatch.setenv("GROQ_API_KEY", "gsk_test")
+    for exc in (requests.exceptions.ChunkedEncodingError("cut"), requests.Timeout("slow")):
+        def boom(*a, _e=exc, **k):
+            raise _e
+        monkeypatch.setattr(requests, "post", boom)
+        assert retryable(openai_compat.GroqReviewer()._review("p").error)
+
+    class Garbled:
+        status_code, headers, text = 200, {}, "<html>gateway</html>"
+
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            raise ValueError("not json")
+
+    monkeypatch.setattr(requests, "post", lambda *a, **k: Garbled())
+    result = openai_compat.GroqReviewer()._review("p")
+    assert result.error == "transient: unreadable response body" and retryable(result.error)

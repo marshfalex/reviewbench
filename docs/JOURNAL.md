@@ -382,3 +382,20 @@ Append-only. One short entry per working session: what was done, what was learne
   without independent review). From now on every PR is reviewed by a separate reviewer agent before
   it opens. This batch: all 5 PASS (diff applies, excerpt coherent, no defect introduced). A full
   audit of the PRs merged on 2026-11-23/24 is running; its findings get fixed in follow-up PRs.
+
+## 2026-11-24 — fixes from the independent audit
+- Audited today's merged PRs with a separate reviewer agent. Confirmed and fixed here:
+  - Network failures (timeouts, resets, dropped mid-body, garbled 2xx bodies) were recorded as
+    generic exceptions, which resume treats as done, so n shrank silently. They're now retried, then
+    recorded as `transient:` (retryable). Retry-After as an HTTP date no longer crashes.
+  - The per-run recall cell put run counts next to the per-bug mean ("51/68 runs (74%)", but
+    51/68 = 75%). Now labelled "per-bug mean"; the findings report explains it.
+  - Stale RISKS §3 counts and a findings line saying gemini/nemotron weren't re-running.
+- The pre-PR review of this very fix found a gap (ChunkedEncodingError and bad JSON bodies still
+  escaped). Fixed before opening the PR. That's the case for keeping the second reviewer.
+- Not fixed here (needs the owner): the automerge gate only protects .github/, pyproject,
+  BENCH_VERSION, the prompt/schema and scoring.py; report.py, stats.py, runner.py, adapters,
+  cases/ and docs merge unreviewed, and CLAUDE.md still says the owner merges. Proposed a wider gate
+  in a separate `needs-owner` PR.
+- Suspected, not acted on: OpenRouter may report varying `model` ids across routes, which would trip
+  the served-model check. Current files show one id each; watch the next runs.

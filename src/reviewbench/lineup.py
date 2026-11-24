@@ -9,6 +9,7 @@ import yaml
 
 from reviewbench import BENCH_VERSION
 from reviewbench.adapters import ADAPTERS
+from reviewbench.runner import has_retryable
 
 EXCLUDE = ("preview", "exp", "lite", "tts", "image", "audio", "live", "embed", "vision", "guard")
 
@@ -31,7 +32,9 @@ def list_models(provider: str) -> list[str]:
     return [m["id"] for m in r.json().get("data", [])]
 
 
-def completed(results_dir: Path, provider: str, model: str, k: int, levels: list[str]) -> bool:
+def completed(results_dir: Path, provider: str, model: str, k: int, levels: list[str],
+              case_ids: set[str] | None = None) -> bool:
+    """A complete results file exists for these settings and covers every case in case_ids."""
     for path in results_dir.glob("*.json"):
         if path.name.endswith(".adjudications.json"):
             continue
@@ -39,14 +42,16 @@ def completed(results_dir: Path, provider: str, model: str, k: int, levels: list
             doc = json.loads(path.read_text())
         except (OSError, json.JSONDecodeError):
             continue
-        if (doc.get("status") == "complete" and doc.get("bench_version") == BENCH_VERSION
+        if (doc.get("status") == "complete" and not has_retryable(doc) and doc.get("bench_version") == BENCH_VERSION
                 and doc.get("provider") == provider and doc.get("model") == model
-                and doc.get("k") == k and doc.get("levels") == levels):
+                and doc.get("k") == k and doc.get("levels") == levels
+                and not (case_ids or set()) - set(doc.get("cases") or {})):
             return True
     return False
 
 
-def plan(lineup_path: Path, results_dir: Path, lister=list_models, log=print) -> list[dict]:
+def plan(lineup_path: Path, results_dir: Path, lister=list_models, log=print,
+         case_ids: set[str] | None = None) -> list[dict]:
     """Entries to run now: provider key present, model resolved, not yet complete."""
     cfg = yaml.safe_load(lineup_path.read_text())
     k, levels = int(cfg.get("k", 3)), [x.strip() for x in str(cfg.get("levels", "L0,L1,L2")).split(",")]
@@ -72,7 +77,7 @@ def plan(lineup_path: Path, results_dir: Path, lister=list_models, log=print) ->
                 continue
             log(f"{provider}: {model} -> {resolved}")
             model = resolved
-        if completed(results_dir, provider, model, k, levels):
+        if completed(results_dir, provider, model, k, levels, case_ids):
             log(f"skip {provider}/{model}: already complete")
             continue
         out.append({"provider": provider, "model": model, "k": str(k), "levels": ",".join(levels)})

@@ -12,7 +12,7 @@ from pathlib import Path
 import yaml
 
 DIFFICULTIES = {"easy", "hard"}
-SOURCE_KINDS = {"synthetic", "cve", "postmortem"}
+SOURCE_KINDS = {"synthetic", "cve", "postmortem", "upstream"}
 SEVERITIES = ["critical", "high", "medium", "low"]
 ID_RE = re.compile(r"^py-\d{4}-[a-z0-9-]+$")
 
@@ -52,6 +52,11 @@ class Case:
     dir: Path
     split: str = "public"  # "public" or "heldout"
     raw: dict = field(default_factory=dict, repr=False)
+
+    @property
+    def since(self) -> str:
+        """First benchmark version that includes this case (case.yaml `since`, default "0.1")."""
+        return str(self.raw.get("since", "0.1"))
 
     @property
     def is_control(self) -> bool:
@@ -130,6 +135,10 @@ def validate_case(case: Case) -> list[str]:
         errs.append("language must be 'python' in v0.1")
     if case.difficulty not in DIFFICULTIES:
         errs.append(f"difficulty must be one of {sorted(DIFFICULTIES)}")
+    try:
+        _ver(case.since)
+    except ValueError:
+        errs.append(f"since must look like '0.2', got {case.since!r}")
     if case.source.get("kind") not in SOURCE_KINDS:
         errs.append(f"source.kind must be one of {sorted(SOURCE_KINDS)}")
     for key in ("ref", "license"):
@@ -159,6 +168,18 @@ def validate_case(case: Case) -> list[str]:
         if not k.match.strip():
             errs.append("known_issues entries need a non-empty match")
     return errs
+
+
+def _ver(v: str) -> tuple[int, ...]:
+    return tuple(int(x) for x in v.split("."))
+
+
+def active(cases: list[Case], version: str | None = None) -> list[Case]:
+    """Cases that belong to this benchmark version: a case added for a later version (its
+    `since` is newer) is held back, so new cases never leak into a frozen version's runs."""
+    from reviewbench import BENCH_VERSION
+    v = _ver(version or BENCH_VERSION)
+    return [c for c in cases if _ver(c.since) <= v]
 
 
 def discover(*dirs: tuple[Path, str]) -> list[Case]:

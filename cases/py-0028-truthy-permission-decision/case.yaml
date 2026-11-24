@@ -1,0 +1,22 @@
+id: py-0028-truthy-permission-decision
+title: Permission check tests a Decision object instead of its .allowed flag
+language: python
+difficulty: hard
+since: "0.2"
+tags: [authz, cross-file]
+source:
+  kind: synthetic
+  ref: reviewbench v0.2 cross-file proof of concept
+  license: MIT
+bugs:
+- file: app/docs.py
+  lines: [15, 16]
+  class: authz_bypass_truthy_result
+  cwe: CWE-863
+  severity: high
+  description: permissions.can_edit returns a Decision dataclass, which is always truthy, so
+    `not can_edit(...)` is never true and anyone can edit any document. Must check `.allowed`.
+    Only visible with app/permissions.py.
+context:
+  related: [app/permissions.py]
+known_issues: []

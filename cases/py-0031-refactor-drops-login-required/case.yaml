@@ -1,0 +1,23 @@
+id: py-0031-refactor-drops-login-required
+title: Typing refactor of 12 views silently drops @login_required from delete_project
+language: python
+difficulty: hard
+since: "0.2"
+tags: [authz, noisy-diff, refactor]
+source:
+  kind: synthetic
+  ref: reviewbench v0.2 noisy-diff proof of concept
+  license: MIT
+bugs:
+- file: app/views.py
+  lines: [85, 89]
+  class: missing_auth_decorator
+  cwe: CWE-306
+  severity: critical
+  description: In a mechanical refactor (type hints, docstrings, json_response) every view keeps
+    @login_required except delete_project. The store does no access checks (it relies on the
+    decorator), so an anonymous request can delete any project by id. The new module docstring
+    even claims every view requires a signed-in user.
+context:
+  related: [app/auth.py, app/store.py]
+known_issues: []

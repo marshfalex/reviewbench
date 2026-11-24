@@ -1,0 +1,19 @@
+diff --git a/src/click/core.py b/src/click/core.py
+index 4be46d6..91ef779 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -23,9 +23,13 @@ class BaseCommand:
+         :param complete_var: Name of the environment variable that holds
+             the completion instruction. Defaults to
+             ``_{PROG_NAME}_COMPLETE``.
++
++        .. versionchanged:: 8.2.0
++            Dots (``.``) in ``prog_name`` are replaced with underscores (``_``).
+         """
+         if complete_var is None:
+-            complete_var = f"_{prog_name}_COMPLETE".replace("-", "_").upper()
++            complete_name = prog_name.replace("-", "_").replace(".", "_")
++            complete_var = f"_{complete_name}_COMPLETE".upper()
+ 
+         instruction = os.environ.get(complete_var)
+ 

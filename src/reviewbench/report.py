@@ -7,7 +7,58 @@ from pathlib import Path
 
 from reviewbench.adjudicate import load_verdicts
 from reviewbench.heldout import all_slices, leaks
-from reviewbench.scoring import per_case_table
+from reviewbench.runner import retryable
+from reviewbench.scoring import COUNTED, per_case_table, score
+
+# SPEC §10 noise flag: control FPR point estimate above this, or more counted findings per review.
+NOISE_FPR = 0.20
+NOISE_FINDINGS_PER_REVIEW = 3.0
+
+
+# RISKS §1: a precision rate is only shown once this share of the findings that need a human
+# verdict (everything that isn't a planted-bug hit or a known issue) actually has one.
+MIN_JUDGED_SHARE = 0.80
+
+
+def judged_counts(doc: dict, verdicts: dict, level: str, split: str = "public",
+                  controls_only: bool = False) -> tuple[int, int]:
+    """(judged, unjudged) counted findings that needed a verdict, for one level and split."""
+    labels = score(doc, verdicts)["labels"]
+    judged = unjudged = 0
+    for r in doc["records"]:
+        t = doc["cases"].get(r["case"], {})
+        if r["level"] != level or r.get("error") or t.get("split", "public") != split:
+            continue
+        if controls_only and t.get("bugs"):
+            continue
+        for f in r["findings"]:
+            lab = labels.get(f["id"])
+            judged += lab in ("valid", "invalid")
+            unjudged += lab == "unadjudicated"
+    return judged, unjudged
+
+
+def precision_cell(prec: dict, judged: int, unjudged: int) -> str:
+    need = judged + unjudged
+    if need and judged / need < MIN_JUDGED_SHARE:
+        return f"not measured ({unjudged} of {need} unjudged)"
+    return _r(prec)
+
+
+def noise_reasons(doc: dict, level: str, ctrl: dict, ctrl_unjudged: int = 0) -> list[str]:
+    """Why a reviewer is flagged noisy at this level (empty = not flagged). With unjudged
+    control findings the confirmed FPR is only a lower bound, so it is shown as one."""
+    reasons = []
+    if ctrl["n"] and ctrl["hits"] / ctrl["n"] > NOISE_FPR:
+        bound = f" (≥; {ctrl_unjudged} control findings unjudged)" if ctrl_unjudged else ""
+        reasons.append(f"control FPR {ctrl['hits'] / ctrl['n']:.0%}{bound}")
+    runs = [r for r in doc["records"] if r["level"] == level and not r.get("error")
+            and doc["cases"].get(r["case"], {}).get("split", "public") == "public"]
+    if runs:
+        per = sum(1 for r in runs for f in r["findings"] if f["severity"] in COUNTED) / len(runs)
+        if per > NOISE_FINDINGS_PER_REVIEW:
+            reasons.append(f"{per:.1f} findings/review")
+    return reasons
 
 
 def _r(d: dict) -> str:
@@ -36,8 +87,11 @@ def run_report(results: dict, verdicts: dict) -> str:
         for k in keys:
             _, level, diff = k.split("/")
             m = s[k]
+            j, u = judged_counts(results, verdicts, level, split) if split == "public" \
+                else (0, m["unadjudicated_findings"])
+            prec = precision_cell(m["precision_adjudicated"], j, u)
             out.append(f"| {level} | {diff} | {_r(m['any_of_k'])} | {_r(m['all_of_k'])} | "
-                       f"{_r(m['per_run_recall'])} | {_r(m['precision_adjudicated'])} | "
+                       f"{_r(m['per_run_recall'])} | {prec} | "
                        f"{_r(m['control_runs_with_confirmed_fp'])} | {m['unadjudicated_findings']} | "
                        f"{m['errored_runs']} |")
         out.append("")
@@ -76,15 +130,38 @@ def leaderboard(results_dir: Path) -> str:
                     if not a:
                         continue
                     hard = (_r(h["any_of_k"]) + " / " + _r(h["all_of_k"])) if h else "n/a"
-                    status = "" if doc["status"] == "complete" else " (partial)"
-                    rows.append(f"| {doc['provider']} / `{doc['model']}`{status} | {level} | {doc['k']} | "
-                                f"{_r(a['any_of_k'])} | {_r(a['all_of_k'])} | {hard} | "
-                                f"{_r(a['precision_adjudicated'])} | {_r(a['control_runs_with_confirmed_fp'])} | "
-                                f"{a['unadjudicated_findings']} | [{p.stem}]({p.name}) |")
+                    # Status alone isn't enough: files written before retryable errors were tracked
+                    # say "complete" while most reviews failed. Name the gap so 6/6 can't pass as done.
+                    failed = sum(1 for r in doc["records"] if r["level"] == level and retryable(r.get("error")))
+                    status = "" if doc["status"] == "complete" and not failed else " (partial)"
+                    if failed:
+                        status += f" ({failed} reviews failed, to retry)"
+                    verdicts = load_verdicts(p)
+                    j, u = judged_counts(doc, verdicts, level, split) if split == "public" else (0, 1)
+                    prec = precision_cell(a["precision_adjudicated"], j, u)
+                    _, cu = judged_counts(doc, verdicts, level, split, controls_only=True) \
+                        if split == "public" else (0, 0)
+                    noisy = noise_reasons(doc, level, a["control_runs_with_confirmed_fp"], cu) \
+                        if split == "public" else []
+                    flag = f" ⚠ noisy: {', '.join(noisy)}" if noisy else ""
+                    pr = a["per_run_recall"]
+                    # Unfinished results go last: 12/12 on a sliver of the cases must not outrank a full run.
+                    sort_key = (level, bool(status), -(pr["rate"] if pr["n"] else -1), doc["provider"], doc["model"])
+                    rows.append((sort_key,
+                                 f"| {doc['provider']} / `{doc['model']}`{status}{flag} | {level} | {doc['k']} | "
+                                 f"**{_r(pr)}** | {_r(a['any_of_k'])} | {_r(a['all_of_k'])} | {hard} | "
+                                 f"{prec} | {_r(a['control_runs_with_confirmed_fp'])} | "
+                                 f"{a['unadjudicated_findings']} | [{p.stem}]({p.name}) |"))
             if not rows:
                 continue
             out += [f"## v{version} — {split} cases", "",
-                    "| reviewer | context | k | recall any-of-k | recall all-of-k | hard: any / all | "
-                    "precision | control runs w/ FP | unadj. | results |",
-                    "|---|---|---|---|---|---|---|---|---|---|", *rows, ""]
+                    f"Precision is shown only once {MIN_JUDGED_SHARE:.0%} of the findings needing a human verdict "
+                    "have one; control runs w/ FP counts confirmed false positives only (a lower bound "
+                    "while control findings are unjudged). "
+                    "Sorted by per-run recall within each context level, unfinished results last. "
+                    "⚠ noisy = control false-positive "
+                    f"rate over {NOISE_FPR:.0%} or more than {NOISE_FINDINGS_PER_REVIEW:g} findings per review.", "",
+                    "| reviewer | context | k | **per-run recall** | recall any-of-k | recall all-of-k | "
+                    "hard: any / all | precision | control runs w/ FP | unadj. | results |",
+                    "|---|---|---|---|---|---|---|---|---|---|---|", *[r for _, r in sorted(rows)], ""]
     return "\n".join(out) + "\n"

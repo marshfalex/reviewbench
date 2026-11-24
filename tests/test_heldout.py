@@ -207,10 +207,16 @@ def test_heldout_allowed_rules(tmp_path):
     assert not heldout_allowed("groq", "openai/gpt-oss-120b", p)
 
 
-def test_repo_lineup_approves_only_groq():
+def test_repo_lineup_approves_only_providers_cleared_in_docs():
+    """A held-out approval in lineup.yaml needs a **yes** row in docs/providers.md (SPEC §10)."""
     from reviewbench.heldout import heldout_allowed
     cfg = yaml.safe_load((ROOT / "lineup.yaml").read_text())
     lineup = ROOT / "lineup.yaml"
-    approved = [e["provider"] for e in cfg["models"]
-                if heldout_allowed(e["provider"], str(e["model"]).replace("auto:", ""), lineup)]
-    assert approved == ["groq"]
+    approved = {e["provider"] for e in cfg["models"]
+                if heldout_allowed(e["provider"], str(e["model"]).replace("auto:", ""), lineup)}
+    cleared = set()
+    for row in (ROOT / "docs" / "providers.md").read_text().splitlines():
+        cells = [c.strip() for c in row.strip().strip("|").split("|")]
+        if row.startswith("|") and len(cells) >= 4 and cells[3].startswith("**yes**"):
+            cleared.add(cells[0].split(" (")[0].lower())
+    assert approved <= cleared, f"approved without a cleared row in docs/providers.md: {approved - cleared}"

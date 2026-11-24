@@ -1,0 +1,2 @@
+SESSION_TTL_SECONDS = 60 * 60 * 8  # a working day
+RESET_TOKEN_TTL_SECONDS = 15 * 60

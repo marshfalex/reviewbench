@@ -10,7 +10,7 @@ from pathlib import Path
 from reviewbench import BENCH_VERSION
 from reviewbench.adapters import ADAPTERS, get_adapter
 from reviewbench.adjudicate import apply_rules, interactive, load_rules, load_verdicts, save_verdicts
-from reviewbench.cases import discover, validate_case
+from reviewbench.cases import active, discover, validate_case
 from reviewbench.context import LEVELS
 from reviewbench.heldout import attach_summary, heldout_allowed, heldout_dir, leaks, raw_path, redacting_log
 from reviewbench.report import leaderboard, run_report
@@ -25,6 +25,8 @@ def _cases(args):
     if held:
         dirs.append((held, "heldout"))
     cases = discover(*dirs)
+    if getattr(args, "cmd", None) != "validate":  # validate checks every case, future ones too
+        cases = active(cases)
     if args.only:
         wanted = set(args.only.split(","))
         cases = [c for c in cases if c.id in wanted]
@@ -86,7 +88,8 @@ def cmd_run(args) -> int:
         return 2
     out = Path(args.out) if args.out else None
     if out is None and args.resume:
-        out = find_resumable(Path(args.results_dir), reviewer.provider, reviewer.model, args.k, levels)
+        out = find_resumable(Path(args.results_dir), reviewer.provider, reviewer.model, args.k, levels,
+                             {c.id for c in cases if c.split == "public"})
     if out is None:
         out = results_path(Path(args.results_dir), reviewer.provider, reviewer.model)
     public = [c for c in cases if c.split == "public"]
@@ -140,6 +143,27 @@ def cmd_adjudicate(args) -> int:
     return 0
 
 
+def cmd_adjudicate_blind(args) -> int:
+    from reviewbench.adjudicate import interactive_blind
+    paths = [Path(p) for p in args.results]
+    judged = interactive_blind(paths, rater=args.rater, seed=args.seed)
+    if args.rater == "primary":
+        for p in paths:
+            p.with_suffix(".md").write_text(run_report(json.loads(p.read_text()), load_verdicts(p)))
+    print(f"{judged} judged blind as the {args.rater} rater", file=sys.stderr)
+    return 0
+
+
+def cmd_agreement(args) -> int:
+    from reviewbench.adjudicate import agreement
+    a = agreement([Path(p) for p in args.results])
+    if not a["n"]:
+        print("no findings judged by both raters yet")
+        return 0
+    print(f"second rater agreed on {a['agree']}/{a['n']} findings; Cohen's kappa = {a['kappa']:.2f}")
+    return 0
+
+
 def cmd_report(args) -> int:
     path = Path(args.results)
     print(run_report(json.loads(path.read_text()), load_verdicts(path)))
@@ -156,7 +180,9 @@ def cmd_leaderboard(args) -> int:
 def cmd_lineup(args) -> int:
     from reviewbench.lineup import plan
 
-    entries = plan(Path(args.lineup), Path(args.results_dir), log=lambda m: print(m, file=sys.stderr))
+    public = {c.id for c in active(discover((Path(args.cases), "public")))}
+    entries = plan(Path(args.lineup), Path(args.results_dir), log=lambda m: print(m, file=sys.stderr),
+                   case_ids=public)
     print(json.dumps(entries))
     return 0
 
@@ -206,11 +232,22 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--rules", default="adjudications/rules.yaml")
     p.add_argument("--rules-only", action="store_true", help="apply rules, ask nothing (for CI)")
     p.set_defaults(fn=cmd_adjudicate)
+    p = sub.add_parser("adjudicate-blind",
+                       help="judge findings pooled from several results files with the model hidden")
+    p.add_argument("results", nargs="+")
+    p.add_argument("--rater", choices=["primary", "second"], default="primary",
+                   help="second: re-judge a fixed 20%% sample of primary verdicts for agreement")
+    p.add_argument("--seed", type=int, default=0, help="shuffle seed")
+    p.set_defaults(fn=cmd_adjudicate_blind)
+    p = sub.add_parser("agreement", help="Cohen's kappa between the primary and second rater")
+    p.add_argument("results", nargs="+")
+    p.set_defaults(fn=cmd_agreement)
     p = sub.add_parser("report", help="print the markdown report for one results file")
     p.add_argument("results")
     p.set_defaults(fn=cmd_report)
     p = sub.add_parser("lineup", help="print (JSON) the lineup entries to run now: key set, not complete")
     p.add_argument("--lineup", default="lineup.yaml")
+    p.add_argument("--cases", default="cases")
     p.add_argument("--results-dir", default="results")
     p.set_defaults(fn=cmd_lineup)
     p = sub.add_parser("leaderboard", help="regenerate results/LEADERBOARD.md")

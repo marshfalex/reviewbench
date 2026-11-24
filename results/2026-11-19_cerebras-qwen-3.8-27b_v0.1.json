@@ -515,6 +515,145 @@
    ],
    "bugs": [],
    "known_issues": []
+  },
+  "py-0023-requests-auth-https-downgrade": {
+   "title": "Authorization header kept on an https-to-http redirect to the same host",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "credentials",
+    "http",
+    "redirect",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "requests/sessions.py",
+     "lines": [
+      200,
+      201
+     ],
+     "class": "credential_leak_on_redirect",
+     "cwe": "CWE-522",
+     "severity": "high"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0024-urllib3-cookie-redirect": {
+   "title": "Cookie header is forwarded on cross-origin redirects",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "credentials",
+    "http",
+    "redirect",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "src/urllib3/util/retry.py",
+     "lines": [
+      190,
+      190
+     ],
+     "class": "credential_leak_on_redirect",
+     "cwe": "CWE-200",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0025-jinja2-xmlattr-key-injection": {
+   "title": "xmlattr filter accepts attribute keys containing spaces",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "security",
+    "xss",
+    "templating",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "src/jinja2/filters.py",
+     "lines": [
+      88,
+      92
+     ],
+     "class": "attribute_injection",
+     "cwe": "CWE-79",
+     "severity": "medium"
+    }
+   ],
+   "known_issues": []
+  },
+  "py-0026-aiohttp-static-symlink-traversal": {
+   "title": "Static file route skips the path containment check when follow_symlinks is on",
+   "difficulty": "hard",
+   "split": "public",
+   "tags": [
+    "security",
+    "path-traversal",
+    "web",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "aiohttp/web_urldispatcher.py",
+     "lines": [
+      188,
+      190
+     ],
+     "class": "path_traversal",
+     "cwe": "CWE-22",
+     "severity": "high"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "traversal",
+     "file": "aiohttp/web_urldispatcher.py",
+     "note": "the same missing check in url_for(append_version=True), lines 122-124"
+    }
+   ]
+  },
+  "py-0027-gitpython-clone-ext-protocol-rce": {
+   "title": "Repo.clone/clone_from no longer refuse ext:: URLs and protocol/upload-pack options",
+   "difficulty": "easy",
+   "split": "public",
+   "tags": [
+    "security",
+    "command-injection",
+    "rce",
+    "cve"
+   ],
+   "bugs": [
+    {
+     "file": "git/repo/base.py",
+     "lines": [
+      236,
+      239
+     ],
+     "class": "command_injection",
+     "cwe": "CWE-94",
+     "severity": "critical"
+    }
+   ],
+   "known_issues": [
+    {
+     "match": "ext::",
+     "file": "git/repo/base.py",
+     "note": "the same unchecked URL in Repo.clone (line ~202)"
+    },
+    {
+     "match": "upload-pack",
+     "file": "git/repo/base.py",
+     "note": "the same unchecked options in Repo.clone (line ~202)"
+    }
+   ]
   }
  },
  "records": [
@@ -6157,6 +6296,1204 @@
      "explanation": "hmac.compare_digest only supports ASCII-only str values; a malformed signature containing non-ASCII characters raises TypeError instead of returning False. Compare bytes instead, e.g. hmac.compare_digest(expected.encode(), signature.encode())."
     }
    ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The change weakens credential handling on redirects by only checking hostname, allowing Authorization headers to be sent to the same host over a different port or scheme.",
+   "usage": {
+    "input_tokens": 717,
+    "output_tokens": 770,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L0/r0/f0",
+     "path": "requests/sessions.py",
+     "line": 200,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header may leak on same-host redirects to different port or scheme",
+     "explanation": "Removing the port and scheme checks means requests may forward the Authorization header when redirecting from https to http or to a different port on the same hostname. Restore the original comparison of hostname, port, and scheme before deleting the header."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The change weakens credential handling on redirects by only checking hostname, allowing Authorization headers to be sent to the same host over a different port or scheme.",
+   "usage": {
+    "input_tokens": 717,
+    "output_tokens": 770,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L0/r1/f0",
+     "path": "requests/sessions.py",
+     "line": 200,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header may leak on same-host redirects to different port or scheme",
+     "explanation": "Removing the port and scheme checks means requests may forward the Authorization header when redirecting from https to http or to a different port on the same hostname. Restore the original comparison of hostname, port, and scheme before deleting the header."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The change weakens credential handling on redirects by only checking hostname, allowing Authorization headers to be sent to the same host over a different port or scheme.",
+   "usage": {
+    "input_tokens": 717,
+    "output_tokens": 770,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L0/r2/f0",
+     "path": "requests/sessions.py",
+     "line": 200,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header may leak on same-host redirects to different port or scheme",
+     "explanation": "Removing the port and scheme checks means requests may forward the Authorization header when redirecting from https to http or to a different port on the same hostname. Restore the original comparison of hostname, port, and scheme before deleting the header."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The change weakens redirect credential handling by only stripping Authorization when the hostname changes, allowing credentials to leak when the redirect changes scheme or port.",
+   "usage": {
+    "input_tokens": 3091,
+    "output_tokens": 1401,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L1/r0/f0",
+     "path": "requests/sessions.py",
+     "line": 200,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header may leak on redirect to different port or scheme",
+     "explanation": "Removing the port and scheme checks means the Authorization header is retained when a redirect changes the scheme (e.g., https to http) or port, which can leak credentials. Restore the original checks for hostname, port, and scheme before deleting the Authorization header."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The change weakens redirect credential handling by only stripping Authorization when the hostname changes, allowing credentials to leak when the redirect changes scheme or port.",
+   "usage": {
+    "input_tokens": 3091,
+    "output_tokens": 1401,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L1/r1/f0",
+     "path": "requests/sessions.py",
+     "line": 200,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header may leak on redirect to different port or scheme",
+     "explanation": "Removing the port and scheme checks means the Authorization header is retained when a redirect changes the scheme (e.g., https to http) or port, which can leak credentials. Restore the original checks for hostname, port, and scheme before deleting the Authorization header."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The change weakens redirect credential handling by only stripping Authorization when the hostname changes, allowing credentials to leak when the redirect changes scheme or port.",
+   "usage": {
+    "input_tokens": 3091,
+    "output_tokens": 1401,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L1/r2/f0",
+     "path": "requests/sessions.py",
+     "line": 200,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header may leak on redirect to different port or scheme",
+     "explanation": "Removing the port and scheme checks means the Authorization header is retained when a redirect changes the scheme (e.g., https to http) or port, which can leak credentials. Restore the original checks for hostname, port, and scheme before deleting the Authorization header."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The change weakens redirect credential handling by only stripping Authorization when the hostname changes, allowing credentials to leak when the redirect changes scheme or port.",
+   "usage": {
+    "input_tokens": 3091,
+    "output_tokens": 1401,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L2/r0/f0",
+     "path": "requests/sessions.py",
+     "line": 200,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header may leak on redirect to different port or scheme",
+     "explanation": "Removing the port and scheme checks means the Authorization header is retained when a redirect changes the scheme (e.g., https to http) or port, which can leak credentials. Restore the original checks for hostname, port, and scheme before deleting the Authorization header."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The change weakens redirect credential handling by only stripping Authorization when the hostname changes, allowing credentials to leak when the redirect changes scheme or port.",
+   "usage": {
+    "input_tokens": 3091,
+    "output_tokens": 1401,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L2/r1/f0",
+     "path": "requests/sessions.py",
+     "line": 200,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header may leak on redirect to different port or scheme",
+     "explanation": "Removing the port and scheme checks means the Authorization header is retained when a redirect changes the scheme (e.g., https to http) or port, which can leak credentials. Restore the original checks for hostname, port, and scheme before deleting the Authorization header."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The change weakens redirect credential handling by only stripping Authorization when the hostname changes, allowing credentials to leak when the redirect changes scheme or port.",
+   "usage": {
+    "input_tokens": 3091,
+    "output_tokens": 1401,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L2/r2/f0",
+     "path": "requests/sessions.py",
+     "line": 200,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header may leak on redirect to different port or scheme",
+     "explanation": "Removing the port and scheme checks means the Authorization header is retained when a redirect changes the scheme (e.g., https to http) or port, which can leak credentials. Restore the original checks for hostname, port, and scheme before deleting the Authorization header."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The change removes Cookie from the default headers stripped on redirect, allowing cookie headers to be forwarded to redirect targets and potentially leaking session credentials.",
+   "usage": {
+    "input_tokens": 730,
+    "output_tokens": 1605,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L0/r0/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 190,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer removed on redirect by default",
+     "explanation": "Removing \"Cookie\" from DEFAULT_REMOVE_HEADERS_ON_REDIRECT means urllib3 may send the original request's Cookie header to a different host on redirect, leaking session or authentication data. Restore \"Cookie\" to the default set or explicitly strip Cookie for cross-host redirects."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The change removes Cookie from the default headers stripped on redirect, allowing cookie headers to be forwarded to redirect targets and potentially leaking session credentials.",
+   "usage": {
+    "input_tokens": 730,
+    "output_tokens": 1605,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L0/r1/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 190,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer removed on redirect by default",
+     "explanation": "Removing \"Cookie\" from DEFAULT_REMOVE_HEADERS_ON_REDIRECT means urllib3 may send the original request's Cookie header to a different host on redirect, leaking session or authentication data. Restore \"Cookie\" to the default set or explicitly strip Cookie for cross-host redirects."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The change removes Cookie from the default headers stripped on redirect, allowing cookie headers to be forwarded to redirect targets and potentially leaking session credentials.",
+   "usage": {
+    "input_tokens": 730,
+    "output_tokens": 1605,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L0/r2/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 190,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer removed on redirect by default",
+     "explanation": "Removing \"Cookie\" from DEFAULT_REMOVE_HEADERS_ON_REDIRECT means urllib3 may send the original request's Cookie header to a different host on redirect, leaking session or authentication data. Restore \"Cookie\" to the default set or explicitly strip Cookie for cross-host redirects."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The change removes Cookie from the default headers stripped on redirects, which can leak session cookies to redirect targets.",
+   "usage": {
+    "input_tokens": 5047,
+    "output_tokens": 10709,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L1/r0/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 190,
+     "category": "security",
+     "severity": "medium",
+     "title": "Default no longer strips Cookie on redirects",
+     "explanation": "Removing Cookie from DEFAULT_REMOVE_HEADERS_ON_REDIRECT means Cookie headers are forwarded by default when following redirects. If a request carries a session cookie and is redirected to a different origin, the cookie can be leaked. Keep Cookie in the default or make credential stripping host-aware."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The change removes Cookie from the default headers stripped on redirects, which can leak session cookies to redirect targets.",
+   "usage": {
+    "input_tokens": 5047,
+    "output_tokens": 10709,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L1/r1/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 190,
+     "category": "security",
+     "severity": "medium",
+     "title": "Default no longer strips Cookie on redirects",
+     "explanation": "Removing Cookie from DEFAULT_REMOVE_HEADERS_ON_REDIRECT means Cookie headers are forwarded by default when following redirects. If a request carries a session cookie and is redirected to a different origin, the cookie can be leaked. Keep Cookie in the default or make credential stripping host-aware."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The change removes Cookie from the default headers stripped on redirects, which can leak session cookies to redirect targets.",
+   "usage": {
+    "input_tokens": 5047,
+    "output_tokens": 10709,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L1/r2/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 190,
+     "category": "security",
+     "severity": "medium",
+     "title": "Default no longer strips Cookie on redirects",
+     "explanation": "Removing Cookie from DEFAULT_REMOVE_HEADERS_ON_REDIRECT means Cookie headers are forwarded by default when following redirects. If a request carries a session cookie and is redirected to a different origin, the cookie can be leaked. Keep Cookie in the default or make credential stripping host-aware."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The change removes Cookie from the default headers stripped on cross-host redirects, allowing Cookie headers to be forwarded to different hosts by default.",
+   "usage": {
+    "input_tokens": 5828,
+    "output_tokens": 2543,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L2/r0/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 190,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer stripped on cross-host redirects",
+     "explanation": "PoolManager.urlopen only removes headers listed in Retry.remove_headers_on_redirect when redirecting to a different host. Removing Cookie from DEFAULT_REMOVE_HEADERS_ON_REDIRECT means a Cookie header can be forwarded to another host, leaking credentials. Restore Cookie to the default set or explicitly require callers to strip it."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The change removes Cookie from the default headers stripped on cross-host redirects, allowing Cookie headers to be forwarded to different hosts by default.",
+   "usage": {
+    "input_tokens": 5828,
+    "output_tokens": 2543,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L2/r1/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 190,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer stripped on cross-host redirects",
+     "explanation": "PoolManager.urlopen only removes headers listed in Retry.remove_headers_on_redirect when redirecting to a different host. Removing Cookie from DEFAULT_REMOVE_HEADERS_ON_REDIRECT means a Cookie header can be forwarded to another host, leaking credentials. Restore Cookie to the default set or explicitly require callers to strip it."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The change removes Cookie from the default headers stripped on cross-host redirects, allowing Cookie headers to be forwarded to different hosts by default.",
+   "usage": {
+    "input_tokens": 5828,
+    "output_tokens": 2543,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L2/r2/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 190,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer stripped on cross-host redirects",
+     "explanation": "PoolManager.urlopen only removes headers listed in Retry.remove_headers_on_redirect when redirecting to a different host. Removing Cookie from DEFAULT_REMOVE_HEADERS_ON_REDIRECT means a Cookie header can be forwarded to another host, leaking credentials. Restore Cookie to the default set or explicitly require callers to strip it."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The change removes the whitespace validation for xmlattr keys. Since escape() does not escape spaces and HTML attribute names cannot contain spaces, untrusted keys can produce malformed HTML and inject additional attributes.",
+   "usage": {
+    "input_tokens": 1055,
+    "output_tokens": 6088,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L0/r0/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 89,
+     "category": "security",
+     "severity": "high",
+     "title": "xmlattr allows whitespace in keys, enabling attribute injection",
+     "explanation": "Keys are HTML-escaped but not whitespace-escaped, and HTML attribute names cannot contain spaces. A key such as 'foo onmouseover=alert(1) bar' can render as multiple attributes, allowing XSS if keys are user-controlled. Restore the previous check that rejects keys containing whitespace, or sanitize/normalize keys before emitting them."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The change removes the whitespace validation for xmlattr keys. Since escape() does not escape spaces and HTML attribute names cannot contain spaces, untrusted keys can produce malformed HTML and inject additional attributes.",
+   "usage": {
+    "input_tokens": 1055,
+    "output_tokens": 6088,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L0/r1/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 89,
+     "category": "security",
+     "severity": "high",
+     "title": "xmlattr allows whitespace in keys, enabling attribute injection",
+     "explanation": "Keys are HTML-escaped but not whitespace-escaped, and HTML attribute names cannot contain spaces. A key such as 'foo onmouseover=alert(1) bar' can render as multiple attributes, allowing XSS if keys are user-controlled. Restore the previous check that rejects keys containing whitespace, or sanitize/normalize keys before emitting them."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The change removes the whitespace validation for xmlattr keys. Since escape() does not escape spaces and HTML attribute names cannot contain spaces, untrusted keys can produce malformed HTML and inject additional attributes.",
+   "usage": {
+    "input_tokens": 1055,
+    "output_tokens": 6088,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L0/r2/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 89,
+     "category": "security",
+     "severity": "high",
+     "title": "xmlattr allows whitespace in keys, enabling attribute injection",
+     "explanation": "Keys are HTML-escaped but not whitespace-escaped, and HTML attribute names cannot contain spaces. A key such as 'foo onmouseover=alert(1) bar' can render as multiple attributes, allowing XSS if keys are user-controlled. Restore the previous check that rejects keys containing whitespace, or sanitize/normalize keys before emitting them."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes the space-in-key validation from `do_xmlattr`, which was a deliberate security fix added in Jinja 3.1.3. This reintroduces an HTML attribute injection vulnerability: a key containing a space (e.g. `\"class onmouseover=alert(1)\"`) passes through `escape()` unmodified (markupsafe does not escape spaces) and produces malformed HTML that a browser parses as multiple attributes, enabling XSS.",
+   "usage": {
+    "input_tokens": 1815,
+    "output_tokens": 2454,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L1/r0/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 87,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of space-in-key check reintroduces HTML attribute injection in do_xmlattr",
+     "explanation": "The old code raised `ValueError` when a key matched `\\s` (added in 3.1.3 specifically to prevent this). `markupsafe.escape` does not escape spaces, so a key like `\"class onmouseover=alert(1)\"` produces the output `class onmouseover=alert(1)=\"x\"`, which a browser parses as two attributes, injecting arbitrary HTML attributes (and thus XSS) into the rendered element. Fix: restore the space check before building the attribute string, e.g. `if re.search(r\"\\s\", key): raise ValueError(...)`, or at minimum reject/escape keys containing whitespace."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes the space-in-key validation from `do_xmlattr`, which was a deliberate security fix added in Jinja 3.1.3. This reintroduces an HTML attribute injection vulnerability: a key containing a space (e.g. `\"class onmouseover=alert(1)\"`) passes through `escape()` unmodified (markupsafe does not escape spaces) and produces malformed HTML that a browser parses as multiple attributes, enabling XSS.",
+   "usage": {
+    "input_tokens": 1815,
+    "output_tokens": 2454,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L1/r1/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 87,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of space-in-key check reintroduces HTML attribute injection in do_xmlattr",
+     "explanation": "The old code raised `ValueError` when a key matched `\\s` (added in 3.1.3 specifically to prevent this). `markupsafe.escape` does not escape spaces, so a key like `\"class onmouseover=alert(1)\"` produces the output `class onmouseover=alert(1)=\"x\"`, which a browser parses as two attributes, injecting arbitrary HTML attributes (and thus XSS) into the rendered element. Fix: restore the space check before building the attribute string, e.g. `if re.search(r\"\\s\", key): raise ValueError(...)`, or at minimum reject/escape keys containing whitespace."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes the space-in-key validation from `do_xmlattr`, which was a deliberate security fix added in Jinja 3.1.3. This reintroduces an HTML attribute injection vulnerability: a key containing a space (e.g. `\"class onmouseover=alert(1)\"`) passes through `escape()` unmodified (markupsafe does not escape spaces) and produces malformed HTML that a browser parses as multiple attributes, enabling XSS.",
+   "usage": {
+    "input_tokens": 1815,
+    "output_tokens": 2454,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L1/r2/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 87,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of space-in-key check reintroduces HTML attribute injection in do_xmlattr",
+     "explanation": "The old code raised `ValueError` when a key matched `\\s` (added in 3.1.3 specifically to prevent this). `markupsafe.escape` does not escape spaces, so a key like `\"class onmouseover=alert(1)\"` produces the output `class onmouseover=alert(1)=\"x\"`, which a browser parses as two attributes, injecting arbitrary HTML attributes (and thus XSS) into the rendered element. Fix: restore the space check before building the attribute string, e.g. `if re.search(r\"\\s\", key): raise ValueError(...)`, or at minimum reject/escape keys containing whitespace."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes the space-in-key validation from `do_xmlattr`, which was a deliberate security fix added in Jinja 3.1.3. This reintroduces an HTML attribute injection vulnerability: a key containing a space (e.g. `\"class onmouseover=alert(1)\"`) passes through `escape()` unmodified (markupsafe does not escape spaces) and produces malformed HTML that a browser parses as multiple attributes, enabling XSS.",
+   "usage": {
+    "input_tokens": 1815,
+    "output_tokens": 2454,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L2/r0/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 87,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of space-in-key check reintroduces HTML attribute injection in do_xmlattr",
+     "explanation": "The old code raised `ValueError` when a key matched `\\s` (added in 3.1.3 specifically to prevent this). `markupsafe.escape` does not escape spaces, so a key like `\"class onmouseover=alert(1)\"` produces the output `class onmouseover=alert(1)=\"x\"`, which a browser parses as two attributes, injecting arbitrary HTML attributes (and thus XSS) into the rendered element. Fix: restore the space check before building the attribute string, e.g. `if re.search(r\"\\s\", key): raise ValueError(...)`, or at minimum reject/escape keys containing whitespace."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes the space-in-key validation from `do_xmlattr`, which was a deliberate security fix added in Jinja 3.1.3. This reintroduces an HTML attribute injection vulnerability: a key containing a space (e.g. `\"class onmouseover=alert(1)\"`) passes through `escape()` unmodified (markupsafe does not escape spaces) and produces malformed HTML that a browser parses as multiple attributes, enabling XSS.",
+   "usage": {
+    "input_tokens": 1815,
+    "output_tokens": 2454,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L2/r1/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 87,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of space-in-key check reintroduces HTML attribute injection in do_xmlattr",
+     "explanation": "The old code raised `ValueError` when a key matched `\\s` (added in 3.1.3 specifically to prevent this). `markupsafe.escape` does not escape spaces, so a key like `\"class onmouseover=alert(1)\"` produces the output `class onmouseover=alert(1)=\"x\"`, which a browser parses as two attributes, injecting arbitrary HTML attributes (and thus XSS) into the rendered element. Fix: restore the space check before building the attribute string, e.g. `if re.search(r\"\\s\", key): raise ValueError(...)`, or at minimum reject/escape keys containing whitespace."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes the space-in-key validation from `do_xmlattr`, which was a deliberate security fix added in Jinja 3.1.3. This reintroduces an HTML attribute injection vulnerability: a key containing a space (e.g. `\"class onmouseover=alert(1)\"`) passes through `escape()` unmodified (markupsafe does not escape spaces) and produces malformed HTML that a browser parses as multiple attributes, enabling XSS.",
+   "usage": {
+    "input_tokens": 1815,
+    "output_tokens": 2454,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L2/r2/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 87,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of space-in-key check reintroduces HTML attribute injection in do_xmlattr",
+     "explanation": "The old code raised `ValueError` when a key matched `\\s` (added in 3.1.3 specifically to prevent this). `markupsafe.escape` does not escape spaces, so a key like `\"class onmouseover=alert(1)\"` produces the output `class onmouseover=alert(1)=\"x\"`, which a browser parses as two attributes, injecting arbitrary HTML attributes (and thus XSS) into the rendered element. Fix: restore the space check before building the attribute string, e.g. `if re.search(r\"\\s\", key): raise ValueError(...)`, or at minimum reject/escape keys containing whitespace."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR simplifies StaticResource path resolution but drops the path-containment check that was applied to the unresolved path in the follow_symlinks=True branch. As a result, a filename containing '..' (which can come straight from the request URL) is resolved with no check that it stays inside self._directory, enabling path traversal / arbitrary file read. There is also a latent correctness issue where the resolved path is compared against a possibly-unresolved directory.",
+   "usage": {
+    "input_tokens": 972,
+    "output_tokens": 11808,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r0/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 122,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal via '..' when follow_symlinks=True (append_version branch)",
+     "explanation": "The new code computes `filepath = self._directory.joinpath(filename).resolve()` and only runs `filepath.relative_to(self._directory)` in the `not self._follow_symlinks` branch. The old code first did `Path(os.path.normpath(unresolved_path)).relative_to(self._directory)` to reject '..' sequences before resolving. Since `filename` is derived from the request URL and can contain '..' (e.g. `../../etc/passwd`), `resolve()` canonicalizes it to a path outside `self._directory` and the file is served, allowing arbitrary file read. Fix: re-apply a containment check on the resolved path regardless of follow_symlinks (e.g. `filepath.relative_to(self._directory.resolve())`), or restore the normalized-path check for the follow_symlinks=True case."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r0/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 188,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal via '..' when follow_symlinks=True (resolve branch)",
+     "explanation": "Same regression as the append_version branch: the `os.path.normpath` + `relative_to` containment check on the unresolved path was removed, so when `self._follow_symlinks` is True a `filename` containing '..' resolves outside `self._directory` and is served. Restore the containment check so traversal is rejected even when symlinks are followed."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r0/f2",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 124,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "relative_to compares a resolved path against a possibly-unresolved directory",
+     "explanation": "In the `not self._follow_symlinks` branch, `filepath` is fully resolved (all symlinks followed) but is compared against `self._directory`, which may not be resolved. If `self._directory` or any of its parents is a symlink or a relative path, `filepath.relative_to(self._directory)` raises ValueError for legitimate files, breaking static serving. Compare against `self._directory.resolve()` instead (same applies at line 190)."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR simplifies StaticResource path resolution but drops the path-containment check that was applied to the unresolved path in the follow_symlinks=True branch. As a result, a filename containing '..' (which can come straight from the request URL) is resolved with no check that it stays inside self._directory, enabling path traversal / arbitrary file read. There is also a latent correctness issue where the resolved path is compared against a possibly-unresolved directory.",
+   "usage": {
+    "input_tokens": 972,
+    "output_tokens": 11808,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r1/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 122,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal via '..' when follow_symlinks=True (append_version branch)",
+     "explanation": "The new code computes `filepath = self._directory.joinpath(filename).resolve()` and only runs `filepath.relative_to(self._directory)` in the `not self._follow_symlinks` branch. The old code first did `Path(os.path.normpath(unresolved_path)).relative_to(self._directory)` to reject '..' sequences before resolving. Since `filename` is derived from the request URL and can contain '..' (e.g. `../../etc/passwd`), `resolve()` canonicalizes it to a path outside `self._directory` and the file is served, allowing arbitrary file read. Fix: re-apply a containment check on the resolved path regardless of follow_symlinks (e.g. `filepath.relative_to(self._directory.resolve())`), or restore the normalized-path check for the follow_symlinks=True case."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r1/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 188,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal via '..' when follow_symlinks=True (resolve branch)",
+     "explanation": "Same regression as the append_version branch: the `os.path.normpath` + `relative_to` containment check on the unresolved path was removed, so when `self._follow_symlinks` is True a `filename` containing '..' resolves outside `self._directory` and is served. Restore the containment check so traversal is rejected even when symlinks are followed."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r1/f2",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 124,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "relative_to compares a resolved path against a possibly-unresolved directory",
+     "explanation": "In the `not self._follow_symlinks` branch, `filepath` is fully resolved (all symlinks followed) but is compared against `self._directory`, which may not be resolved. If `self._directory` or any of its parents is a symlink or a relative path, `filepath.relative_to(self._directory)` raises ValueError for legitimate files, breaking static serving. Compare against `self._directory.resolve()` instead (same applies at line 190)."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR simplifies StaticResource path resolution but drops the path-containment check that was applied to the unresolved path in the follow_symlinks=True branch. As a result, a filename containing '..' (which can come straight from the request URL) is resolved with no check that it stays inside self._directory, enabling path traversal / arbitrary file read. There is also a latent correctness issue where the resolved path is compared against a possibly-unresolved directory.",
+   "usage": {
+    "input_tokens": 972,
+    "output_tokens": 11808,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r2/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 122,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal via '..' when follow_symlinks=True (append_version branch)",
+     "explanation": "The new code computes `filepath = self._directory.joinpath(filename).resolve()` and only runs `filepath.relative_to(self._directory)` in the `not self._follow_symlinks` branch. The old code first did `Path(os.path.normpath(unresolved_path)).relative_to(self._directory)` to reject '..' sequences before resolving. Since `filename` is derived from the request URL and can contain '..' (e.g. `../../etc/passwd`), `resolve()` canonicalizes it to a path outside `self._directory` and the file is served, allowing arbitrary file read. Fix: re-apply a containment check on the resolved path regardless of follow_symlinks (e.g. `filepath.relative_to(self._directory.resolve())`), or restore the normalized-path check for the follow_symlinks=True case."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r2/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 188,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal via '..' when follow_symlinks=True (resolve branch)",
+     "explanation": "Same regression as the append_version branch: the `os.path.normpath` + `relative_to` containment check on the unresolved path was removed, so when `self._follow_symlinks` is True a `filename` containing '..' resolves outside `self._directory` and is served. Restore the containment check so traversal is rejected even when symlinks are followed."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r2/f2",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 124,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "relative_to compares a resolved path against a possibly-unresolved directory",
+     "explanation": "In the `not self._follow_symlinks` branch, `filepath` is fully resolved (all symlinks followed) but is compared against `self._directory`, which may not be resolved. If `self._directory` or any of its parents is a symlink or a relative path, `filepath.relative_to(self._directory)` raises ValueError for legitimate files, breaking static serving. Compare against `self._directory.resolve()` instead (same applies at line 190)."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR simplifies path resolution in StaticResource by always calling .resolve() and only checking relative_to when follow_symlinks is False. This drops the pre-resolution normalized-path check that previously blocked '..' traversal when follow_symlinks is True, reintroducing a path-traversal vulnerability for that configuration.",
+   "usage": {
+    "input_tokens": 2623,
+    "output_tokens": 15730,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L1/r0/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 188,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal via '..' when follow_symlinks=True",
+     "explanation": "When follow_symlinks is True, the new code resolves the path with .resolve() but never verifies that the lexically-normalized path (before symlink resolution) stays inside the static directory. The old code called Path(os.path.normpath(unresolved_path)).relative_to(self._directory) to block '..' traversal while still letting symlinks point outside. The new code skips that check entirely, so a request like /static/../../etc/passwd resolves to /etc/passwd and is served, enabling arbitrary file reads. Fix: when follow_symlinks is True, still assert the normalized (pre-resolution) path is within the directory, e.g. Path(os.path.normpath(self._directory.joinpath(filename))).relative_to(self._directory), before calling .resolve()."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L1/r0/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 122,
+     "category": "security",
+     "severity": "medium",
+     "title": "Same missing normalized-path check in url_for when follow_symlinks=True",
+     "explanation": "url_for applies the identical change: with follow_symlinks=True it resolves self._directory.joinpath(filename) without any relative_to guard, so a filename containing '..' (e.g. one derived from user input) resolves outside the static directory and the code opens and hashes that out-of-tree file. The same pre-resolution normalized-path check should be applied here as in _handle."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR simplifies path resolution in StaticResource by always calling .resolve() and only checking relative_to when follow_symlinks is False. This drops the pre-resolution normalized-path check that previously blocked '..' traversal when follow_symlinks is True, reintroducing a path-traversal vulnerability for that configuration.",
+   "usage": {
+    "input_tokens": 2623,
+    "output_tokens": 15730,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L1/r1/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 188,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal via '..' when follow_symlinks=True",
+     "explanation": "When follow_symlinks is True, the new code resolves the path with .resolve() but never verifies that the lexically-normalized path (before symlink resolution) stays inside the static directory. The old code called Path(os.path.normpath(unresolved_path)).relative_to(self._directory) to block '..' traversal while still letting symlinks point outside. The new code skips that check entirely, so a request like /static/../../etc/passwd resolves to /etc/passwd and is served, enabling arbitrary file reads. Fix: when follow_symlinks is True, still assert the normalized (pre-resolution) path is within the directory, e.g. Path(os.path.normpath(self._directory.joinpath(filename))).relative_to(self._directory), before calling .resolve()."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L1/r1/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 122,
+     "category": "security",
+     "severity": "medium",
+     "title": "Same missing normalized-path check in url_for when follow_symlinks=True",
+     "explanation": "url_for applies the identical change: with follow_symlinks=True it resolves self._directory.joinpath(filename) without any relative_to guard, so a filename containing '..' (e.g. one derived from user input) resolves outside the static directory and the code opens and hashes that out-of-tree file. The same pre-resolution normalized-path check should be applied here as in _handle."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR simplifies path resolution in StaticResource by always calling .resolve() and only checking relative_to when follow_symlinks is False. This drops the pre-resolution normalized-path check that previously blocked '..' traversal when follow_symlinks is True, reintroducing a path-traversal vulnerability for that configuration.",
+   "usage": {
+    "input_tokens": 2623,
+    "output_tokens": 15730,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L1/r2/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 188,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal via '..' when follow_symlinks=True",
+     "explanation": "When follow_symlinks is True, the new code resolves the path with .resolve() but never verifies that the lexically-normalized path (before symlink resolution) stays inside the static directory. The old code called Path(os.path.normpath(unresolved_path)).relative_to(self._directory) to block '..' traversal while still letting symlinks point outside. The new code skips that check entirely, so a request like /static/../../etc/passwd resolves to /etc/passwd and is served, enabling arbitrary file reads. Fix: when follow_symlinks is True, still assert the normalized (pre-resolution) path is within the directory, e.g. Path(os.path.normpath(self._directory.joinpath(filename))).relative_to(self._directory), before calling .resolve()."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L1/r2/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 122,
+     "category": "security",
+     "severity": "medium",
+     "title": "Same missing normalized-path check in url_for when follow_symlinks=True",
+     "explanation": "url_for applies the identical change: with follow_symlinks=True it resolves self._directory.joinpath(filename) without any relative_to guard, so a filename containing '..' (e.g. one derived from user input) resolves outside the static directory and the code opens and hashes that out-of-tree file. The same pre-resolution normalized-path check should be applied here as in _handle."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR simplifies path resolution in StaticResource by always calling .resolve() and only checking relative_to when follow_symlinks is False. This drops the pre-resolution normalized-path check that previously blocked '..' traversal when follow_symlinks is True, reintroducing a path-traversal vulnerability for that configuration.",
+   "usage": {
+    "input_tokens": 2623,
+    "output_tokens": 15730,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r0/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 188,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal via '..' when follow_symlinks=True",
+     "explanation": "When follow_symlinks is True, the new code resolves the path with .resolve() but never verifies that the lexically-normalized path (before symlink resolution) stays inside the static directory. The old code called Path(os.path.normpath(unresolved_path)).relative_to(self._directory) to block '..' traversal while still letting symlinks point outside. The new code skips that check entirely, so a request like /static/../../etc/passwd resolves to /etc/passwd and is served, enabling arbitrary file reads. Fix: when follow_symlinks is True, still assert the normalized (pre-resolution) path is within the directory, e.g. Path(os.path.normpath(self._directory.joinpath(filename))).relative_to(self._directory), before calling .resolve()."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r0/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 122,
+     "category": "security",
+     "severity": "medium",
+     "title": "Same missing normalized-path check in url_for when follow_symlinks=True",
+     "explanation": "url_for applies the identical change: with follow_symlinks=True it resolves self._directory.joinpath(filename) without any relative_to guard, so a filename containing '..' (e.g. one derived from user input) resolves outside the static directory and the code opens and hashes that out-of-tree file. The same pre-resolution normalized-path check should be applied here as in _handle."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR simplifies path resolution in StaticResource by always calling .resolve() and only checking relative_to when follow_symlinks is False. This drops the pre-resolution normalized-path check that previously blocked '..' traversal when follow_symlinks is True, reintroducing a path-traversal vulnerability for that configuration.",
+   "usage": {
+    "input_tokens": 2623,
+    "output_tokens": 15730,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r1/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 188,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal via '..' when follow_symlinks=True",
+     "explanation": "When follow_symlinks is True, the new code resolves the path with .resolve() but never verifies that the lexically-normalized path (before symlink resolution) stays inside the static directory. The old code called Path(os.path.normpath(unresolved_path)).relative_to(self._directory) to block '..' traversal while still letting symlinks point outside. The new code skips that check entirely, so a request like /static/../../etc/passwd resolves to /etc/passwd and is served, enabling arbitrary file reads. Fix: when follow_symlinks is True, still assert the normalized (pre-resolution) path is within the directory, e.g. Path(os.path.normpath(self._directory.joinpath(filename))).relative_to(self._directory), before calling .resolve()."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r1/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 122,
+     "category": "security",
+     "severity": "medium",
+     "title": "Same missing normalized-path check in url_for when follow_symlinks=True",
+     "explanation": "url_for applies the identical change: with follow_symlinks=True it resolves self._directory.joinpath(filename) without any relative_to guard, so a filename containing '..' (e.g. one derived from user input) resolves outside the static directory and the code opens and hashes that out-of-tree file. The same pre-resolution normalized-path check should be applied here as in _handle."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR simplifies path resolution in StaticResource by always calling .resolve() and only checking relative_to when follow_symlinks is False. This drops the pre-resolution normalized-path check that previously blocked '..' traversal when follow_symlinks is True, reintroducing a path-traversal vulnerability for that configuration.",
+   "usage": {
+    "input_tokens": 2623,
+    "output_tokens": 15730,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r2/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 188,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal via '..' when follow_symlinks=True",
+     "explanation": "When follow_symlinks is True, the new code resolves the path with .resolve() but never verifies that the lexically-normalized path (before symlink resolution) stays inside the static directory. The old code called Path(os.path.normpath(unresolved_path)).relative_to(self._directory) to block '..' traversal while still letting symlinks point outside. The new code skips that check entirely, so a request like /static/../../etc/passwd resolves to /etc/passwd and is served, enabling arbitrary file reads. Fix: when follow_symlinks is True, still assert the normalized (pre-resolution) path is within the directory, e.g. Path(os.path.normpath(self._directory.joinpath(filename))).relative_to(self._directory), before calling .resolve()."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r2/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 122,
+     "category": "security",
+     "severity": "medium",
+     "title": "Same missing normalized-path check in url_for when follow_symlinks=True",
+     "explanation": "url_for applies the identical change: with follow_symlinks=True it resolves self._directory.joinpath(filename) without any relative_to guard, so a filename containing '..' (e.g. one derived from user input) resolves outside the static directory and the code opens and hashes that out-of-tree file. The same pre-resolution normalized-path check should be applied here as in _handle."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes the unsafe protocol/options validation from Repo.clone and Repo.clone_from, allowing ext:: URLs and dangerous git options to be passed to git clone.",
+   "usage": {
+    "input_tokens": 1748,
+    "output_tokens": 7694,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r0/f0",
+     "path": "git/repo/base.py",
+     "line": 202,
+     "category": "security",
+     "severity": "critical",
+     "title": "Repo.clone no longer blocks unsafe protocols/options",
+     "explanation": "Removing the unsafe_options check lets callers pass ext:: URLs or --upload-pack/-c protocol.* options, which can execute arbitrary commands or bypass protocol restrictions. Restore validation and require an explicit unsafe_protocols flag before calling _clone."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r0/f1",
+     "path": "git/repo/base.py",
+     "line": 239,
+     "category": "security",
+     "severity": "critical",
+     "title": "Repo.clone_from no longer blocks unsafe protocols/options",
+     "explanation": "The same guard is removed from clone_from, so untrusted URLs or multi_options can reach git clone and enable command execution or protocol bypass. Re-add the unsafe_options check and UnsafeOptionsUsedError handling here."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r0/f2",
+     "path": "git/exc.py",
+     "line": 40,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Public exception class removed without deprecation",
+     "explanation": "UnsafeOptionsUsedError is part of the public git.exc API; removing it can break downstream code that imports or catches it. Keep a deprecated alias or document the breaking API change."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes the unsafe protocol/options validation from Repo.clone and Repo.clone_from, allowing ext:: URLs and dangerous git options to be passed to git clone.",
+   "usage": {
+    "input_tokens": 1748,
+    "output_tokens": 7694,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r1/f0",
+     "path": "git/repo/base.py",
+     "line": 202,
+     "category": "security",
+     "severity": "critical",
+     "title": "Repo.clone no longer blocks unsafe protocols/options",
+     "explanation": "Removing the unsafe_options check lets callers pass ext:: URLs or --upload-pack/-c protocol.* options, which can execute arbitrary commands or bypass protocol restrictions. Restore validation and require an explicit unsafe_protocols flag before calling _clone."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r1/f1",
+     "path": "git/repo/base.py",
+     "line": 239,
+     "category": "security",
+     "severity": "critical",
+     "title": "Repo.clone_from no longer blocks unsafe protocols/options",
+     "explanation": "The same guard is removed from clone_from, so untrusted URLs or multi_options can reach git clone and enable command execution or protocol bypass. Re-add the unsafe_options check and UnsafeOptionsUsedError handling here."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r1/f2",
+     "path": "git/exc.py",
+     "line": 40,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Public exception class removed without deprecation",
+     "explanation": "UnsafeOptionsUsedError is part of the public git.exc API; removing it can break downstream code that imports or catches it. Keep a deprecated alias or document the breaking API change."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes the unsafe protocol/options validation from Repo.clone and Repo.clone_from, allowing ext:: URLs and dangerous git options to be passed to git clone.",
+   "usage": {
+    "input_tokens": 1748,
+    "output_tokens": 7694,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r2/f0",
+     "path": "git/repo/base.py",
+     "line": 202,
+     "category": "security",
+     "severity": "critical",
+     "title": "Repo.clone no longer blocks unsafe protocols/options",
+     "explanation": "Removing the unsafe_options check lets callers pass ext:: URLs or --upload-pack/-c protocol.* options, which can execute arbitrary commands or bypass protocol restrictions. Restore validation and require an explicit unsafe_protocols flag before calling _clone."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r2/f1",
+     "path": "git/repo/base.py",
+     "line": 239,
+     "category": "security",
+     "severity": "critical",
+     "title": "Repo.clone_from no longer blocks unsafe protocols/options",
+     "explanation": "The same guard is removed from clone_from, so untrusted URLs or multi_options can reach git clone and enable command execution or protocol bypass. Re-add the unsafe_options check and UnsafeOptionsUsedError handling here."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r2/f2",
+     "path": "git/exc.py",
+     "line": 40,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Public exception class removed without deprecation",
+     "explanation": "UnsafeOptionsUsedError is part of the public git.exc API; removing it can break downstream code that imports or catches it. Keep a deprecated alias or document the breaking API change."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The change removes GitPython's guard against unsafe clone protocols and options, allowing command injection via ext:: URLs or upload-pack/protocol options.",
+   "usage": {
+    "input_tokens": 5557,
+    "output_tokens": 11547,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r0/f0",
+     "path": "git/repo/base.py",
+     "line": 239,
+     "category": "security",
+     "severity": "critical",
+     "title": "Clone operations no longer reject unsafe protocols/options",
+     "explanation": "Removing unsafe_options() and the unsafe_protocols checks lets Repo.clone_from pass user-controlled URLs such as ext::sh -c ... and multi_options such as --upload-pack or -c protocol.* directly to git clone, enabling arbitrary command execution. Restore validation or require an explicit, safe allowlist before invoking git."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The change removes GitPython's guard against unsafe clone protocols and options, allowing command injection via ext:: URLs or upload-pack/protocol options.",
+   "usage": {
+    "input_tokens": 5557,
+    "output_tokens": 11547,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r1/f0",
+     "path": "git/repo/base.py",
+     "line": 239,
+     "category": "security",
+     "severity": "critical",
+     "title": "Clone operations no longer reject unsafe protocols/options",
+     "explanation": "Removing unsafe_options() and the unsafe_protocols checks lets Repo.clone_from pass user-controlled URLs such as ext::sh -c ... and multi_options such as --upload-pack or -c protocol.* directly to git clone, enabling arbitrary command execution. Restore validation or require an explicit, safe allowlist before invoking git."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The change removes GitPython's guard against unsafe clone protocols and options, allowing command injection via ext:: URLs or upload-pack/protocol options.",
+   "usage": {
+    "input_tokens": 5557,
+    "output_tokens": 11547,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r2/f0",
+     "path": "git/repo/base.py",
+     "line": 239,
+     "category": "security",
+     "severity": "critical",
+     "title": "Clone operations no longer reject unsafe protocols/options",
+     "explanation": "Removing unsafe_options() and the unsafe_protocols checks lets Repo.clone_from pass user-controlled URLs such as ext::sh -c ... and multi_options such as --upload-pack or -c protocol.* directly to git clone, enabling arbitrary command execution. Restore validation or require an explicit, safe allowlist before invoking git."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The change removes GitPython's guard against unsafe clone protocols and options, allowing command injection via ext:: URLs or upload-pack/protocol options.",
+   "usage": {
+    "input_tokens": 5557,
+    "output_tokens": 11547,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r0/f0",
+     "path": "git/repo/base.py",
+     "line": 239,
+     "category": "security",
+     "severity": "critical",
+     "title": "Clone operations no longer reject unsafe protocols/options",
+     "explanation": "Removing unsafe_options() and the unsafe_protocols checks lets Repo.clone_from pass user-controlled URLs such as ext::sh -c ... and multi_options such as --upload-pack or -c protocol.* directly to git clone, enabling arbitrary command execution. Restore validation or require an explicit, safe allowlist before invoking git."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The change removes GitPython's guard against unsafe clone protocols and options, allowing command injection via ext:: URLs or upload-pack/protocol options.",
+   "usage": {
+    "input_tokens": 5557,
+    "output_tokens": 11547,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r1/f0",
+     "path": "git/repo/base.py",
+     "line": 239,
+     "category": "security",
+     "severity": "critical",
+     "title": "Clone operations no longer reject unsafe protocols/options",
+     "explanation": "Removing unsafe_options() and the unsafe_protocols checks lets Repo.clone_from pass user-controlled URLs such as ext::sh -c ... and multi_options such as --upload-pack or -c protocol.* directly to git clone, enabling arbitrary command execution. Restore validation or require an explicit, safe allowlist before invoking git."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The change removes GitPython's guard against unsafe clone protocols and options, allowing command injection via ext:: URLs or upload-pack/protocol options.",
+   "usage": {
+    "input_tokens": 5557,
+    "output_tokens": 11547,
+    "served_model": "qwen-3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r2/f0",
+     "path": "git/repo/base.py",
+     "line": 239,
+     "category": "security",
+     "severity": "critical",
+     "title": "Clone operations no longer reject unsafe protocols/options",
+     "explanation": "Removing unsafe_options() and the unsafe_protocols checks lets Repo.clone_from pass user-controlled URLs such as ext::sh -c ... and multi_options such as --upload-pack or -c protocol.* directly to git clone, enabling arbitrary command execution. Restore validation or require an explicit, safe allowlist before invoking git."
+    }
+   ]
   }
- ]
+ ],
+ "prompt_sha256": "d08c51ab869c7874"
 }

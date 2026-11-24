@@ -1,0 +1,18 @@
+id: py-0070-clean-click-forward-params
+title: "click: Context.invoke tracks all kwargs in params so forward() passes them on at every level"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/pallets/click/commit/043511294a9eec59d08e64c351621e790ae74b76
+  license: BSD-3-Clause
+  notes: Merged 2021-04. Every line the commit added to src/click/core.py is still present on upstream main as
+    of 2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and the
+    changed functions; pr.diff has exactly the upstream commit's changed lines in that file. Label
+    is "no known defect", not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

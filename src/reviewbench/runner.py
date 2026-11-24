@@ -120,6 +120,10 @@ def run(cases: list[Case], reviewer: Reviewer, levels: list[str], k: int, out_pa
             "records": [],
         }
         done = set()
+    # RISKS §6: a provider can swap what runs behind a model name. Every record in one results file
+    # must come from the same served model, or the file silently mixes two models.
+    served = {(r.get("usage") or {}).get("served_model") for r in doc["records"] if not r.get("error")}
+    served.discard(None)
     doc["status"] = "partial"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     for case in cases:
@@ -138,6 +142,15 @@ def run(cases: list[Case], reviewer: Reviewer, levels: list[str], k: int, out_pa
                 except Exception as e:  # recorded, not fatal: one flaky call must not lose the run
                     from reviewbench.adapters.base import ReviewResult
                     result = ReviewResult("", [], error=f"exception: {type(e).__name__}: {e}")
+                now_serving = (result.usage or {}).get("served_model") if not result.error else None
+                if now_serving and served and now_serving not in served:
+                    out_path.write_text(json.dumps(doc, indent=1))
+                    raise ValueError(
+                        f"{out_path.name}: provider now serves {now_serving!r}, but earlier reviews in this file "
+                        f"came from {sorted(served)}; refusing to mix models in one result. Start a new "
+                        "results file for the new model.")
+                if now_serving:
+                    served.add(now_serving)
                 findings = []
                 for i, f in enumerate(result.findings):
                     findings.append({"id": f"{case.id}/{level}/r{r}/f{i}", **f.to_dict()})

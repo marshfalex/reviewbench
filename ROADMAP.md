@@ -93,7 +93,7 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
 - [x] **Stop reporting unmeasured precision** (RISKS §1): when fewer than ~80% of a slice's
       non-hit findings are adjudicated, the leaderboard and reports show "not measured (N
       unjudged)" instead of a precision rate, and the noise flag says which half it rests on.
-- [ ] **Refuse to resume across a served-model change** (RISKS §6): `run --resume` stops if the
+- [x] **Refuse to resume across a served-model change** (RISKS §6): `run --resume` stops if the
       provider reports a different served model id than the file's earlier records.
 - [ ] **Report real and synthetic cases separately** (RISKS §3), and note in each table which
       model family wrote the synthetic cases.

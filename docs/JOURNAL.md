@@ -314,3 +314,10 @@ Append-only. One short entry per working session: what was done, what was learne
   by changed line numbers.
 - Controls: 12 of 36. All 7 upstream ones are click; next batches should use other projects.
 - The excerpt script is committed as `scripts/upstream_excerpt.py` for future batches.
+
+## 2026-11-24 — one served model per results file
+- `run` now refuses, with an error, to append a review whose `served_model` differs from the ones
+  already in the file. The mismatching review isn't written, so the file stays single-model and
+  the scheduled job fails visibly instead of silently mixing models (RISKS §6).
+- All four current v0.1 files have exactly one served id each, so nothing existing trips it.
+- Next: upstream controls from projects other than click.

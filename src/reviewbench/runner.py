@@ -21,6 +21,7 @@ EST_OUTPUT_TOKENS = 4000
 def case_truth(case: Case) -> dict:
     """Snapshot of the ground truth used, stored inside every results file."""
     return {"title": case.title, "difficulty": case.difficulty, "split": case.split, "tags": case.tags,
+            "source_kind": case.source.get("kind"),
             "bugs": [{"file": b.file, "lines": list(b.lines), "class": b.cls, "cwe": b.cwe,
                       "severity": b.severity} for b in case.bugs],
             "known_issues": [asdict(k) for k in case.known_issues]}

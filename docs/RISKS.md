@@ -27,8 +27,10 @@ differences whose intervals don't overlap, and say so.
 small) and easier for LLMs than real bugs. Also a conflict of interest: Claude wrote the synthetic
 cases since py-0028, so evaluating Claude models on them would be self-grading.
 **Status:** 9 of 38 cases are real CVEs (4 of them held back for v0.2); 2 are real upstream controls; the rest are synthetic.
-**Fix:** shift the mix toward real bugs (CVE fixes, upstream postmortems, reverted commits). Report
-synthetic and real cases separately. Never evaluate a model family on cases its own family wrote
+**Fix:** shift the mix toward real bugs (CVE fixes, upstream postmortems, reverted commits). The
+leaderboard reports synthetic and real cases separately (since 2026-11-24). First signal: groq
+gpt-oss-120b catches 94% of synthetic bugs but 47% of real ones at L0 (5 real bugs; partly matcher
+artifacts), so the concern is live. Never evaluate a model family on cases its own family wrote
 without saying so in the table.
 
 ## 4. Contamination

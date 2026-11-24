@@ -95,7 +95,7 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
       unjudged)" instead of a precision rate, and the noise flag says which half it rests on.
 - [x] **Refuse to resume across a served-model change** (RISKS §6): `run --resume` stops if the
       provider reports a different served model id than the file's earlier records.
-- [ ] **Report real and synthetic cases separately** (RISKS §3), and note in each table which
+- [x] **Report real and synthetic cases separately** (RISKS §3), and note in each table which
       model family wrote the synthetic cases.
 - [ ] **Shift the case mix toward real bugs:** CVE batches 2–3, plus upstream reverted or
       later-fixed commits (the "bug introduced by PR X, fixed by PR Y" pattern), aiming for

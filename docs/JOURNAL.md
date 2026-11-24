@@ -399,3 +399,12 @@ Append-only. One short entry per working session: what was done, what was learne
   in a separate `needs-owner` PR.
 - Suspected, not acted on: OpenRouter may report varying `model` ids across routes, which would trip
   the served-model check. Current files show one id each; watch the next runs.
+
+## 2026-11-24 — proposed: wider automerge gate (needs owner)
+- The audit found the gate protected only .github/, pyproject, BENCH_VERSION, the prompt/schema
+  and scoring.py, while report.py, stats.py, runner.py, the adapters and the findings docs (all of
+  which change published numbers or claims) merged on green CI. This PR widens it to those plus
+  CLAUDE.md. Cases, the roadmap, the journal and tooling still merge automatically, since each case
+  batch now gets an independent reviewer pass.
+- It touches .github/, so it waits for the owner. The PR description also proposes CLAUDE.md wording
+  that matches how merging actually works; only the owner can make that edit.

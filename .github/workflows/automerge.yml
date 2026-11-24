@@ -5,9 +5,10 @@
 # - Only PRs from this repo (no forks) on a Claude branch (claude/*, seneca/*) are considered.
 # - CI must have passed on the PR's *current* head commit.
 # - Gated PRs wait for the owner: they get the `needs-owner` label and a reason in the job log.
-#   A PR is gated if it touches .github/, pyproject.toml (dependencies), the reviewer prompt or
-#   output schema (adapters/base.py), the matching rule (scoring.py) or BENCH_VERSION
-#   (src/reviewbench/__init__.py), or adds `heldout_ok: true` anywhere.
+#   A PR is gated if it touches .github/, pyproject.toml (dependencies), CLAUDE.md (session rules),
+#   any code that produces published numbers (src/reviewbench/: __init__ (BENCH_VERSION), scoring,
+#   stats, report, runner, heldout, adapters/), or published claims (docs/findings/), or adds
+#   `heldout_ok: true` anywhere. New cases and other docs merge on green CI.
 # - The owner can stop any PR from merging by adding the `needs-owner` label.
 name: automerge
 on:
@@ -45,8 +46,8 @@ jobs:
           files=$(gh api --paginate "repos/$REPO/pulls/$num/files" --jq '.[].filename')
           added=$(gh api --paginate "repos/$REPO/pulls/$num/files" --jq '.[].patch // ""' | grep '^+' || true)
           reason=""
-          grep -qE '^(\.github/|pyproject\.toml$|src/reviewbench/(__init__|scoring)\.py$|src/reviewbench/adapters/base\.py$)' \
-            <<<"$files" && reason="touches a gated file: $(grep -E '^(\.github/|pyproject|src/reviewbench/(__init__|scoring)\.py|src/reviewbench/adapters/base\.py)' <<<"$files" | tr '\n' ' ')"
+          gated='^(\.github/|pyproject\.toml$|CLAUDE\.md$|docs/findings/|src/reviewbench/adapters/|src/reviewbench/(__init__|scoring|stats|report|runner|heldout)\.py$)'
+          grep -qE "$gated" <<<"$files" && reason="touches a gated file: $(grep -E "$gated" <<<"$files" | tr '\n' ' ')"
           grep -qE 'heldout_ok:[[:space:]]*true' <<<"$added" && reason="$reason adds heldout_ok: true"
           if [ -n "$reason" ]; then
             echo "PR #$num is gated ($reason); labeling needs-owner."

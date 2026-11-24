@@ -115,6 +115,16 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
       the private repo, retire the old 5 (or move them to the public set), and never name held-out
       cases, their CVEs or their projects in this repository: not in docs, PRs, commits or logs.
 
+- Decision 2026-11-24 (owner): **freeze slow free models, add fast ones.** Gemini and Nemotron
+      free tiers allow only a few reviews a day (40/243 and 54/243 after 5 days); they're
+      `frozen: true` in lineup.yaml and stay on the leaderboard as partial. Added four auto-picked
+      models on Groq and Cerebras.
+- Decision 2026-11-24 (owner): **fix scoring before the v0.2 bump**, in this order:
+  - [ ] **Multiple line ranges per bug** (the CVE second-call-site / near-miss problem); then fold
+        py-0051's known_issue into a second range. Gated (scoring.py): owner merges.
+  - [ ] **Matcher defect check** (a hit must also name the defect). Gated: owner merges.
+  - [ ] **Bump BENCH_VERSION to 0.2** and let the lineup re-run every active model. Gated.
+
 ## v0.2 — breadth and contributors
 - [ ] **Modify-existing-file synthetic cases (8):** PRs that edit existing code so L1 differs from
       L0 (e.g. a refactor that drops an authz check, a changed default, a removed lock).

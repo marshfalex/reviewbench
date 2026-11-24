@@ -39,4 +39,3 @@ Created 2026-11-19T17:36:19+00:00, k=3 runs per case and level, status `partial`
 | py-0016-float-money | L2 | 1/1 | 2 | 0 | 0 | 0 | 1 | 0 |
 | py-0017-cursor-pagination-skips | L1 | 1/1 | 1 | 0 | 0 | 0 | 0 | 0 |
 | py-0017-cursor-pagination-skips | L2 | 1/1 | 2 | 0 | 0 | 0 | 0 | 0 |
-

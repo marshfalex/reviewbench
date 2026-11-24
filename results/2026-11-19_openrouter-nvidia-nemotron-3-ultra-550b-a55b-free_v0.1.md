@@ -35,4 +35,3 @@ Created 2026-11-19T17:36:19+00:00, k=3 runs per case and level, status `partial`
 | py-0006-path-traversal | L0 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
 | py-0006-path-traversal | L1 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
 | py-0006-path-traversal | L2 | 2/2 | 2 | 0 | 0 | 0 | 0 | 1 |
-

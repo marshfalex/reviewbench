@@ -1,0 +1,18 @@
+id: py-0048-clean-jinja-get-template-separator
+title: "jinja2: get_template() uses / as the separator even on Windows"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/pallets/jinja/commit/e8da6267f8ab3c586cc88fca7c38cd9d116ba00e
+  license: BSD-3-Clause
+  notes: Merged 2022-02. Every line the commit added is still present in src/jinja2/environment.py on jinja main as of
+    2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and only
+    Environment.get_template/_load_template; pr.diff has exactly the upstream commit's changed lines. Label is "no known defect",
+    not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

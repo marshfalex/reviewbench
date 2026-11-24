@@ -1,0 +1,24 @@
+diff --git a/src/flask/json/tag.py b/src/flask/json/tag.py
+index b24292a..4b485fd 100644
+--- a/src/flask/json/tag.py
++++ b/src/flask/json/tag.py
+@@ -16,6 +16,18 @@ from ..json import loads
+ class TaggedJSONSerializer:
+     # [... omitted ...]
+ 
++    def _untag_scan(self, value: t.Any) -> t.Any:
++        if isinstance(value, dict):
++            # untag each item recursively
++            value = {k: self._untag_scan(v) for k, v in value.items()}
++            # untag the dict itself
++            value = self.untag(value)
++        elif isinstance(value, list):
++            # untag each item recursively
++            value = [self._untag_scan(item) for item in value]
++
++        return value
++
+     def loads(self, value: str) -> t.Any:
+         """Load data from a JSON string and deserialized any tagged objects."""
+-        return loads(value, object_hook=self.untag)
++        return self._untag_scan(loads(value))

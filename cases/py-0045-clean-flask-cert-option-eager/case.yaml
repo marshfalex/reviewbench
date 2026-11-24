@@ -1,0 +1,18 @@
+id: py-0045-clean-flask-cert-option-eager
+title: "flask: make --cert eager so it is evaluated before --key"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/pallets/flask/commit/5050a18a0057df4cda6f6b00483d12d29cb59239
+  license: BSD-3-Clause
+  notes: Merged 2022-04. Every line the commit added is still present in src/flask/cli.py on flask main as of
+    2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and only
+    the run command and its --cert/--key options; pr.diff has exactly the upstream commit's changed lines. Label is "no known defect",
+    not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

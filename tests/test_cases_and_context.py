@@ -12,7 +12,7 @@ ALL = discover((CASES, "public"))
 def test_case_counts():
     from reviewbench.cases import active
 
-    assert len(ALL) == 43 and len(active(ALL, "0.1")) == 27  # v0.1 stays frozen at 27
+    assert len(ALL) == 48 and len(active(ALL, "0.1")) == 27  # v0.1 stays frozen at 27
     assert {c.id for c in ALL if c.since == "0.2"} == {
         "py-0028-truthy-permission-decision", "py-0029-ttl-seconds-vs-ms-clock",
         "py-0030-clean-sort-column-whitelist", "py-0031-refactor-drops-login-required",
@@ -21,8 +21,11 @@ def test_case_counts():
         "py-0036-django-admindocs-template-traversal", "py-0037-pyjwt-hmac-key-confusion",
         "py-0038-requests-proxy-auth-https-leak", "py-0039-clean-click-abort-chains-cause",
         "py-0040-clean-click-empty-envvar-is-none", "py-0041-clean-click-invalid-glob-pattern",
-        "py-0042-clean-click-confirm-default-none", "py-0043-clean-click-choice-complete-case"}
-    assert sum(c.is_control for c in ALL) == 12  # toward the SPEC §10 target of 36
+        "py-0042-clean-click-confirm-default-none", "py-0043-clean-click-choice-complete-case",
+        "py-0044-clean-flask-untag-without-object-hook", "py-0045-clean-flask-cert-option-eager",
+        "py-0046-clean-flask-config-from-file-text", "py-0047-clean-jinja-required-block-check",
+        "py-0048-clean-jinja-get-template-separator"}
+    assert sum(c.is_control for c in ALL) == 17  # toward the SPEC §10 target of 36
     ALL_V01 = active(ALL, "0.1")
     assert sum(c.is_control for c in ALL_V01) == 4
     bugs = [c for c in ALL_V01 if not c.is_control]

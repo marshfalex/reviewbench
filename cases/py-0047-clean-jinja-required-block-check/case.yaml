@@ -1,0 +1,18 @@
+id: py-0047-clean-jinja-required-block-check
+title: "jinja2: correct the check that required blocks contain only whitespace or comments"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/pallets/jinja/commit/051df10c7b95b735ee53eeb1e9c8de1eb48ead14
+  license: BSD-3-Clause
+  notes: Merged 2023-06. Every line the commit added is still present in src/jinja2/parser.py on jinja main as of
+    2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and only
+    Parser.parse_block; pr.diff has exactly the upstream commit's changed lines. Label is "no known defect",
+    not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

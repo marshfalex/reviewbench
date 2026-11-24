@@ -408,3 +408,12 @@ Append-only. One short entry per working session: what was done, what was learne
   batch now gets an independent reviewer pass.
 - It touches .github/, so it waits for the owner. The PR description also proposes CLAUDE.md wording
   that matches how merging actually works; only the owner can make that edit.
+
+## 2026-11-24 — lessons file
+- Owner asked that mistakes be written down so they don't repeat. Added `docs/LESSONS.md`: every
+  mistake so far with the rule or check that now prevents it, plus a pre-PR checklist (tests
+  proven to fail on old code, independent reviewer agent, no held-out names, regenerated numbers).
+  CLAUDE.md now points sessions at it.
+- Turned one lesson into a test: two cases may not share an upstream commit (the near-duplicate
+  CVE import).
+- Owner's direction: keep working autonomously; bring major direction choices to them.

@@ -6,7 +6,8 @@ whether the other things it says are true. Re-run it when a new model ships
 and publish the numbers.
 
 ReviewBench v0.1: 27 Python cases: 22 synthetic (12 textbook bugs, 6 hard
-logic/context bugs, 4 clean controls) and 5 reversed fixes of real CVEs. Spec: [docs/SPEC.md](docs/SPEC.md). Results:
+logic/context bugs, 4 clean controls) and 5 reversed fixes of real CVEs. 11 more cases
+(4 of them CVEs) are held back for v0.2. Spec: [docs/SPEC.md](docs/SPEC.md). Results:
 [results/LEADERBOARD.md](results/LEADERBOARD.md).
 
 ## Why

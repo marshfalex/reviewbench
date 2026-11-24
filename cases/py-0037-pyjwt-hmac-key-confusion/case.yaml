@@ -1,0 +1,35 @@
+id: py-0037-pyjwt-hmac-key-confusion
+title: HMAC key check goes back to an incomplete blocklist of public-key markers
+language: python
+since: '0.2'
+difficulty: hard
+tags:
+- security
+- authentication
+- jwt
+- crypto
+- cve
+source:
+  kind: cve
+  ref: https://github.com/jpadilla/pyjwt/commit/9c528670c455b8d948aff95ed50e22940d1ad3fc
+  license: MIT
+  cve: CVE-2022-29217
+  advisory: GHSA-ffqj-6fqr-9h24
+  fixed_in: PyJWT 2.4.0
+  notes: pr.diff is the fix's change to jwt/algorithms.py and jwt/utils.py, reversed (the version bump in jwt/__init__.py
+    is left out). jwt/utils.py is whole; jwt/algorithms.py holds lines 1-30, 172-228 (HMACAlgorithm) and 538-575
+    (OKPAlgorithm.prepare_key).
+bugs:
+- file: jwt/algorithms.py
+  lines:
+  - 46
+  - 53
+  class: algorithm_confusion
+  cwe: CWE-327
+  severity: high
+  description: HMACAlgorithm.prepare_key only refuses keys containing a few RSA/X.509 markers. EC PEM keys and ssh-ed25519/ecdsa
+    public keys pass, so with algorithms that include both HS* and an asymmetric algorithm, an attacker can sign
+    an HS256 token with the public key as the HMAC secret and it verifies.
+context:
+  related: []
+known_issues: []

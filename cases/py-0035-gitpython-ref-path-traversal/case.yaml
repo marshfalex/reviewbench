@@ -1,0 +1,32 @@
+id: py-0035-gitpython-ref-path-traversal
+title: Reference lookup no longer rejects '..' in ref paths
+language: python
+since: '0.2'
+difficulty: easy
+tags:
+- security
+- path-traversal
+- git
+- cve
+source:
+  kind: cve
+  ref: https://github.com/gitpython-developers/GitPython/commit/64ebb9fcdfbe48d5d61141a557691fd91f1e88d6
+  license: BSD-3-Clause
+  cve: CVE-2023-41040
+  advisory: GHSA-cwvm-v4w8-q58c
+  fixed_in: GitPython 3.1.37
+  notes: pr.diff is the fix's change to git/refs/symbolic.py, reversed. repo/ holds lines 1-70 and 150-215 of the
+    file at the fix commit.
+bugs:
+- file: git/refs/symbolic.py
+  lines:
+  - 94
+  - 96
+  class: path_traversal
+  cwe: CWE-22
+  severity: medium
+  description: ref_path is joined onto the .git directory and opened without rejecting '..', so a reference name
+    such as '../../etc/passwd' (e.g. from user input to Repo.rev_parse) reads files outside the repository.
+context:
+  related: []
+known_issues: []

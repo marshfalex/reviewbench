@@ -24,7 +24,7 @@ differences whose intervals don't overlap, and say so.
 **Breaks:** external validity: planted bugs may be "LLM-shaped" (textbook, well-commented,
 small) and easier for LLMs than real bugs. Also a conflict of interest: Claude wrote the synthetic
 cases since py-0028, so evaluating Claude models on them would be self-grading.
-**Status:** 5 of 34 cases are real CVEs; 2 are real upstream controls; the rest are synthetic.
+**Status:** 9 of 38 cases are real CVEs (4 of them held back for v0.2); 2 are real upstream controls; the rest are synthetic.
 **Fix:** shift the mix toward real bugs (CVE fixes, upstream postmortems, reverted commits). Report
 synthetic and real cases separately. Never evaluate a model family on cases its own family wrote
 without saying so in the table.

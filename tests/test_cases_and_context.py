@@ -12,19 +12,21 @@ ALL = discover((CASES, "public"))
 def test_case_counts():
     from reviewbench.cases import active
 
-    assert len(ALL) == 34 and len(active(ALL, "0.1")) == 27  # v0.1 stays frozen at 27
+    assert len(ALL) == 38 and len(active(ALL, "0.1")) == 27  # v0.1 stays frozen at 27
     assert {c.id for c in ALL if c.since == "0.2"} == {
         "py-0028-truthy-permission-decision", "py-0029-ttl-seconds-vs-ms-clock",
         "py-0030-clean-sort-column-whitelist", "py-0031-refactor-drops-login-required",
         "py-0032-refactor-pagination-off-by-one", "py-0033-clean-click-help-formfeed",
-        "py-0034-clean-click-completion-var-dots"}
+        "py-0034-clean-click-completion-var-dots", "py-0035-gitpython-ref-path-traversal",
+        "py-0036-django-admindocs-template-traversal", "py-0037-pyjwt-hmac-key-confusion",
+        "py-0038-requests-proxy-auth-https-leak"}
     ALL_V01 = active(ALL, "0.1")
     assert sum(c.is_control for c in ALL_V01) == 4
     bugs = [c for c in ALL_V01 if not c.is_control]
     assert sum(c.difficulty == "easy" for c in bugs) == 15
     assert sum(c.difficulty == "hard" for c in bugs) == 8
     cves = [c for c in ALL if c.source["kind"] == "cve"]
-    assert len(cves) == 5 and all(c.source.get("cve", "").startswith("CVE-") for c in cves)
+    assert len(cves) == 9 and all(c.source.get("cve", "").startswith("CVE-") for c in cves)
 
 
 @pytest.mark.parametrize("case", ALL, ids=lambda c: c.id)

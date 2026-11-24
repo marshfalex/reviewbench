@@ -215,6 +215,39 @@ Append-only. One short entry per working session: what was done, what was learne
   false positives are only a lower bound).
 - Done in report.py on purpose: scoring.py is gated under automerge, and this didn't need it.
 
+## 2026-11-20 — CVE batch 2
+- Added py-0035..py-0038 (`since: "0.2"`; renumbered from py-0028..31 after main took those ids), the same method as batch 1:
+  - GitPython CVE-2023-41040 (64ebb9f, the commit titled "Fix CVE-2023-41040": rejects `..` in
+    ref paths)
+  - Django CVE-2021-33203 (dfaba12: `safe_join` in admindocs)
+  - PyJWT CVE-2022-29217 (9c52867: replaces the incomplete HMAC key blocklist)
+  - requests CVE-2023-32681 (74ea7cf: no Proxy-Authorization on HTTPS-tunnelled requests)
+
+  Licenses are BSD-3, BSD-3, MIT and Apache-2.0. The largest prompt is Django at L1/L2 (17,709
+  chars).
+- Decisions:
+  - GitPython: 3.1.37 also has follow-up refname hardening (46d3d05, in #1672). The case pins only
+    the commit named for the CVE.
+  - PyJWT: the fix also touched OKPAlgorithm.prepare_key (key-type checks). That stays in the diff
+    as part of the pinned commit but is not a planted bug.
+  - Difficulty: GitPython and Django are `easy` (the diff removes an explicit `..` check /
+    safe_join); PyJWT and requests are `hard` (you need to know which key formats or which tunnel
+    path the old code missed).
+- Ran the private repo's overlap check against these cases: no overlap with the held-out set,
+  including the PyJWT and Django held-out cases, which change different files.
+- BENCH_VERSION stays 0.1, as for batch 1. The complete cerebras run covers only the 22 synthetic
+  cases; re-running finished models on new cases is #12.
+- Next: CVE batch 3.
+
+## 2026-11-21 — maintenance only (2 PRs open)
+- #13 (findings report) and #14 (CVE batch 2) are open with green CI, no review comments, and
+  both still merge cleanly into main. Per the 2-open-PR rule, no new roadmap work this session.
+- Scheduled benchmark runs #8–#10 succeeded after #5 and #7 failed; groq keeps adding results.
+- Next: once #13/#14 merge, CVE batch 3 (requests CVE-2024-35195, urllib3 CVE-2023-45803, Jinja2
+  CVE-2024-34064, CVE-2019-10906). Run the private overlap check on it. The urllib3 case touches
+  redirect handling, but the held-out urllib3 case has already been replaced.
+- 2026-11-21 (later): still 2 PRs open (#13, #14), unreviewed, green, merge cleanly. No new work.
+
 ## 2026-11-20 — findings report v0.1, first cut
 - Wrote `docs/findings/v0.1.md` from the only complete run, cerebras qwen-3.8-27b, on the 22
   synthetic cases. The CVE cases were added after it ran. The groq, gemini and openrouter runs are

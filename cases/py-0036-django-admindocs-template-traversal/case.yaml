@@ -1,0 +1,31 @@
+id: py-0036-django-admindocs-template-traversal
+title: admindocs template view joins the template name without safe_join
+language: python
+since: '0.2'
+difficulty: easy
+tags:
+- security
+- path-traversal
+- web
+- cve
+source:
+  kind: cve
+  ref: https://github.com/django/django/commit/dfaba12cda060b8b292ae1d271b44bf810b1c5b9
+  license: BSD-3-Clause
+  cve: CVE-2021-33203
+  fixed_in: Django 3.2.4 / 3.1.12 / 2.2.24
+  notes: pr.diff is the fix's change to django/contrib/admindocs/views.py, reversed (tests and release notes left
+    out); repo/ is the whole file at the fix commit.
+bugs:
+- file: django/contrib/admindocs/views.py
+  lines:
+  - 332
+  - 334
+  class: path_traversal
+  cwe: CWE-22
+  severity: medium
+  description: The template name from the URL is joined with a template directory using '/', not safe_join, so a
+    staff user can read any file on the server via '../' in the template name.
+context:
+  related: []
+known_issues: []

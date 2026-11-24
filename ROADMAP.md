@@ -99,6 +99,15 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
       later-fixed commits (the "bug introduced by PR X, fixed by PR Y" pattern), aiming for
       at least half real cases in v0.2. Progress: CVE batch 2 (py-0035..0038, `since: "0.2"`).
 
+- [ ] **Widen CVE bug ranges for v0.2** (decided 2026-11-24): each CVE bug's range covers the whole
+      vulnerable hunk, and a bug may list several ranges (e.g. the second call site) instead of a
+      `known_issues` entry. Ships with the v0.2 bump; v0.1 keeps its narrow ranges, documented as a
+      matcher artifact in the findings report. Needs a SPEC + scoring change (gated: `needs-owner`).
+- Decision 2026-11-24: **keep k = 3 at temperature 0.** Groq's catch/miss varies across runs on
+  4 of 23 bugs, so repeats aren't wasted; the cost of correlated runs is handled by computing
+  per-run recall intervals with the bug as the unit (done). Revisit if every lineup provider
+  turns out deterministic.
+
 ## v0.2 — breadth and contributors
 - [ ] **Modify-existing-file synthetic cases (8):** PRs that edit existing code so L1 differs from
       L0 (e.g. a refactor that drops an authz check, a changed default, a removed lock).
@@ -116,14 +125,6 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
 
 ## Ideas (unapproved)
 <!-- Sessions add ideas here; the owner promotes them above. -->
-- Widen CVE bug ranges (or allow several ranges per bug), alongside the defect-check matcher
-  (RISKS §5). In the Groq run, most CVE "misses" were the right vulnerability flagged a few lines
-  outside ±2 (e.g. urllib3 line 187 vs 190) or at the second call site. Changes ground truth, so
-  it belongs to v0.2.
 - Store each review's raw model response, or at least count findings `parse_review` drops. The only
   miss in the first complete run (py-0004 at L1) looks like dropped findings: the summary names the
   bug but the findings list is empty. Today that can't be confirmed.
-- k = 3 at `temperature: 0` gives three identical runs on deterministic providers (Cerebras: 81/81
-  identical groups), so any-of-k vs all-of-k measures nothing for them. Options: sample at a non-zero
-  temperature (a spec change, so a new BENCH_VERSION), or run k = 1 for providers shown to be
-  deterministic.

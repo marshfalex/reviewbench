@@ -141,7 +141,7 @@ Every rate is published as `hits/n (%, Wilson 95% CI)`.
 |---|---|---|
 | recall any-of-k | planted bugs | caught in at least one of the k runs |
 | recall all-of-k | planted bugs | caught in every one of the k runs |
-| per-run recall | bug × run | caught in that run |
+| per-run recall | bug × run | caught in that run. Its **interval uses the bug as the unit**: each bug contributes its catch fraction over its k runs and n = number of bugs, because runs of one bug are correlated (identical at temperature 0 on deterministic providers) |
 | precision (adjudicated) | adjudicated findings | (hit + known + valid) / (hit + known + valid + invalid). **Unadjudicated findings are excluded** and their count is always published next to it |
 | control runs with confirmed FP | clean-control runs | runs with ≥1 `invalid` finding |
 | errored runs | runs | API failure, refusal, over budget, unparseable output; excluded from the rates above and reported |

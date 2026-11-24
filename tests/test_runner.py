@@ -418,3 +418,17 @@ def test_precision_hidden_until_findings_are_judged(tmp_path):
     save_verdicts(p, {i: {"verdict": "invalid", "by": "human", "note": ""} for i in ids})
     row = next(line for line in leaderboard(tmp_path).splitlines() if "`m`" in line)
     assert "1/6 (17%" in row and "not measured" not in row
+
+
+def test_per_run_interval_counts_bugs_not_runs(tmp_path):
+    from reviewbench.report import per_run_by_bug
+    from reviewbench.stats import wilson_interval
+
+    cases = [c for c in discover((CASES, "public")) if c.id == "py-0001-sql-injection"]
+    hit = Finding("app/users.py", 6, "security", "critical", "SQL injection", "f-string")
+    doc = run(cases, ReplayReviewer(model="m", fn=lambda _: [hit]), ["L0"], 3, tmp_path / "a.json",
+              log=lambda m: None)
+    rate, lo, hi, n = per_run_by_bug(doc, "L0")
+    assert (rate, n) == (1.0, 1)  # 3 identical runs of one bug are one observation, not three
+    assert (lo, hi) == wilson_interval(1, 1) and lo < wilson_interval(3, 3)[0]
+    assert "3/3 runs (100%; 95% CI 21–100 over 1 bugs)" in leaderboard(tmp_path)

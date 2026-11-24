@@ -6,15 +6,15 @@ Created 2026-11-19T17:36:18+00:00, k=3 runs per case and level, status `complete
 
 | level | difficulty | any-of-k recall | all-of-k recall | per-run recall | precision (adjudicated) | control runs w/ FP | unadjudicated | errors |
 |---|---|---|---|---|---|---|---|---|
-| L0 | all | 23/23 (100%, 86–100) | 23/23 (100%, 86–100) | 69/69 (100%, 95–100) | not measured (15 of 15 unjudged) | 0/12 (0%, 0–24) | 15 | 0 |
-| L0 | easy | 15/15 (100%, 80–100) | 15/15 (100%, 80–100) | 45/45 (100%, 92–100) | not measured (15 of 15 unjudged) | 0/12 (0%, 0–24) | 12 | 0 |
-| L0 | hard | 8/8 (100%, 68–100) | 8/8 (100%, 68–100) | 24/24 (100%, 86–100) | not measured (15 of 15 unjudged) | n/a | 3 | 0 |
-| L1 | all | 22/23 (96%, 79–99) | 22/23 (96%, 79–99) | 66/69 (96%, 88–98) | not measured (15 of 15 unjudged) | 0/12 (0%, 0–24) | 15 | 0 |
-| L1 | easy | 14/15 (93%, 70–99) | 14/15 (93%, 70–99) | 42/45 (93%, 82–98) | not measured (15 of 15 unjudged) | 0/12 (0%, 0–24) | 12 | 0 |
-| L1 | hard | 8/8 (100%, 68–100) | 8/8 (100%, 68–100) | 24/24 (100%, 86–100) | not measured (15 of 15 unjudged) | n/a | 3 | 0 |
-| L2 | all | 23/23 (100%, 86–100) | 23/23 (100%, 86–100) | 69/69 (100%, 95–100) | not measured (12 of 12 unjudged) | 0/12 (0%, 0–24) | 12 | 0 |
-| L2 | easy | 15/15 (100%, 80–100) | 15/15 (100%, 80–100) | 45/45 (100%, 92–100) | not measured (12 of 12 unjudged) | 0/12 (0%, 0–24) | 9 | 0 |
-| L2 | hard | 8/8 (100%, 68–100) | 8/8 (100%, 68–100) | 24/24 (100%, 86–100) | not measured (12 of 12 unjudged) | n/a | 3 | 0 |
+| L0 | all | 23/23 (100%, 86–100) | 23/23 (100%, 86–100) | 69/69 runs (100%; 95% CI 86–100 over 23 bugs) | not measured (15 of 15 unjudged) | 0/12 (0%, 0–24) | 15 | 0 |
+| L0 | easy | 15/15 (100%, 80–100) | 15/15 (100%, 80–100) | 45/45 runs (100%; 95% CI 80–100 over 15 bugs) | not measured (15 of 15 unjudged) | 0/12 (0%, 0–24) | 12 | 0 |
+| L0 | hard | 8/8 (100%, 68–100) | 8/8 (100%, 68–100) | 24/24 runs (100%; 95% CI 68–100 over 8 bugs) | not measured (15 of 15 unjudged) | n/a | 3 | 0 |
+| L1 | all | 22/23 (96%, 79–99) | 22/23 (96%, 79–99) | 66/69 runs (96%; 95% CI 79–99 over 23 bugs) | not measured (15 of 15 unjudged) | 0/12 (0%, 0–24) | 15 | 0 |
+| L1 | easy | 14/15 (93%, 70–99) | 14/15 (93%, 70–99) | 42/45 runs (93%; 95% CI 70–99 over 15 bugs) | not measured (15 of 15 unjudged) | 0/12 (0%, 0–24) | 12 | 0 |
+| L1 | hard | 8/8 (100%, 68–100) | 8/8 (100%, 68–100) | 24/24 runs (100%; 95% CI 68–100 over 8 bugs) | not measured (15 of 15 unjudged) | n/a | 3 | 0 |
+| L2 | all | 23/23 (100%, 86–100) | 23/23 (100%, 86–100) | 69/69 runs (100%; 95% CI 86–100 over 23 bugs) | not measured (12 of 12 unjudged) | 0/12 (0%, 0–24) | 12 | 0 |
+| L2 | easy | 15/15 (100%, 80–100) | 15/15 (100%, 80–100) | 45/45 runs (100%; 95% CI 80–100 over 15 bugs) | not measured (12 of 12 unjudged) | 0/12 (0%, 0–24) | 9 | 0 |
+| L2 | hard | 8/8 (100%, 68–100) | 8/8 (100%, 68–100) | 24/24 runs (100%; 95% CI 68–100 over 8 bugs) | not measured (12 of 12 unjudged) | n/a | 3 | 0 |
 
 ## Per case
 
@@ -101,3 +101,4 @@ Created 2026-11-19T17:36:18+00:00, k=3 runs per case and level, status `complete
 | py-0027-gitpython-clone-ext-protocol-rce | L0 | 3/3 | 3 | 3 | 0 | 0 | 0 | 0 |
 | py-0027-gitpython-clone-ext-protocol-rce | L1 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
 | py-0027-gitpython-clone-ext-protocol-rce | L2 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
+

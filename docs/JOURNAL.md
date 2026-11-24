@@ -287,3 +287,19 @@ Append-only. One short entry per working session: what was done, what was learne
   idea (done in #16) and the urllib3 held-out idea (resolved).
 - Mistake caught: mid-merge I ran `git checkout origin/main -- .`, which would have discarded the
   branch's roadmap edits. I aborted the merge and redid it before committing anything.
+
+## 2026-11-24 — per-run intervals use the bug as the unit; two pending decisions made
+- The other session's finding (cerebras's 3 runs are byte-identical) means per-run Wilson intervals
+  over 69 bug × run observations overstated the evidence ~√3-fold. Measured: cerebras identical on
+  23/23 L0 bug cases; groq's catch/miss differs across runs on only 4/23.
+- Reports and leaderboard now show per-run recall as "58/69 runs (84%; 95% CI 65–94 over 23 bugs)".
+  Done in report.py (scoring.py is gated); SPEC §6 documents it.
+- **This reversed a published claim.** The findings report said cerebras beats groq because the
+  intervals didn't overlap (95–100 vs 74–91). Per-bug intervals overlap at every level (86–100 vs
+  65–94 at L0). Report and RISKS corrected: no model ranking is supported yet.
+- Owner delegated decisions. Made the two that were waiting:
+  - Keep k = 3. Groq varies, so the repeats are cheap insurance.
+  - Widen CVE bug ranges in v0.2 only (whole vulnerable hunk, multiple ranges). v0.1 stays frozen.
+- Owner also turned off the twice-daily "next roadmap item" scheduled task and archived the
+  builder session; this session continues the work directly.
+- Next: real-PR controls (7/36), then refuse-to-resume on served-model change.

@@ -8,7 +8,8 @@ from pathlib import Path
 from reviewbench.adjudicate import load_verdicts
 from reviewbench.heldout import all_slices, leaks
 from reviewbench.runner import retryable
-from reviewbench.scoring import COUNTED, per_case_table, score
+from reviewbench.scoring import COUNTED, bug_matches, per_case_table, score
+from reviewbench.stats import wilson_interval
 
 # SPEC §10 noise flag: control FPR point estimate above this, or more counted findings per review.
 NOISE_FPR = 0.20
@@ -61,6 +62,38 @@ def noise_reasons(doc: dict, level: str, ctrl: dict, ctrl_unjudged: int = 0) -> 
     return reasons
 
 
+def per_run_by_bug(doc: dict, level: str, split: str = "public", difficulty: str | None = None):
+    """Per-run recall with the bug, not the run, as the unit of the interval (RISKS §2).
+
+    The k runs of one bug are highly correlated (at temperature 0 they are often byte-identical),
+    so a Wilson interval over bug x run pretends to have k times more data than it does. Here each
+    bug contributes its catch fraction over its runs, and the interval uses n = number of bugs.
+    Returns (rate, lo, hi, n_bugs) or None."""
+    fracs = {}
+    for r in doc["records"]:
+        t = doc["cases"].get(r["case"], {})
+        if (r["level"] != level or r.get("error") or t.get("split", "public") != split
+                or (difficulty and t.get("difficulty") != difficulty)):
+            continue
+        for i, b in enumerate(t.get("bugs") or []):
+            caught = any(f["severity"] in COUNTED and bug_matches(f, b) for f in r["findings"])
+            fracs.setdefault((r["case"], i), []).append(caught)
+    if not fracs:
+        return None
+    hits = sum(sum(v) / len(v) for v in fracs.values())
+    n = len(fracs)
+    lo, hi = wilson_interval(hits, n)
+    return hits / n, lo, hi, n
+
+
+def _pr(d: dict, by_bug) -> str:
+    """Per-run recall cell: run counts, then the interval computed per bug."""
+    if not d["n"] or by_bug is None:
+        return _r(d)
+    rate, lo, hi, n = by_bug
+    return f"{d['hits']}/{d['n']} runs ({rate:.0%}; 95% CI {lo:.0f}–{hi:.0f} over {n} bugs)"
+
+
 def _r(d: dict) -> str:
     if not d["n"]:
         return "n/a"
@@ -90,8 +123,10 @@ def run_report(results: dict, verdicts: dict) -> str:
             j, u = judged_counts(results, verdicts, level, split) if split == "public" \
                 else (0, m["unadjudicated_findings"])
             prec = precision_cell(m["precision_adjudicated"], j, u)
+            by_bug = per_run_by_bug(results, level, split, None if diff == "all" else diff) \
+                if split == "public" else None
             out.append(f"| {level} | {diff} | {_r(m['any_of_k'])} | {_r(m['all_of_k'])} | "
-                       f"{_r(m['per_run_recall'])} | {prec} | "
+                       f"{_pr(m['per_run_recall'], by_bug)} | {prec} | "
                        f"{_r(m['control_runs_with_confirmed_fp'])} | {m['unadjudicated_findings']} | "
                        f"{m['errored_runs']} |")
         out.append("")
@@ -145,11 +180,12 @@ def leaderboard(results_dir: Path) -> str:
                         if split == "public" else []
                     flag = f" ⚠ noisy: {', '.join(noisy)}" if noisy else ""
                     pr = a["per_run_recall"]
+                    by_bug = per_run_by_bug(doc, level, split) if split == "public" else None
                     # Unfinished results go last: 12/12 on a sliver of the cases must not outrank a full run.
                     sort_key = (level, bool(status), -(pr["rate"] if pr["n"] else -1), doc["provider"], doc["model"])
                     rows.append((sort_key,
                                  f"| {doc['provider']} / `{doc['model']}`{status}{flag} | {level} | {doc['k']} | "
-                                 f"**{_r(pr)}** | {_r(a['any_of_k'])} | {_r(a['all_of_k'])} | {hard} | "
+                                 f"**{_pr(pr, by_bug)}** | {_r(a['any_of_k'])} | {_r(a['all_of_k'])} | {hard} | "
                                  f"{prec} | {_r(a['control_runs_with_confirmed_fp'])} | "
                                  f"{a['unadjudicated_findings']} | [{p.stem}]({p.name}) |"))
             if not rows:
@@ -158,6 +194,8 @@ def leaderboard(results_dir: Path) -> str:
                     f"Precision is shown only once {MIN_JUDGED_SHARE:.0%} of the findings needing a human verdict "
                     "have one; control runs w/ FP counts confirmed false positives only (a lower bound "
                     "while control findings are unjudged). "
+                    "Per-run recall's interval treats each bug as one observation (its k runs are "
+                    "correlated, often identical at temperature 0), so it is wider than a per-run one. "
                     "Sorted by per-run recall within each context level, unfinished results last. "
                     "⚠ noisy = control false-positive "
                     f"rate over {NOISE_FPR:.0%} or more than {NOISE_FINDINGS_PER_REVIEW:g} findings per review.", "",

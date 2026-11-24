@@ -1,0 +1,18 @@
+id: py-0065-clean-flask-cli-super-in-comprehension
+title: "flask: avoid zero-argument super() inside a list comprehension before Python 3.12"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/pallets/flask/commit/1af8f95785b85d0937153ee63d504c0b51934d80
+  license: BSD-3-Clause
+  notes: Merged 2024-01. Every line the commit added to src/flask/cli.py is still present on upstream main as
+    of 2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and the
+    changed functions; pr.diff has exactly the upstream commit's changed lines in that file. Label
+    is "no known defect", not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

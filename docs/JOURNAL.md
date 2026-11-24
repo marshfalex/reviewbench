@@ -417,3 +417,12 @@ Append-only. One short entry per working session: what was done, what was learne
 - Turned one lesson into a test: two cases may not share an upstream commit (the near-duplicate
   CVE import).
 - Owner's direction: keep working autonomously; bring major direction choices to them.
+
+## 2026-11-24 — controls batch 6 (py-0063..0067)
+- rich daf6e38f and f540b003, Flask 1af8f957 and e679a85b, click 46b78bc. Controls: 32 of 36.
+- Independent reviewer: all 5 PASS. Acted on two notes: py-0063's title undersold the change (it
+  also fixes the xterm colour-cube mapping), and py-0067's `params.extend` mutates the caller's
+  list. That's a real latent quirk, so it's now a `known_issues` entry: a reviewer who flags it
+  earns a valid finding instead of a false positive on a control.
+- Lesson for controls (added to LESSONS): "no known defect" isn't "no issue a reviewer could fairly
+  raise". Record such quirks as known_issues.

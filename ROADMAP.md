@@ -75,8 +75,8 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
       files), then `--rater second` (by a second person, or the owner a few days later), then
       `python -m reviewbench agreement results/*_v0.1.json`.
 - [ ] **Controls to ≥36,** labeled "no known defect" (real merged PRs, provenance recorded).
-      Progress: 27 of 36 (4 v0.1 synthetic, py-0030 synthetic, 22 upstream from 8 projects:
-      click, Flask, Jinja2, attrs, httpx, rich, Starlette, pydantic). 9 to go. Never take a commit that is,
+      Progress: 32 of 36 (4 v0.1 synthetic, py-0030 synthetic, 27 upstream from 8 projects:
+      click, Flask, Jinja2, attrs, httpx, rich, Starlette, pydantic). 4 to go. Never take a commit that is,
       or sits in the same file as, any security fix, so controls can't hint at a CVE case. Method that
       works: pick small single-file behavior changes ≥2 years old whose lines are unchanged on
       upstream main today; excerpt just the enclosing method so the upstream diff applies as-is.

@@ -1,0 +1,25 @@
+id: py-0067-clean-click-command-params-argument
+title: "click: the command decorator accepts params and appends decorated params to them"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/pallets/click/commit/46b78bcb80ac4f81e3248a83725c6f0adcc1089a
+  license: BSD-3-Clause
+  notes: Merged 2022-02. Every line the commit added to src/click/decorators.py is still present on upstream main as
+    of 2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and the
+    changed functions; pr.diff has exactly the upstream commit's changed lines in that file. Label
+    is "no known defect", not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues:
+- match: mutat
+  file: src/click/decorators.py
+  note: params.extend modifies the caller's list in place, so one list passed to two commands
+    collects both commands' decorated params. Upstream behaviour; a finding about it is valid.
+- match: in place
+  file: src/click/decorators.py
+  note: same issue, other wording.

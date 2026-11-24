@@ -331,3 +331,12 @@ Append-only. One short entry per working session: what was done, what was learne
   header; the excerpt check (+/- lines identical to upstream) caught it, and the click cases
   re-excerpt identically.
 - Controls: 17 of 36.
+
+## 2026-11-24 — the held-out set is exposed
+- An automated check blocked this session from naming a held-out case in the journal. Looking
+  further: the roadmap's owner item had named all 5 held-out cases since 2026-11-19. They're in git
+  history, so removing the text doesn't un-expose them.
+- Removed the names from the current roadmap, recorded the exposure in RISKS §4, and added an
+  `[owner]` item to replace the held-out set. Rule for every session: never name held-out cases,
+  their CVEs or their projects anywhere in this repository.
+- Scanned all current files for the five identifiers: none remain.

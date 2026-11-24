@@ -34,8 +34,12 @@ without saying so in the table.
 ## 4. Contamination
 **Breaks:** recall on public cases, especially CVEs, whose fixes and write-ups are in training data.
 **Status:** the held-out set is 5 cases, too few to detect a public-vs-held-out gap, and no
-provider is currently cleared to receive it (docs/providers.md).
-**Fix:** grow held-out to ≥30 real cases; clear one provider; report the gap with intervals.
+provider is currently cleared to receive it (docs/providers.md). **The 5 are also exposed:** the
+public roadmap named them from 2026-11-19 until 2026-11-24, and git history keeps that text, so
+they can't serve as a contamination check any more. Found 2026-11-24 when an automated check stopped
+a session from naming one of them in the journal.
+**Fix:** replace the held-out set (owner, roadmap) and grow it to ≥30 real cases; clear one
+provider; report the gap with intervals. Never name a held-out case anywhere in this repository.
 
 ## 5. The matcher is crude
 **Breaks:** recall in both directions: a finding at the right line for the wrong reason counts

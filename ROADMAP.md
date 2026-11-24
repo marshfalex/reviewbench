@@ -7,9 +7,8 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
 - [x] **Held-out loader.** Load extra cases from the directory in `REVIEWBENCH_HELDOUT` (if set),
       tag them `split: heldout`, report them separately, and make sure nothing about them is ever
       written into committed results (only aggregate numbers). Tests with a temp dir.
-- [x] [owner] Create private repo `marshfalex/reviewbench-heldout` and add the 5 held-out CVE cases
-      (PyJWT iss CVE-2024-53861, urllib3 Proxy-Authorization CVE-2024-37891, Flask Vary: Cookie
-      CVE-2023-30861, Django Trunc/Extract CVE-2022-34265, python-multipart ReDoS CVE-2024-24762).
+- [x] [owner] Create private repo `marshfalex/reviewbench-heldout` and add 5 held-out cases
+      (which ones is recorded only in that repo; see RISKS §4).
 - [ ] [owner] **Let the `benchmark` workflow read held-out cases** (no cost; prerequisite: the
       held-out cases exist). The owner needs to:
       1. Create a fine-grained personal access token scoped to `marshfalex/reviewbench-heldout`
@@ -110,6 +109,11 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
   4 of 23 bugs, so repeats aren't wasted; the cost of correlated runs is handled by computing
   per-run recall intervals with the bug as the unit (done). Revisit if every lineup provider
   turns out deterministic.
+
+- [ ] [owner] **Replace the held-out set** (RISKS §4). The current 5 cases were named in this
+      public roadmap from 2026-11-19 to 2026-11-24, so they are exposed. Put ≥10 new real cases in
+      the private repo, retire the old 5 (or move them to the public set), and never name held-out
+      cases, their CVEs or their projects in this repository: not in docs, PRs, commits or logs.
 
 ## v0.2 — breadth and contributors
 - [ ] **Modify-existing-file synthetic cases (8):** PRs that edit existing code so L1 differs from

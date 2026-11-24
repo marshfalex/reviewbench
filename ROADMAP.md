@@ -45,7 +45,7 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
 - [x] **Import public CVE cases, batch 1** (reverse the fix commit; pin it; verify license):
       CVE-2018-18074 requests, CVE-2023-43804 urllib3, CVE-2024-22195 Jinja2,
       CVE-2024-23334 aiohttp, CVE-2022-24439 GitPython.
-- [ ] **Import public CVE cases, batch 2:** CVE-2023-41040 GitPython, CVE-2021-33203 Django,
+- [x] **Import public CVE cases, batch 2:** CVE-2023-41040 GitPython, CVE-2021-33203 Django,
       CVE-2022-29217 PyJWT, CVE-2023-32681 requests.
 - [ ] **Import public CVE cases, batch 3:** CVE-2024-35195 requests, CVE-2023-45803 urllib3,
       CVE-2024-34064 Jinja2, CVE-2019-10906 Jinja2.
@@ -97,7 +97,7 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
       model family wrote the synthetic cases.
 - [ ] **Shift the case mix toward real bugs:** CVE batches 2–3, plus upstream reverted or
       later-fixed commits (the "bug introduced by PR X, fixed by PR Y" pattern), aiming for
-      at least half real cases in v0.2.
+      at least half real cases in v0.2. Progress: CVE batch 2 (py-0035..0038, `since: "0.2"`).
 
 ## v0.2 — breadth and contributors
 - [ ] **Modify-existing-file synthetic cases (8):** PRs that edit existing code so L1 differs from

@@ -12,7 +12,7 @@ ALL = discover((CASES, "public"))
 def test_case_counts():
     from reviewbench.cases import active
 
-    assert len(ALL) == 57 and len(active(ALL, "0.1")) == 27  # v0.1 stays frozen at 27
+    assert len(ALL) == 62 and len(active(ALL, "0.1")) == 27  # v0.1 stays frozen at 27
     assert {c.id for c in ALL if c.since == "0.2"} == {
         "py-0028-truthy-permission-decision", "py-0029-ttl-seconds-vs-ms-clock",
         "py-0030-clean-sort-column-whitelist", "py-0031-refactor-drops-login-required",
@@ -28,8 +28,11 @@ def test_case_counts():
         "py-0050-jinja-sandbox-format-map", "py-0051-urllib3-303-body-not-dropped",
         "py-0052-requests-verify-false-pool-reuse", "py-0053-clean-attrs-cached-property-attributeerror",
         "py-0054-clean-httpx-send-timeout", "py-0055-clean-httpx-encoding-after-text",
-        "py-0056-clean-rich-progress-negative-time", "py-0057-clean-rich-traceback-missing-file"}
-    assert sum(c.is_control for c in ALL) == 22  # toward the SPEC §10 target of 36
+        "py-0056-clean-rich-progress-negative-time", "py-0057-clean-rich-traceback-missing-file",
+        "py-0058-clean-starlette-exception-str-kwargs", "py-0059-clean-pydantic-model-construct-private",
+        "py-0060-clean-pydantic-fieldinfo-repr-default", "py-0061-clean-pydantic-json-schema-usage-error",
+        "py-0062-clean-rich-text-tab-size"}
+    assert sum(c.is_control for c in ALL) == 27  # toward the SPEC §10 target of 36
     ALL_V01 = active(ALL, "0.1")
     assert sum(c.is_control for c in ALL_V01) == 4
     bugs = [c for c in ALL_V01 if not c.is_control]

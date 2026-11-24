@@ -1,0 +1,16 @@
+diff --git a/starlette/exceptions.py b/starlette/exceptions.py
+--- a/starlette/exceptions.py
++++ b/starlette/exceptions.py
+@@ -8,8 +8,12 @@ import warnings
+ class HTTPException:
+     # [... omitted ...]
+ 
++    def __str__(self) -> str:
++        return f"{self.status_code}: {self.detail}"
+ 
+ 
+ class WebSocketException:
+     # [... omitted ...]
+ 
++    def __str__(self) -> str:
++        return f"{self.code}: {self.reason}"

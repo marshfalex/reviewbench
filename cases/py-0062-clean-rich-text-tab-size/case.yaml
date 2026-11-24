@@ -1,0 +1,18 @@
+id: py-0062-clean-rich-text-tab-size
+title: "rich: expand_tabs falls back to a tab size of 8 instead of asserting"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/Textualize/rich/commit/720800e6930d85ad027b1e9bd0cbb96b5e994ce3
+  license: MIT
+  notes: Merged 2023-08. Every line the commit added to rich/text.py is still present on upstream main as
+    of 2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and the
+    changed functions; pr.diff has exactly the upstream commit's changed lines in that file. Label
+    is "no known defect", not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

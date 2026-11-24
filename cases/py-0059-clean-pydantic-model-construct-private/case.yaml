@@ -1,0 +1,18 @@
+id: py-0059-clean-pydantic-model-construct-private
+title: "pydantic: model_construct() sets private attributes passed as values"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/pydantic/pydantic/commit/2b09cf48c4737898679b62cfbd004d9d1083877a
+  license: MIT
+  notes: Merged 2024-01. Every line the commit added to pydantic/main.py is still present on upstream main as
+    of 2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and the
+    changed functions; pr.diff has exactly the upstream commit's changed lines in that file. Label
+    is "no known defect", not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

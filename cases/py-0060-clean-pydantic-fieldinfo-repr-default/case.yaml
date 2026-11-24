@@ -1,0 +1,18 @@
+id: py-0060-clean-pydantic-fieldinfo-repr-default
+title: "pydantic: FieldInfo repr includes default=None when it is set"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/pydantic/pydantic/commit/332eac4beb9f620fe8b13dc1aa59ef59ac5c67ae
+  license: MIT
+  notes: Merged 2024-02. Every line the commit added to pydantic/fields.py is still present on upstream main as
+    of 2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and the
+    changed functions; pr.diff has exactly the upstream commit's changed lines in that file. Label
+    is "no known defect", not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

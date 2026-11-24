@@ -1,0 +1,18 @@
+id: py-0058-clean-starlette-exception-str-kwargs
+title: "starlette: str(HTTPException/WebSocketException) is no longer empty when built with keyword arguments"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/encode/starlette/commit/2168e47052239da5df35d5353bb986f760c51cef
+  license: BSD-3-Clause
+  notes: Merged 2023-06. Every line the commit added to starlette/exceptions.py is still present on upstream main as
+    of 2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and the
+    changed functions; pr.diff has exactly the upstream commit's changed lines in that file. Label
+    is "no known defect", not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

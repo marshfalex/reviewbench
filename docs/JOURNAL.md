@@ -371,3 +371,14 @@ Append-only. One short entry per working session: what was done, what was learne
 - py-0053 (attrs 88e2896), py-0054/55 (httpx 6d852d3, 59df819), py-0056/57 (rich 368e8ad7,
   3469674b). Skipped httpx auth, URL-parsing and proxy fixes as security-adjacent.
 - Controls: 22 of 36. 17 of them are real upstream PRs from 6 projects.
+
+## 2026-11-24 — five more upstream controls; independent review before each PR
+- py-0058 (Starlette 2168e47), py-0059..0061 (pydantic 2b09cf48c, 332eac4be, e1a5c1818), py-0062
+  (rich 720800e6). Controls: 27 of 36, 22 of them real upstream PRs from 8 projects.
+- Dropped three candidates whose change sits in a class body or class docstring rather than a
+  function (Starlette 93074e8, pydantic 28ed33f1b, attrs bfd7bb4): the excerpt script only keeps
+  functions, so their diffs couldn't be reproduced exactly.
+- Process change (owner asked whether this is a proper senior-engineer process; honest answer: not
+  without independent review). From now on every PR is reviewed by a separate reviewer agent before
+  it opens. This batch: all 5 PASS (diff applies, excerpt coherent, no defect introduced). A full
+  audit of the PRs merged on 2026-11-23/24 is running; its findings get fixed in follow-up PRs.

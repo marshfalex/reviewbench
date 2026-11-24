@@ -532,3 +532,36 @@ def test_mid_body_drops_and_garbled_bodies_are_retryable(monkeypatch):
     monkeypatch.setattr(requests, "post", lambda *a, **k: Garbled())
     result = openai_compat.GroqReviewer()._review("p")
     assert result.error == "transient: unreadable response body" and retryable(result.error)
+
+
+def test_frozen_lineup_entries_are_not_scheduled(tmp_path, monkeypatch):
+    from reviewbench.lineup import plan
+
+    (tmp_path / "lineup.yaml").write_text(
+        "k: 3\nlevels: L0\nmodels:\n"
+        "  - {provider: groq, model: slow-one, frozen: true}\n"
+        "  - {provider: groq, model: 'auto:versatile'}\n")
+    monkeypatch.setenv("GROQ_API_KEY", "g")
+    logs = []
+    entries = plan(tmp_path / "lineup.yaml", tmp_path, log=logs.append,
+                   lister=lambda p: ["meta-llama/llama-guard-4-12b", "llama-3.3-70b-versatile"])
+    assert entries == [{"provider": "groq", "model": "llama-3.3-70b-versatile", "k": "3", "levels": "L0"}]
+    assert any("frozen" in m for m in logs)
+
+
+def test_repo_lineup_freezes_slow_models_and_has_fast_ones():
+    import yaml
+
+    cfg = yaml.safe_load((CASES.parent / "lineup.yaml").read_text())
+    frozen = {e["provider"] for e in cfg["models"] if e.get("frozen") is True}
+    assert frozen == {"gemini", "openrouter"}
+    active = [e for e in cfg["models"] if not e.get("frozen")]
+    assert sum(e["provider"] in ("groq", "cerebras") for e in active) >= 5
+
+
+def test_pick_auto_prefers_the_bigger_number_not_the_later_string():
+    from reviewbench.lineup import pick_auto
+
+    assert pick_auto(["gpt-oss-20b", "gpt-oss-120b", "gpt-oss-safeguard-120b"], "gpt-oss") == "gpt-oss-120b"
+    assert pick_auto(["qwen3-32b", "qwen3-235b-a22b"], "qwen3") == "qwen3-235b-a22b"
+    assert pick_auto(["model-3.9", "model-3.10"], "model") == "model-3.10"

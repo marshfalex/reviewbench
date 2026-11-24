@@ -434,3 +434,18 @@ Append-only. One short entry per working session: what was done, what was learne
   is now ~9% (vs 24% at n = 12), so the noise flag becomes meaningful in v0.2.
 - v0.2 now holds 44 cases beyond v0.1's 27. The next major step (a version bump and full re-run)
   is a direction call for the owner.
+
+## 2026-11-24 — owner decisions: freeze slow models; scoring before v0.2
+- Found that gemini and nemotron gain only a few reviews per 6-hour run (free daily quotas): 40 and
+  54 of 243 after five days. Asked the owner; decision: freeze them (`frozen: true`, a new lineup
+  flag; their partial files stay on the leaderboard) and add fast free models: groq
+  `auto:versatile` and `auto:qwen3`, cerebras `auto:llama` and `auto:gpt-oss`. `auto:` skips the
+  entry if the provider lists no match, and guard/moderation models were already excluded.
+- Second decision: land multi-range bugs and the defect-check matcher before bumping to v0.2, so
+  v0.2 doesn't need a quick v0.3. All three steps touch gated files and wait for the owner.
+- Unknown until the next scheduled run: which ids the auto entries resolve to. Check the
+  benchmark job log.
+- Independent review caught that `pick_auto` used plain string order, so "newest" meant
+  "alphabetically last": `gpt-oss-20b` beat `gpt-oss-120b`, and `llama3.1-8b` beat `llama-3.3-70b`.
+  Fixed with a natural sort (digit runs compare as numbers) plus narrow cerebras needles. Added to
+  LESSONS.

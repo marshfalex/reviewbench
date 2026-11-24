@@ -4,6 +4,8 @@
 #
 # model: an exact id, or "auto:<text>" to pick the newest model whose id contains <text>
 #        from the provider's own model list (excluding preview/experimental/lite variants).
+# frozen: true keeps an entry for the record but stops scheduling it (e.g. a free tier too slow to
+#        ever finish); its partial results stay on the leaderboard, marked partial.
 # heldout_ok: held-out cases are sent only to entries with heldout_ok: true (enforced by
 #        `reviewbench run`/`estimate`; anything else, or a model missing here, is refused).
 #        Keep it false for free endpoints that may log or train on prompts.
@@ -16,8 +18,24 @@ models:
   - provider: gemini
     model: gemini-3-flash-preview  # auto:flash picked a model outside the free tier; this one answers
     heldout_ok: false
+    frozen: true  # 2026-11-24, owner decision: free quota allows only a few reviews/day (40/243 after 5 days)
   - provider: openrouter
     model: nvidia/nemotron-3-ultra-550b-a55b:free
+    heldout_ok: false
+    frozen: true  # 2026-11-24, owner decision: free quota allows only a few reviews/day (54/243 after 5 days)
+  # Fast free providers (added 2026-11-24). auto: picks the newest matching id and skips the entry
+  # if the provider lists none, so a renamed or retired model can't break the run.
+  - provider: groq
+    model: auto:versatile  # Groq's general Llama chat model
+    heldout_ok: false
+  - provider: groq
+    model: auto:qwen3
+    heldout_ok: false
+  - provider: cerebras
+    model: auto:llama-3.3-70b  # narrow on purpose: a bare "llama" could resolve to an 8B model
+    heldout_ok: false
+  - provider: cerebras
+    model: auto:gpt-oss-120b   # narrow on purpose: a bare "gpt-oss" could resolve to the 20B model
     heldout_ok: false
   - provider: cerebras
     model: auto:qwen

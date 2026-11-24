@@ -18,7 +18,14 @@ def pick_auto(model_ids: list[str], needle: str) -> str | None:
     """Newest-looking id containing `needle`, skipping preview/experimental variants."""
     ids = [m.removeprefix("models/") for m in model_ids]
     ok = [m for m in ids if needle.lower() in m.lower() and not any(x in m.lower() for x in EXCLUDE)]
-    return max(ok) if ok else None
+    return max(ok, key=_natural_key) if ok else None
+
+
+def _natural_key(model_id: str) -> list:
+    """Compare digit runs as numbers, so gpt-oss-120b > gpt-oss-20b and 3.10 > 3.9 (plain string
+    order would pick the smaller model)."""
+    import re
+    return [(0, int(t), "") if t.isdigit() else (1, 0, t) for t in re.split(r"(\d+)", model_id.lower()) if t]
 
 
 def list_models(provider: str) -> list[str]:
@@ -58,6 +65,9 @@ def plan(lineup_path: Path, results_dir: Path, lister=list_models, log=print,
     out = []
     for entry in cfg["models"]:
         provider, model = entry["provider"], str(entry.get("model") or "")
+        if entry.get("frozen") is True:  # kept for the record, not run any more (see its comment)
+            log(f"skip {provider}/{model}: frozen")
+            continue
         cls = ADAPTERS.get(provider)
         if cls is None or getattr(cls, "is_paid_provider", False) or provider == "anthropic":
             log(f"skip {provider}: not a free provider")

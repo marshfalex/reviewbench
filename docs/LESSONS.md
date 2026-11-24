@@ -33,6 +33,9 @@ Prefer turning a lesson into a test or validator rule over leaving it as advice.
   about the model is `rate_limited:` or `transient:` and therefore retryable; a file with
   retryable errors is never "complete". Check: `retryable()` in `runner.py` and the network-error
   tests in `tests/test_runner.py`.
+- **"Newest" model by string order** (2026-11-24). `pick_auto` used `max()` on ids, which picks
+  the alphabetically last (gpt-oss-20b over gpt-oss-120b). Rule: compare versions naturally, and
+  use narrow `auto:` needles. Check: `test_pick_auto_prefers_the_bigger_number_not_the_later_string`.
 - **A model can change behind its name.** Check: `run` refuses to mix served models in one file.
 
 ## Cases

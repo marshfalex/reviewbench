@@ -101,4 +101,3 @@ Created 2026-11-19T17:36:19+00:00, k=3 runs per case and level, status `complete
 | py-0027-gitpython-clone-ext-protocol-rce | L0 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
 | py-0027-gitpython-clone-ext-protocol-rce | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
 | py-0027-gitpython-clone-ext-protocol-rce | L2 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
-

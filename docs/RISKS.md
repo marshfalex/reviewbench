@@ -15,8 +15,10 @@ noise flag marks the control FPR as a lower bound while control findings are unj
 
 ## 2. n is far too small to rank models
 **Breaks:** any claim that model A beats model B.
-**Status:** 23 planted bugs in v0.1; Wilson 95% intervals are 15–40 points wide, and most models
-overlap. 4 controls (12 runs) can't measure a false-positive rate at all.
+**Status:** 23 planted bugs in v0.1. The k = 3 runs per bug are not independent (byte-identical
+for cerebras at temperature 0; groq's catch/miss differs across runs on only 4 of 23 bugs), so
+intervals use the bug as the unit (since 2026-11-24). They are 15–40 points wide and every model
+pair overlaps. 4 controls (12 runs) can't measure a false-positive rate at all.
 **Fix:** v0.2 targets: at least 100 planted bugs and 36 controls. Until then, report only
 differences whose intervals don't overlap, and say so.
 
@@ -64,6 +66,7 @@ rule.
 
 ## What this means for claims today
 The defensible statement right now is narrow: on 23 small, mostly synthetic Python bugs, the free
-models tested catch most of them at L0, and gpt-oss-120b misses more (per-run recall 84%, 95% CI
-74–91%) than qwen-3.8-27b (100%, 93–100). Nothing about precision, noise, real-world bug finding,
-or commercial reviewers is supported yet.
+models tested catch most of them from the diff alone (L0 per-run recall: qwen-3.8-27b 100%, 86–100;
+gpt-oss-120b 84%, 65–94; 95% CIs with the bug as the unit). The intervals overlap, so **no model
+ranking is supported**. Nothing about precision, noise, real-world bug finding, or commercial
+reviewers is supported yet.

@@ -6,14 +6,14 @@ Created 2026-11-19T17:36:19+00:00, k=3 runs per case and level, status `complete
 
 | level | difficulty | any-of-k recall | all-of-k recall | per-run recall | precision (adjudicated) | control runs w/ FP | unadjudicated | errors |
 |---|---|---|---|---|---|---|---|---|
-| L0 | all | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 18/18 (100%, 82–100) | not measured (1 of 1 unjudged) | n/a | 1 | 63 |
-| L0 | easy | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 18/18 (100%, 82–100) | not measured (1 of 1 unjudged) | n/a | 1 | 39 |
+| L0 | all | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 18/18 runs (100%; 95% CI 61–100 over 6 bugs) | not measured (1 of 1 unjudged) | n/a | 1 | 63 |
+| L0 | easy | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 18/18 runs (100%; 95% CI 61–100 over 6 bugs) | not measured (1 of 1 unjudged) | n/a | 1 | 39 |
 | L0 | hard | n/a | n/a | n/a | not measured (1 of 1 unjudged) | n/a | 0 | 24 |
-| L1 | all | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 18/18 (100%, 82–100) | not measured (3 of 3 unjudged) | n/a | 3 | 63 |
-| L1 | easy | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 18/18 (100%, 82–100) | not measured (3 of 3 unjudged) | n/a | 3 | 39 |
+| L1 | all | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 18/18 runs (100%; 95% CI 61–100 over 6 bugs) | not measured (3 of 3 unjudged) | n/a | 3 | 63 |
+| L1 | easy | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 18/18 runs (100%; 95% CI 61–100 over 6 bugs) | not measured (3 of 3 unjudged) | n/a | 3 | 39 |
 | L1 | hard | n/a | n/a | n/a | not measured (3 of 3 unjudged) | n/a | 0 | 24 |
-| L2 | all | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 17/17 (100%, 82–100) | not measured (7 of 7 unjudged) | n/a | 7 | 64 |
-| L2 | easy | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 17/17 (100%, 82–100) | not measured (7 of 7 unjudged) | n/a | 7 | 40 |
+| L2 | all | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 17/17 runs (100%; 95% CI 61–100 over 6 bugs) | not measured (7 of 7 unjudged) | n/a | 7 | 64 |
+| L2 | easy | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 17/17 runs (100%; 95% CI 61–100 over 6 bugs) | not measured (7 of 7 unjudged) | n/a | 7 | 40 |
 | L2 | hard | n/a | n/a | n/a | not measured (7 of 7 unjudged) | n/a | 0 | 24 |
 
 ## Per case
@@ -101,3 +101,4 @@ Created 2026-11-19T17:36:19+00:00, k=3 runs per case and level, status `complete
 | py-0027-gitpython-clone-ext-protocol-rce | L0 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
 | py-0027-gitpython-clone-ext-protocol-rce | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
 | py-0027-gitpython-clone-ext-protocol-rce | L2 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+

@@ -1,0 +1,37 @@
+id: py-0051-urllib3-303-body-not-dropped
+title: Redirect to GET after a 303 keeps the original request body and content headers
+language: python
+since: '0.2'
+difficulty: hard
+tags:
+- security
+- http
+- redirect
+- information-disclosure
+- cve
+source:
+  kind: cve
+  ref: https://github.com/urllib3/urllib3/commit/4e50fbc5db74e32cabd5ccc1ab81fc103adfe0b3
+  license: MIT
+  cve: CVE-2023-45803
+  advisory: GHSA-g4mx-q9vg-27p4
+  fixed_in: urllib3 2.0.7 / 1.26.18
+  notes: pr.diff is the fix's change to _collections.py, connectionpool.py and poolmanager.py, reversed. repo/ holds
+    the imports and the touched functions of each file at the fix commit.
+bugs:
+- file: src/urllib3/poolmanager.py
+  lines:
+  - 74
+  - 77
+  class: body_leak_on_redirect
+  cwe: CWE-200
+  severity: medium
+  description: On a 303 redirect the method becomes GET but the request body (and Content-Type/Length etc.) is still
+    sent to the redirect target, which may be another host. The fix drops the body and content-specific headers;
+    the PR removes that.
+context:
+  related: []
+known_issues:
+- match: body
+  file: src/urllib3/connectionpool.py
+  note: same bug at the connection-pool redirect path

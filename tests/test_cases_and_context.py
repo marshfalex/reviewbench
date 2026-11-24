@@ -12,7 +12,7 @@ ALL = discover((CASES, "public"))
 def test_case_counts():
     from reviewbench.cases import active
 
-    assert len(ALL) == 48 and len(active(ALL, "0.1")) == 27  # v0.1 stays frozen at 27
+    assert len(ALL) == 52 and len(active(ALL, "0.1")) == 27  # v0.1 stays frozen at 27
     assert {c.id for c in ALL if c.since == "0.2"} == {
         "py-0028-truthy-permission-decision", "py-0029-ttl-seconds-vs-ms-clock",
         "py-0030-clean-sort-column-whitelist", "py-0031-refactor-drops-login-required",
@@ -24,7 +24,9 @@ def test_case_counts():
         "py-0042-clean-click-confirm-default-none", "py-0043-clean-click-choice-complete-case",
         "py-0044-clean-flask-untag-without-object-hook", "py-0045-clean-flask-cert-option-eager",
         "py-0046-clean-flask-config-from-file-text", "py-0047-clean-jinja-required-block-check",
-        "py-0048-clean-jinja-get-template-separator"}
+        "py-0048-clean-jinja-get-template-separator", "py-0049-jinja-xmlattr-invalid-key-chars",
+        "py-0050-jinja-sandbox-format-map", "py-0051-urllib3-303-body-not-dropped",
+        "py-0052-requests-verify-false-pool-reuse"}
     assert sum(c.is_control for c in ALL) == 17  # toward the SPEC §10 target of 36
     ALL_V01 = active(ALL, "0.1")
     assert sum(c.is_control for c in ALL_V01) == 4
@@ -32,7 +34,7 @@ def test_case_counts():
     assert sum(c.difficulty == "easy" for c in bugs) == 15
     assert sum(c.difficulty == "hard" for c in bugs) == 8
     cves = [c for c in ALL if c.source["kind"] == "cve"]
-    assert len(cves) == 9 and all(c.source.get("cve", "").startswith("CVE-") for c in cves)
+    assert len(cves) == 13 and all(c.source.get("cve", "").startswith("CVE-") for c in cves)
 
 
 @pytest.mark.parametrize("case", ALL, ids=lambda c: c.id)

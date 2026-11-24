@@ -350,3 +350,19 @@ Append-only. One short entry per working session: what was done, what was learne
   finding, but it's the strongest argument yet for more real cases and the v0.2 range fix.
 - Gemini and Nemotron re-runs are progressing (41 and 54 of 243 reviews) under daily quotas.
 - Next: more real-PR controls from outside Pallets; then real bug cases (CVE batch 3).
+
+## 2026-11-24 — CVE batch 3 (py-0049..0052)
+- Jinja2 CVE-2024-34064 (d6550307, xmlattr `/ > =` keys), Jinja2 CVE-2019-10906 (a2a6c930, sandbox
+  `format_map`), urllib3 CVE-2023-45803 (4e50fbc5, body kept on 303), requests CVE-2024-35195
+  (c0813a2d, `verify=False` pool reuse). Reversed fixes, `since: "0.2"`, upstream LICENSE copied.
+- Bug ranges cover the vulnerable hunk (the v0.2 decision), e.g. py-0049 spans the regex constant to
+  the check. urllib3's second call site (connectionpool) is a `known_issues` entry until scoring
+  supports several ranges per bug.
+- Caught before shipping: the roadmap's "CVE-2024-34064" and the commit I first picked (7dd3680e)
+  didn't match: 7dd3680e is CVE-2024-22195, already public py-0025. Checked `git tag --contains`
+  (3.1.3 vs 3.1.4) to pin the right commit. Also my journal entry earlier today called d6550307
+  "py-0025"; it's this batch's CVE.
+- `scripts/upstream_excerpt.py` now also keeps touched module-level statements (with their leading
+  comments) and emits a class header on both sides when a commit adds or removes a whole method.
+  All 10 script-built controls still re-excerpt identically.
+- Real bugs now: 13 CVE cases (5 in v0.1, 8 held for v0.2).

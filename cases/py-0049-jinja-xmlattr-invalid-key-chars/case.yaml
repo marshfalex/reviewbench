@@ -1,0 +1,32 @@
+id: py-0049-jinja-xmlattr-invalid-key-chars
+title: xmlattr filter only rejects spaces in keys, allowing / > = to inject attributes
+language: python
+since: '0.2'
+difficulty: hard
+tags:
+- security
+- xss
+- templating
+- cve
+source:
+  kind: cve
+  ref: https://github.com/pallets/jinja/commit/d655030770081e2dfe46f90e27620472a502289d
+  license: BSD-3-Clause
+  cve: CVE-2024-34064
+  advisory: GHSA-h75v-3vvj-5mfj
+  fixed_in: Jinja2 3.1.4
+  notes: pr.diff is the fix's change to src/jinja2/filters.py, reversed. repo/ holds the file's imports, the key
+    regex and do_xmlattr at the fix commit.
+bugs:
+- file: src/jinja2/filters.py
+  lines:
+  - 28
+  - 68
+  class: attribute_injection
+  cwe: CWE-79
+  severity: medium
+  description: The PR narrows the key check in do_xmlattr from [\s/>=] to whitespace only. A key containing /, >
+    or = can then close the tag or inject extra attributes when untrusted keys reach the filter (XSS).
+context:
+  related: []
+known_issues: []

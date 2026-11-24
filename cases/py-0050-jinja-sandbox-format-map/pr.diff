@@ -1,0 +1,48 @@
+diff --git a/jinja2/sandbox.py b/jinja2/sandbox.py
+--- a/jinja2/sandbox.py
++++ b/jinja2/sandbox.py
+@@ -17,7 +17,7 @@ from collections import MutableSet, MutableMapping, MutableSequence
+ def inspect_format_method(callable):
+     if not isinstance(callable, (types.MethodType,
+                                  types.BuiltinMethodType)) or \
+-       callable.__name__ not in ('format', 'format_map'):
++       callable.__name__ != 'format':
+         return None
+     obj = callable.__self__
+     if isinstance(obj, string_types):
+@@ -27,7 +27,7 @@ def inspect_format_method(callable):
+ class SandboxedEnvironment:
+     # [... omitted ...]
+ 
+-    def format_string(self, s, args, kwargs, format_func=None):
++    def format_string(self, s, args, kwargs):
+         """If a format call is detected, then this is routed through this
+         method so that our safety sandbox can be used for it.
+         """
+@@ -35,17 +35,6 @@ class SandboxedEnvironment:
+             formatter = SandboxedEscapeFormatter(self, s.escape)
+         else:
+             formatter = SandboxedFormatter(self)
+-
+-        if format_func is not None and format_func.__name__ == 'format_map':
+-            if len(args) != 1 or kwargs:
+-                raise TypeError(
+-                    'format_map() takes exactly one argument %d given'
+-                    % (len(args) + (kwargs is not None))
+-                )
+-
+-            kwargs = args[0]
+-            args = None
+-
+         kwargs = _MagicFormatMapping(args, kwargs)
+         rv = formatter.vformat(s, args, kwargs)
+         return type(s)(rv)
+@@ -54,7 +43,7 @@ class SandboxedEnvironment:
+         """Call an object from sandboxed code."""
+         fmt = inspect_format_method(__obj)
+         if fmt is not None:
+-            return __self.format_string(fmt, args, kwargs, __obj)
++            return __self.format_string(fmt, args, kwargs)
+ 
+         # the double prefixes are to avoid double keyword argument
+         # errors when proxying the call.

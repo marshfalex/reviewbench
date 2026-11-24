@@ -49,14 +49,36 @@ def functions(tree: ast.AST) -> list[tuple[int, int, str | None]]:
     return out
 
 
-def excerpt(text: str, lines: list[int], path: str) -> str:
+def touched_classes(text: str, lines: list[int]) -> set[str]:
+    tree = ast.parse(text)
+    return {c for s, e, c in functions(tree) if c and any(s <= x <= e for x in lines)}
+
+
+def excerpt(text: str, lines: list[int], path: str, classes: set[str] = frozenset()) -> str:
+    """classes: class headers to emit even if none of their methods changed on this side (a
+    method added or removed by the commit exists on one side only, but the header must not)."""
     tree = ast.parse(text)
     src = text.splitlines()
     imports = [n for n in tree.body if isinstance(n, (ast.Import, ast.ImportFrom))]
     body = [f"# Excerpt of {path} from an upstream project; code outside the functions below is omitted."]
     body += [line for n in imports for line in src[n.lineno - 1:n.end_lineno]] + [""]
+    # Module-level statements the commit touches (e.g. a new compiled regex constant).
+    for n in tree.body:
+        if isinstance(n, (ast.Import, ast.ImportFrom, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            continue
+        end = n.end_lineno or n.lineno
+        start = n.lineno
+        while start > 1 and src[start - 2].lstrip().startswith("#"):  # its leading comment block
+            start -= 1
+        if any(start - 1 <= x <= end + 1 for x in lines):
+            body += ["", *src[start - 1:end]]
     prev_cls = None
-    for start, end, cls in sorted({f for f in functions(tree) if any(f[0] <= x <= f[1] for x in lines)}):
+    picked = {f for f in functions(tree) if any(f[0] <= x <= f[1] for x in lines)}
+    class_lines = {n.name: n.lineno for n in ast.walk(tree) if isinstance(n, ast.ClassDef)}
+    for cls in sorted(set(classes) - {c for _, _, c in picked}):
+        if cls in class_lines:  # header only, at the class's position
+            picked.add((class_lines[cls], class_lines[cls] - 1, cls))
+    for start, end, cls in sorted(picked):
         if cls and cls == prev_cls:  # another method of the same class: one header for all of them
             body += [""]
         else:
@@ -70,11 +92,13 @@ def excerpt(text: str, lines: list[int], path: str) -> str:
 
 def main(repo: str, sha: str, path: str, out: str) -> None:
     old, new = changed_lines(repo, sha, path)
-    for tag, rev, lines in (("before", f"{sha}^", old), ("after", sha, new)):
+    texts = {"before": show(repo, f"{sha}^", path), "after": show(repo, sha, path)}
+    classes = touched_classes(texts["before"], old) | touched_classes(texts["after"], new)
+    for tag, lines in (("before", old), ("after", new)):
         dest = os.path.join(out, tag, path)
         os.makedirs(os.path.dirname(dest), exist_ok=True)
         with open(dest, "w") as fh:
-            fh.write(excerpt(show(repo, rev, path), lines, path))
+            fh.write(excerpt(texts[tag], lines, path, classes))
 
 
 if __name__ == "__main__":

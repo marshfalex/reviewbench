@@ -1,0 +1,32 @@
+id: py-0052-requests-verify-false-pool-reuse
+title: Connection pool chosen without TLS settings, so verify=False sticks to later requests
+language: python
+since: '0.2'
+difficulty: hard
+tags:
+- security
+- tls
+- certificate-validation
+- cve
+source:
+  kind: cve
+  ref: https://github.com/psf/requests/commit/c0813a2d910ea6b4f8438b91d315b8d181302356
+  license: Apache-2.0
+  cve: CVE-2024-35195
+  fixed_in: requests 2.32.0
+  notes: pr.diff is the fix's change to src/requests/adapters.py, reversed. repo/ holds the file's imports, _urllib3_request_context
+    and the touched HTTPAdapter methods at the fix commit.
+bugs:
+- file: src/requests/adapters.py
+  lines:
+  - 72
+  - 76
+  class: tls_verification_bypass
+  cwe: CWE-670
+  severity: medium
+  description: send() picks a pool with get_connection(url, proxies), which keys pools only by URL. After one request
+    to a host with verify=False, later requests to that host in the same Session reuse the unverified pool and skip
+    certificate verification. The fix selects the pool using the request's TLS settings.
+context:
+  related: []
+known_issues: []

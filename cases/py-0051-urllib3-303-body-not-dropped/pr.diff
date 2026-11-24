@@ -1,0 +1,82 @@
+diff --git a/src/urllib3/_collections.py b/src/urllib3/_collections.py
+--- a/src/urllib3/_collections.py
++++ b/src/urllib3/_collections.py
+@@ -9,7 +9,7 @@ from threading import RLock
+ if typing.TYPE_CHECKING:
+     # We can only import Protocol if TYPE_CHECKING because it's a development
+     # dependency, and is not available at runtime.
+-    from typing_extensions import Protocol, Self
++    from typing_extensions import Protocol
+ 
+     class HasGettableStringKeys(Protocol):
+         def keys(self) -> typing.Iterator[str]:
+@@ -22,20 +22,3 @@ if typing.TYPE_CHECKING:
+ class HTTPHeaderDict:
+     # [... omitted ...]
+ 
+-    def _prepare_for_method_change(self) -> Self:
+-        """
+-        Remove content-specific header fields before changing the request
+-        method to GET or HEAD according to RFC 9110, Section 15.4.
+-        """
+-        content_specific_headers = [
+-            "Content-Encoding",
+-            "Content-Language",
+-            "Content-Location",
+-            "Content-Type",
+-            "Content-Length",
+-            "Digest",
+-            "Last-Modified",
+-        ]
+-        for header in content_specific_headers:
+-            self.discard(header)
+-        return self
+diff --git a/src/urllib3/connectionpool.py b/src/urllib3/connectionpool.py
+--- a/src/urllib3/connectionpool.py
++++ b/src/urllib3/connectionpool.py
+@@ -10,7 +10,6 @@ import weakref
+ from socket import timeout as SocketTimeout
+ from types import TracebackType
+ from ._base_connection import _TYPE_BODY
+-from ._collections import HTTPHeaderDict
+ from ._request_methods import RequestMethods
+ from .connection import (
+     BaseSSLError,
+@@ -356,11 +355,7 @@ class HTTPConnectionPool:
+         redirect_location = redirect and response.get_redirect_location()
+         if redirect_location:
+             if response.status == 303:
+-                # Change the method according to RFC 9110, Section 15.4.4.
+                 method = "GET"
+-                # And lose the body not to transfer anything sensitive.
+-                body = None
+-                headers = HTTPHeaderDict(headers)._prepare_for_method_change()
+ 
+             try:
+                 retries = retries.increment(method, url, response=response, _pool=self)
+diff --git a/src/urllib3/poolmanager.py b/src/urllib3/poolmanager.py
+--- a/src/urllib3/poolmanager.py
++++ b/src/urllib3/poolmanager.py
+@@ -6,7 +6,7 @@ import typing
+ import warnings
+ from types import TracebackType
+ from urllib.parse import urljoin
+-from ._collections import HTTPHeaderDict, RecentlyUsedContainer
++from ._collections import RecentlyUsedContainer
+ from ._request_methods import RequestMethods
+ from .connection import ProxyConfig
+ from .connectionpool import HTTPConnectionPool, HTTPSConnectionPool, port_by_scheme
+@@ -71,12 +71,9 @@ class PoolManager:
+         # Support relative URLs for redirecting.
+         redirect_location = urljoin(url, redirect_location)
+ 
++        # RFC 7231, Section 6.4.4
+         if response.status == 303:
+-            # Change the method according to RFC 9110, Section 15.4.4.
+             method = "GET"
+-            # And lose the body not to transfer anything sensitive.
+-            kw["body"] = None
+-            kw["headers"] = HTTPHeaderDict(kw["headers"])._prepare_for_method_change()
+ 
+         retries = kw.get("retries")
+         if not isinstance(retries, Retry):

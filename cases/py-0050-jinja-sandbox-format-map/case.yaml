@@ -1,0 +1,32 @@
+id: py-0050-jinja-sandbox-format-map
+title: Sandbox intercepts str.format but not str.format_map
+language: python
+since: '0.2'
+difficulty: hard
+tags:
+- security
+- sandbox-escape
+- templating
+- cve
+source:
+  kind: cve
+  ref: https://github.com/pallets/jinja/commit/a2a6c930bcca591a25d2b316fcfd2d6793897b26
+  license: BSD-3-Clause
+  cve: CVE-2019-10906
+  fixed_in: Jinja2 2.10.1
+  notes: pr.diff is the fix's change to jinja2/sandbox.py, reversed. repo/ holds the file's imports, inspect_format_method,
+    and SandboxedEnvironment.format_string/call at the fix commit.
+bugs:
+- file: jinja2/sandbox.py
+  lines:
+  - 17
+  - 21
+  class: sandbox_escape
+  cwe: CWE-693
+  severity: high
+  description: inspect_format_method only recognizes callables named 'format', so str.format_map is called directly
+    instead of through the sandboxed formatter. Template code can use format_map field lookups to reach attributes
+    the sandbox blocks and escape it.
+context:
+  related: []
+known_issues: []

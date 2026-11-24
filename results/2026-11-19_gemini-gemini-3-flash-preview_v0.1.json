@@ -19,6 +19,7 @@
     "security",
     "injection"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/users.py",
@@ -41,6 +42,7 @@
     "security",
     "secrets"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/payments.py",
@@ -84,6 +86,7 @@
     "correctness",
     "off-by-one"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/pagination.py",
@@ -106,6 +109,7 @@
     "security",
     "authz"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/admin_routes.py",
@@ -128,6 +132,7 @@
     "correctness",
     "concurrency"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/inventory.py",
@@ -156,6 +161,7 @@
     "security",
     "path-traversal"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/files.py",
@@ -178,6 +184,7 @@
     "security",
     "deserialization"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/session.py",
@@ -200,6 +207,7 @@
     "correctness",
     "python-gotcha"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/tags.py",
@@ -228,6 +236,7 @@
     "correctness",
     "error-handling"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/config_loader.py",
@@ -250,6 +259,7 @@
     "security",
     "crypto"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/webhooks.py",
@@ -293,6 +303,7 @@
     "correctness",
     "dates"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/billing.py",
@@ -315,6 +326,7 @@
     "security",
     "ssrf"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/preview.py",
@@ -344,6 +356,7 @@
     "authz",
     "idor"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/invoices.py",
@@ -366,6 +379,7 @@
     "security",
     "caching"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/profile.py",
@@ -389,6 +403,7 @@
     "payments",
     "idempotency"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/billing_client.py",
@@ -411,6 +426,7 @@
     "correctness",
     "money"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/cart.py",
@@ -434,6 +450,7 @@
     "pagination",
     "data-dependent"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/feed.py",
@@ -456,6 +473,7 @@
     "correctness",
     "time"
    ],
+   "source_kind": "synthetic",
    "bugs": [
     {
      "file": "app/tokens.py",
@@ -477,6 +495,7 @@
    "tags": [
     "control"
    ],
+   "source_kind": "synthetic",
    "bugs": [],
    "known_issues": []
   },
@@ -487,6 +506,7 @@
    "tags": [
     "control"
    ],
+   "source_kind": "synthetic",
    "bugs": [],
    "known_issues": []
   },
@@ -497,6 +517,7 @@
    "tags": [
     "control"
    ],
+   "source_kind": "synthetic",
    "bugs": [],
    "known_issues": [
     {
@@ -513,6 +534,7 @@
    "tags": [
     "control"
    ],
+   "source_kind": "synthetic",
    "bugs": [],
    "known_issues": []
   },
@@ -527,6 +549,7 @@
     "redirect",
     "cve"
    ],
+   "source_kind": "cve",
    "bugs": [
     {
      "file": "requests/sessions.py",
@@ -552,6 +575,7 @@
     "redirect",
     "cve"
    ],
+   "source_kind": "cve",
    "bugs": [
     {
      "file": "src/urllib3/util/retry.py",
@@ -576,6 +600,7 @@
     "templating",
     "cve"
    ],
+   "source_kind": "cve",
    "bugs": [
     {
      "file": "src/jinja2/filters.py",
@@ -600,6 +625,7 @@
     "web",
     "cve"
    ],
+   "source_kind": "cve",
    "bugs": [
     {
      "file": "aiohttp/web_urldispatcher.py",
@@ -630,6 +656,7 @@
     "rce",
     "cve"
    ],
+   "source_kind": "cve",
    "bugs": [
     {
      "file": "git/repo/base.py",
@@ -1652,15 +1679,6 @@
   },
   {
    "case": "py-0002-hardcoded-secret",
-   "level": "L0",
-   "run": 2,
-   "error": "transient: HTTP 503",
-   "summary": "",
-   "usage": {},
-   "findings": []
-  },
-  {
-   "case": "py-0002-hardcoded-secret",
    "level": "L1",
    "run": 0,
    "error": null,
@@ -1725,7 +1743,7 @@
   },
   {
    "case": "py-0002-hardcoded-secret",
-   "level": "L1",
+   "level": "L0",
    "run": 2,
    "error": "transient: HTTP 503",
    "summary": "",
@@ -1734,8 +1752,8 @@
   },
   {
    "case": "py-0002-hardcoded-secret",
-   "level": "L2",
-   "run": 0,
+   "level": "L1",
+   "run": 2,
    "error": "rate_limited: retries exhausted",
    "summary": "",
    "usage": {},

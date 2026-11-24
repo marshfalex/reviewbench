@@ -94,3 +94,12 @@ def test_lineup_case_ids_exclude_later_cases(tmp_path, monkeypatch, capsys):
     cli.main(["lineup", "--results-dir", str(tmp_path)])
     assert "py-0028-truthy-permission-decision" not in seen["ids"]
     assert "py-0001" not in seen["ids"] and len(seen["ids"]) == 27
+
+
+def test_no_two_cases_share_an_upstream_commit():
+    """A duplicate source.ref means the same real change was imported twice (docs/LESSONS.md)."""
+    import collections
+
+    refs = collections.Counter(c.source["ref"] for c in ALL if c.source["kind"] in ("cve", "upstream"))
+    dupes = {r: n for r, n in refs.items() if n > 1}
+    assert not dupes, f"cases share an upstream commit: {dupes}"

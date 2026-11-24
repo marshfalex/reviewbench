@@ -4,8 +4,9 @@ ReviewBench is an open benchmark that scores AI pull-request reviewers. The
 owner (marshfalex) wants it built **steadily and autonomously**: sessions start
 on a schedule, pick the next roadmap item, do it well, and open a PR. The owner
 only reviews and merges. Read this file, `ROADMAP.md`, the last entries of
-`docs/JOURNAL.md`, `docs/SPEC.md` and `docs/RISKS.md` before doing anything. Treat RISKS as
-standing priorities: never publish a claim it says isn't supported yet.
+`docs/JOURNAL.md`, `docs/SPEC.md`, `docs/RISKS.md` and `docs/LESSONS.md` before doing anything.
+Treat RISKS as standing priorities: never publish a claim it says isn't supported yet. Follow the
+pre-PR checklist in LESSONS, and add a lesson (ideally with a test) whenever something goes wrong.
 
 ## Each session, in order
 1. **Check open PRs first.** For each open PR you (Claude) authored: if CI is red, fix it; if review

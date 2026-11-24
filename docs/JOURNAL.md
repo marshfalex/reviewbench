@@ -247,3 +247,43 @@ Append-only. One short entry per working session: what was done, what was learne
   CVE-2024-34064, CVE-2019-10906). Run the private overlap check on it. The urllib3 case touches
   redirect handling, but the held-out urllib3 case has already been replaced.
 - 2026-11-21 (later): still 2 PRs open (#13, #14), unreviewed, green, merge cleanly. No new work.
+
+## 2026-11-20 — findings report v0.1, first cut
+- Wrote `docs/findings/v0.1.md` from the only complete run, cerebras qwen-3.8-27b, on the 22
+  synthetic cases. The CVE cases were added after it ran. The groq, gemini and openrouter runs are
+  still partial and are left out.
+- Results: recall 18/18 (100%, 82–100) at L0 and L2, 17/18 at L1; hard bugs 6/6 everywhere.
+  That's a ceiling, so the synthetic set doesn't discriminate.
+- Learned:
+  - (1) All 66 (case, level) groups are byte-identical across the 3 runs (temperature 0 on a
+    deterministic provider), so any-of-k = all-of-k says nothing here.
+  - (2) The only miss (py-0004 at L1, 0/3) has a summary naming the bug but no findings, which
+    points to `parse_review` dropping malformed findings. The raw output isn't stored, so it can't
+    be proven.
+  - (3) Precision reads 100% only because nothing is adjudicated. Two controls have plausible-real
+    unadjudicated findings.
+
+  Ideas for (1) and (2) are added under "Ideas (unapproved)".
+- Next: CVE batch 2. Update the report when another run completes.
+
+## 2026-11-22 — findings report: Groq added (maintenance on #13)
+- Still 2 PRs open, so no new roadmap work. Groq's run completed on 27 cases, which made #13's
+  "only complete run" wrong, so I updated the report in #13.
+- Learned: most Groq CVE "misses" are the right bug flagged just outside the ±2 window, or at the
+  second call site (scored `known`). The batch 1 bug ranges I wrote are too narrow. Also, Gemini and
+  OpenRouter are `complete` with ~80% HTTP 429 errors, because 429 isn't classed as `rate_limited`.
+  Both are added as ideas and both need the owner.
+
+## 2026-11-24 — maintenance: #13 and #14 brought up to date with main
+- Still 2 PRs open, so no new roadmap work. main had moved a lot (#12, #15–#25: v0.1 frozen at 27
+  cases, `since: "0.2"`, RISKS.md, 429 retry, precision shown as "not measured"), and both PRs
+  conflicted.
+- #14: main had taken py-0028..0034, so CVE batch 2 became py-0035..0038 with `since: "0.2"`. Re-ran
+  the private overlap check: no overlap with the held-out set.
+- #13: rewrote the report for the current results. cerebras was re-run on all 27 cases, so both
+  usable runs now share a case set. Headline is per-run recall (SPEC §10): cerebras 69/69 (95–100)
+  vs groq 58/69 (74–91) at L0. The intervals don't overlap, but most of groq's CVE misses are
+  matcher artifacts. Precision is "not measured"; the RISKS caveats are repeated. Dropped the 429
+  idea (done in #16) and the urllib3 held-out idea (resolved).
+- Mistake caught: mid-merge I ran `git checkout origin/main -- .`, which would have discarded the
+  branch's roadmap edits. I aborted the merge and redid it before committing anything.

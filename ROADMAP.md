@@ -38,7 +38,7 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
 - [x] **Run the free-model lineup in parallel**, automated: the `benchmark` workflow runs every 6 h
       and works through `lineup.yaml`, running each model whose key secret is set until its result is
       complete. Add or change models by editing `lineup.yaml`.
-- [ ] **Findings report v0.1, first cut**, as soon as ONE full run completes (don't wait for the CVE
+- [x] **Findings report v0.1, first cut**, as soon as ONE full run completes (don't wait for the CVE
       cases): `docs/findings/v0.1.md`. Headline numbers with n and CIs, recall by difficulty and
       context level, any-of-k vs all-of-k, the L0→L2 effect on the cursor case, and every miss with a
       one-line explanation. Update it as more models finish.
@@ -116,8 +116,14 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
 
 ## Ideas (unapproved)
 <!-- Sessions add ideas here; the owner promotes them above. -->
-- Public case py-0024 (urllib3 Cookie on redirect, CVE-2023-43804) is almost the same diff as the
-  held-out urllib3 case: the same file, line and fix shape. A reviewer that has seen one has
-  effectively seen the other, which weakens that held-out case as a contamination check.
-  Recommendation: replace the held-out urllib3 case with a different CVE, since the public case
-  effectively leaks it.
+- Widen CVE bug ranges (or allow several ranges per bug), alongside the defect-check matcher
+  (RISKS §5). In the Groq run, most CVE "misses" were the right vulnerability flagged a few lines
+  outside ±2 (e.g. urllib3 line 187 vs 190) or at the second call site. Changes ground truth, so
+  it belongs to v0.2.
+- Store each review's raw model response, or at least count findings `parse_review` drops. The only
+  miss in the first complete run (py-0004 at L1) looks like dropped findings: the summary names the
+  bug but the findings list is empty. Today that can't be confirmed.
+- k = 3 at `temperature: 0` gives three identical runs on deterministic providers (Cerebras: 81/81
+  identical groups), so any-of-k vs all-of-k measures nothing for them. Options: sample at a non-zero
+  temperature (a spec change, so a new BENCH_VERSION), or run k = 1 for providers shown to be
+  deterministic.

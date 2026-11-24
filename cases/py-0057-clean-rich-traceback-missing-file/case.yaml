@@ -1,0 +1,18 @@
+id: py-0057-clean-rich-traceback-missing-file
+title: "rich: tracebacks render when a frame's source file is missing"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/Textualize/rich/commit/3469674b528d75cc541331888623ce73f65bc1cd
+  license: MIT
+  notes: Merged 2023-03. Every line the commit added is still present in rich/traceback.py on upstream main as
+    of 2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and the
+    changed functions; pr.diff has exactly the upstream commit's changed lines. Label is "no known
+    defect", not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

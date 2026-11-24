@@ -1,0 +1,18 @@
+id: py-0055-clean-httpx-encoding-after-text
+title: "httpx: setting Response.encoding after .text was read raises ValueError"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/encode/httpx/commit/59df8190a4c72c58238dda315ad446f1c132dcdc
+  license: BSD-3-Clause
+  notes: Merged 2023-09. Every line the commit added is still present in httpx/_models.py on upstream main as
+    of 2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and the
+    changed functions; pr.diff has exactly the upstream commit's changed lines. Label is "no known
+    defect", not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

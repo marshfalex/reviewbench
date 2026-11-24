@@ -1,0 +1,36 @@
+diff --git a/httpx/_client.py b/httpx/_client.py
+--- a/httpx/_client.py
++++ b/httpx/_client.py
+@@ -62,6 +62,14 @@ from ._utils import (
+ class BaseClient:
+     # [... omitted ...]
+ 
++    def _set_timeout(self, request: Request) -> None:
++        if "timeout" not in request.extensions:
++            timeout = (
++                self.timeout
++                if isinstance(self.timeout, UseClientDefault)
++                else Timeout(self.timeout)
++            )
++            request.extensions = dict(**request.extensions, timeout=timeout.as_dict())
+ 
+ 
+ class Client:
+@@ -98,6 +106,8 @@ class Client:
+             else follow_redirects
+         )
+ 
++        self._set_timeout(request)
++
+         auth = self._build_request_auth(request, auth)
+ 
+         response = self._send_handling_auth(
+@@ -151,6 +161,8 @@ class AsyncClient:
+             else follow_redirects
+         )
+ 
++        self._set_timeout(request)
++
+         auth = self._build_request_auth(request, auth)
+ 
+         response = await self._send_handling_auth(

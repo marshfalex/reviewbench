@@ -366,3 +366,8 @@ Append-only. One short entry per working session: what was done, what was learne
   comments) and emits a class header on both sides when a commit adds or removes a whole method.
   All 10 script-built controls still re-excerpt identically.
 - Real bugs now: 13 CVE cases (5 in v0.1, 8 held for v0.2).
+
+## 2026-11-24 — five non-Pallets upstream controls
+- py-0053 (attrs 88e2896), py-0054/55 (httpx 6d852d3, 59df819), py-0056/57 (rich 368e8ad7,
+  3469674b). Skipped httpx auth, URL-parsing and proxy fixes as security-adjacent.
+- Controls: 22 of 36. 17 of them are real upstream PRs from 6 projects.

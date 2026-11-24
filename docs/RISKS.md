@@ -48,7 +48,8 @@ miss/false-match rate.
 **Breaks:** reproducibility and comparisons over time.
 **Status:** providers can change quantization, routing (OpenRouter) or the model behind a name
 without notice; `auto:` lineup entries pick "the newest" model, so a resumed run could switch
-models. Results record the served model id, but nothing yet refuses a mismatch.
+models. Results record the served model id, and since 2026-11-24 a run refuses to add a review from a
+different served model to an existing file (the review is not written; the job fails loudly).
 **Fix:** refuse to resume a results file when the served model id changes; pin exact ids for any
 run that goes into a published comparison.
 

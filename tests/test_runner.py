@@ -432,3 +432,30 @@ def test_per_run_interval_counts_bugs_not_runs(tmp_path):
     assert (rate, n) == (1.0, 1)  # 3 identical runs of one bug are one observation, not three
     assert (lo, hi) == wilson_interval(1, 1) and lo < wilson_interval(3, 3)[0]
     assert "3/3 runs (100%; 95% CI 21–100 over 1 bugs)" in leaderboard(tmp_path)
+
+
+def test_resume_refuses_when_served_model_changes(tmp_path):
+    import pytest
+
+    from reviewbench.adapters.base import Reviewer, ReviewResult
+
+    cases = discover((CASES, "public"))[:2]
+
+    class Swapping(Reviewer):
+        provider, default_model = "fake", "name-stays-the-same"
+
+        def __init__(self, served):
+            super().__init__()
+            self.served = served
+
+        def _review(self, prompt):
+            return ReviewResult("", [], usage={"served_model": self.served})
+
+    out = tmp_path / "r.json"
+    run(cases[:1], Swapping("v1"), ["L0"], 1, out, log=lambda m: None)
+    with pytest.raises(ValueError, match="refusing to mix models"):
+        run(cases, Swapping("v2-quantized"), ["L0"], 1, out, log=lambda m: None)
+    kept = json.loads(out.read_text())["records"]
+    assert [r["usage"]["served_model"] for r in kept] == ["v1"]  # the v2 review was not written
+    doc = run(cases, Swapping("v1"), ["L0"], 1, out, log=lambda m: None)
+    assert doc["status"] == "complete"

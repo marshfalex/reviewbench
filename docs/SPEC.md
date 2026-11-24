@@ -36,6 +36,7 @@ cases/py-0017-cursor-pagination-skips/
 | `bugs[].cwe` | no | e.g. `CWE-89`, or null |
 | `bugs[].severity` | yes | `critical`/`high`/`medium`/`low` (the bug's real severity; not used for matching) |
 | `bugs[].description` | yes | what is wrong |
+| `bugs[].also` | no | `[{file, lines}]`: other places the same defect lives (e.g. a second call site). A finding at the main location **or** any of these, with the same ±2 tolerance, catches the bug. Files must exist in the post-PR tree; they need not be touched by the diff |
 | `context.related` | no | post-PR paths of other files a careful reviewer would open (used at L2) |
 | `known_issues` | no | `[{match, file?, note?}]`: real issues in the PR that were not planted. A finding whose title + explanation contains `match` (case/Unicode-insensitive), on `file` if given, counts as a **valid extra** automatically |
 

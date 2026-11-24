@@ -449,3 +449,13 @@ Append-only. One short entry per working session: what was done, what was learne
   "alphabetically last": `gpt-oss-20b` beat `gpt-oss-120b`, and `llama3.1-8b` beat `llama-3.3-70b`.
   Fixed with a natural sort (digit runs compare as numbers) plus narrow cerebras needles. Added to
   LESSONS.
+
+## 2026-11-24 — bugs can have several locations (`also`)
+- `bugs[].also: [{file, lines}]` lists other places the same defect lives; a finding at any of
+  them (±2) catches the bug. Old results files, whose truth snapshots lack `also`, score exactly
+  as before. py-0051 (v0.2) now lists urllib3's connection-pool call site this way (and keeps a
+  known issue for findings elsewhere in that file), so catching only that site counts as a hit.
+- Deliberately not applied to v0.1 cases yet (py-0026, py-0027 have the same pattern): new v0.1
+  runs from the fast models would otherwise use different truth than the finished ones. Queued
+  for the v0.2 bump PR.
+- Gated (scoring.py, runner.py): waits for the owner.

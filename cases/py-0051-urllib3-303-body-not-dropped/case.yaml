@@ -29,9 +29,15 @@ bugs:
   description: On a 303 redirect the method becomes GET but the request body (and Content-Type/Length etc.) is still
     sent to the redirect target, which may be another host. The fix drops the body and content-specific headers;
     the PR removes that.
+  also:
+  - file: src/urllib3/connectionpool.py
+    lines:
+    - 356
+    - 358
 context:
   related: []
 known_issues:
 - match: body
   file: src/urllib3/connectionpool.py
-  note: same bug at the connection-pool redirect path
+  note: same defect described away from lines 356-358 (e.g. at the urlopen body argument); the also-location covers
+    the branch itself

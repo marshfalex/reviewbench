@@ -29,6 +29,9 @@ class Bug:
     cwe: str | None
     severity: str
     description: str
+    # Other places the same defect lives (e.g. a second call site); a finding at any of them catches
+    # the bug. Each is (file, (start, end)), post-PR line numbers.
+    also: tuple[tuple[str, tuple[int, int]], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -111,7 +114,9 @@ def load_case(case_dir: Path, split: str = "public") -> Case:
     m = yaml.safe_load(meta_path.read_text(encoding="utf-8")) or {}
     try:
         bugs = [Bug(file=b["file"], lines=(int(b["lines"][0]), int(b["lines"][-1])), cls=b["class"],
-                    cwe=b.get("cwe"), severity=b["severity"], description=b["description"])
+                    cwe=b.get("cwe"), severity=b["severity"], description=b["description"],
+                    also=tuple((a["file"], (int(a["lines"][0]), int(a["lines"][-1])))
+                               for a in (b.get("also") or [])))
                 for b in (m.get("bugs") or [])]
         known = [KnownIssue(match=k["match"], file=k.get("file"), note=k.get("note", ""))
                  for k in (m.get("known_issues") or [])]
@@ -161,6 +166,11 @@ def validate_case(case: Case) -> list[str]:
             errs.append(f"bug lines {b.lines} out of range for {b.file} ({n} lines)")
         if b.file not in case.changed_files:
             errs.append(f"bug file {b.file} is not touched by pr.diff")
+        for f, (lo, hi) in b.also:
+            if f not in files:
+                errs.append(f"bug also-location file {f} not in post-PR tree")
+            elif not 1 <= lo <= hi <= len(files[f].splitlines()):
+                errs.append(f"bug also-location lines {(lo, hi)} out of range for {f}")
     for r in case.related:
         if r not in files:
             errs.append(f"context.related file {r} not in post-PR tree")

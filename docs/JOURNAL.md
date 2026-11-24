@@ -340,3 +340,13 @@ Append-only. One short entry per working session: what was done, what was learne
   `[owner]` item to replace the held-out set. Rule for every session: never name held-out cases,
   their CVEs or their projects anywhere in this repository.
 - Scanned all current files for the five identifiers: none remain.
+
+## 2026-11-24 — real vs synthetic split on the leaderboard
+- New "Per-run recall by case origin" table per version: synthetic vs real (CVE + upstream), per
+  bug intervals, unfinished runs marked. Results now store `source_kind`; older files fall back to
+  the `cve`/`upstream` tags (checked: tags match `source.kind` for every case).
+- First signal: groq catches 94% (74–99) of synthetic bugs vs 47% (15–81) of real ones at L0, and
+  13% at L1. Only 5 real bugs, and many misses are the narrow line window, so it's a lead, not a
+  finding, but it's the strongest argument yet for more real cases and the v0.2 range fix.
+- Gemini and Nemotron re-runs are progressing (41 and 54 of 243 reviews) under daily quotas.
+- Next: more real-PR controls from outside Pallets; then real bug cases (CVE batch 3).

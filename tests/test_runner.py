@@ -459,3 +459,20 @@ def test_resume_refuses_when_served_model_changes(tmp_path):
     assert [r["usage"]["served_model"] for r in kept] == ["v1"]  # the v2 review was not written
     doc = run(cases, Swapping("v1"), ["L0"], 1, out, log=lambda m: None)
     assert doc["status"] == "complete"
+
+
+def test_origin_table_splits_real_and_synthetic(tmp_path):
+    from reviewbench.report import case_origin
+
+    assert case_origin({"source_kind": "cve"}) == "real"
+    assert case_origin({"source_kind": "synthetic"}) == "synthetic"
+    assert case_origin({"tags": ["security", "cve"]}) == "real"  # older files: no source_kind
+    cases = [c for c in discover((CASES, "public"))
+             if c.id in ("py-0001-sql-injection", "py-0023-requests-auth-https-downgrade")]
+    hit = Finding("app/users.py", 6, "security", "critical", "SQL injection", "f-string")
+    doc = run(cases, ReplayReviewer(model="m", fn=lambda _: [hit]), ["L0"], 1, tmp_path / "a.json",
+              log=lambda m: None)
+    assert {t["source_kind"] for t in doc["cases"].values()} == {"synthetic", "cve"}
+    row = next(line for line in leaderboard(tmp_path).split("### Per-run recall by case origin")[1]
+               .splitlines() if "`m`" in line)
+    assert "| 100% (95% CI 21–100, 1 bugs) | 0% (95% CI 0–79, 1 bugs) |" in row

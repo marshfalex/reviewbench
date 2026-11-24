@@ -21,3 +21,22 @@ Precision is shown only once 80% of the findings needing a human verdict have on
 | gemini / `gemini-3-flash-preview` (partial) (1 reviews failed, to retry) | L2 | 3 | **11/11 runs (100%; 95% CI 61–100 over 6 bugs)** | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | 3/3 (100%, 44–100) / 3/3 (100%, 44–100) | not measured (2 of 2 unjudged) | n/a | 2 | [2026-11-19_gemini-gemini-3-flash-preview_v0.1](2026-11-19_gemini-gemini-3-flash-preview_v0.1.json) |
 | openrouter / `nvidia/nemotron-3-ultra-550b-a55b:free` (partial) (1 reviews failed, to retry) | L2 | 3 | **17/17 runs (100%; 95% CI 61–100 over 6 bugs)** | 6/6 (100%, 61–100) | 6/6 (100%, 61–100) | n/a | not measured (7 of 7 unjudged) | n/a | 7 | [2026-11-19_openrouter-nvidia-nemotron-3-ultra-550b-a55b-free_v0.1](2026-11-19_openrouter-nvidia-nemotron-3-ultra-550b-a55b-free_v0.1.json) |
 
+### Per-run recall by case origin
+
+Synthetic cases were written for this benchmark by LLMs (py-0028 onward by Claude; earlier ones were ported from another project, authorship not recorded) and may be easier for LLM reviewers than real bugs. Real cases are CVE fixes and upstream PRs. Intervals use the bug as the unit. v0.1 has only 5 real bugs, and several misses on them are the matcher's narrow line window (RISKS §5), so a gap here is a lead, not a finding.
+
+| reviewer | context | synthetic | real |
+|---|---|---|---|
+| cerebras / `qwen-3.8-27b` | L0 | 100% (95% CI 82–100, 18 bugs) | 100% (95% CI 57–100, 5 bugs) |
+| groq / `openai/gpt-oss-120b` | L0 | 94% (95% CI 74–99, 18 bugs) | 47% (95% CI 15–81, 5 bugs) |
+| gemini / `gemini-3-flash-preview` (partial) | L0 | 100% (95% CI 61–100, 6 bugs) | n/a |
+| openrouter / `nvidia/nemotron-3-ultra-550b-a55b:free` (partial) | L0 | 100% (95% CI 61–100, 6 bugs) | n/a |
+| cerebras / `qwen-3.8-27b` | L1 | 94% (95% CI 74–99, 18 bugs) | 100% (95% CI 57–100, 5 bugs) |
+| groq / `openai/gpt-oss-120b` | L1 | 91% (95% CI 69–98, 18 bugs) | 13% (95% CI 2–57, 5 bugs) |
+| gemini / `gemini-3-flash-preview` (partial) | L1 | 100% (95% CI 65–100, 7 bugs) | n/a |
+| openrouter / `nvidia/nemotron-3-ultra-550b-a55b:free` (partial) | L1 | 100% (95% CI 61–100, 6 bugs) | n/a |
+| cerebras / `qwen-3.8-27b` | L2 | 100% (95% CI 82–100, 18 bugs) | 100% (95% CI 57–100, 5 bugs) |
+| groq / `openai/gpt-oss-120b` | L2 | 91% (95% CI 69–98, 18 bugs) | 27% (95% CI 6–68, 5 bugs) |
+| gemini / `gemini-3-flash-preview` (partial) | L2 | 100% (95% CI 61–100, 6 bugs) | n/a |
+| openrouter / `nvidia/nemotron-3-ultra-550b-a55b:free` (partial) | L2 | 100% (95% CI 61–100, 6 bugs) | n/a |
+

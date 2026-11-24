@@ -62,7 +62,20 @@ def noise_reasons(doc: dict, level: str, ctrl: dict, ctrl_unjudged: int = 0) -> 
     return reasons
 
 
-def per_run_by_bug(doc: dict, level: str, split: str = "public", difficulty: str | None = None):
+REAL_KINDS = {"cve", "upstream", "postmortem"}
+
+
+def case_origin(truth: dict) -> str:
+    """'real' (a CVE fix, upstream PR or postmortem) or 'synthetic' (written for the benchmark).
+    Older results files lack source_kind; their real cases carry a 'cve'/'upstream' tag."""
+    kind = truth.get("source_kind")
+    if kind:
+        return "real" if kind in REAL_KINDS else "synthetic"
+    return "real" if {"cve", "upstream"} & set(truth.get("tags") or []) else "synthetic"
+
+
+def per_run_by_bug(doc: dict, level: str, split: str = "public", difficulty: str | None = None,
+                   origin: str | None = None):
     """Per-run recall with the bug, not the run, as the unit of the interval (RISKS §2).
 
     The k runs of one bug are highly correlated (at temperature 0 they are often byte-identical),
@@ -73,7 +86,8 @@ def per_run_by_bug(doc: dict, level: str, split: str = "public", difficulty: str
     for r in doc["records"]:
         t = doc["cases"].get(r["case"], {})
         if (r["level"] != level or r.get("error") or t.get("split", "public") != split
-                or (difficulty and t.get("difficulty") != difficulty)):
+                or (difficulty and t.get("difficulty") != difficulty)
+                or (origin and case_origin(t) != origin)):
             continue
         for i, b in enumerate(t.get("bugs") or []):
             caught = any(f["severity"] in COUNTED and bug_matches(f, b) for f in r["findings"])
@@ -139,6 +153,38 @@ def run_report(results: dict, verdicts: dict) -> str:
     return "\n".join(out) + "\n"
 
 
+def _by_bug_cell(by_bug) -> str:
+    if by_bug is None:
+        return "n/a"
+    rate, lo, hi, n = by_bug
+    return f"{rate:.0%} (95% CI {lo:.0f}–{hi:.0f}, {n} bugs)"
+
+
+def origin_table(entries: list[tuple[Path, dict]]) -> list[str]:
+    """Per-run recall split by case origin (RISKS §3): real bugs vs ones written for the benchmark."""
+    rows = []
+    for _p, doc in entries:
+        for level in doc["levels"]:
+            syn, real = (per_run_by_bug(doc, level, origin=o) for o in ("synthetic", "real"))
+            if syn is None and real is None:
+                continue
+            failed = any(r["level"] == level and retryable(r.get("error")) for r in doc["records"])
+            mark = "" if doc["status"] == "complete" and not failed else " (partial)"
+            rows.append(((level, bool(mark), doc["provider"], doc["model"]),
+                         f"| {doc['provider']} / `{doc['model']}`{mark} | {level} | {_by_bug_cell(syn)} | "
+                         f"{_by_bug_cell(real)} |"))
+    if not rows:
+        return []
+    return ["### Per-run recall by case origin", "",
+            "Synthetic cases were written for this benchmark by LLMs (py-0028 onward by Claude; earlier "
+            "ones were ported from another project, authorship not recorded) and may be easier for LLM "
+            "reviewers than real bugs. Real cases are CVE fixes and upstream PRs. Intervals use the bug "
+            "as the unit. v0.1 has only 5 real bugs, and several misses on them are the matcher's "
+            "narrow line window (RISKS §5), so a gap here is a lead, not a finding.", "",
+            "| reviewer | context | synthetic | real |", "|---|---|---|---|",
+            *[r for _, r in sorted(rows)], ""]
+
+
 def leaderboard(results_dir: Path) -> str:
     by_version: dict[str, list[tuple[Path, dict]]] = defaultdict(list)
     for p in sorted(results_dir.glob("*.json")):
@@ -202,4 +248,6 @@ def leaderboard(results_dir: Path) -> str:
                     "| reviewer | context | k | **per-run recall** | recall any-of-k | recall all-of-k | "
                     "hard: any / all | precision | control runs w/ FP | unadj. | results |",
                     "|---|---|---|---|---|---|---|---|---|---|---|", *[r for _, r in sorted(rows)], ""]
+            if split == "public":
+                out += origin_table(by_version[version])
     return "\n".join(out) + "\n"

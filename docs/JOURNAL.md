@@ -303,3 +303,14 @@ Append-only. One short entry per working session: what was done, what was learne
 - Owner also turned off the twice-daily "next roadmap item" scheduled task and archived the
   builder session; this session continues the work directly.
 - Next: real-PR controls (7/36), then refuse-to-resume on served-model change.
+
+## 2026-11-24 — five more upstream controls (click)
+- py-0039..0043 from click (422e211, 8d7f03d, 3699bcc, c2a5bb0, b964c1e): small single-function
+  behavior fixes, 2019–2022, every added line still present on click main today.
+- Made the excerpting repeatable: a small ast-based script keeps the file's top-level imports and
+  the changed function (with its class header), then checks that the excerpt diff has exactly the
+  upstream commit's +/- lines. It caught one problem: click's `main` has typing `@overload` stubs
+  with the same name, and matching by name pulled them into the "before" side. Now both sides match
+  by changed line numbers.
+- Controls: 12 of 36. All 7 upstream ones are click; next batches should use other projects.
+- The excerpt script is committed as `scripts/upstream_excerpt.py` for future batches.

@@ -1,0 +1,18 @@
+id: py-0064-clean-rich-syntax-superfluous-italics
+title: "rich: indent guides no longer inherit italics from the theme"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/Textualize/rich/commit/f540b003f4448fd4b1c399e1567bc5d632ab5b9d
+  license: MIT
+  notes: Merged 2023-04. Every line the commit added to rich/syntax.py is still present on upstream main as
+    of 2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and the
+    changed functions; pr.diff has exactly the upstream commit's changed lines in that file. Label
+    is "no known defect", not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

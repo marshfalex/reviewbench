@@ -47,6 +47,9 @@ Prefer turning a lesson into a test or validator rule over leaving it as advice.
   exist on one side only. Rule: a case's `pr.diff` +/- lines must equal the upstream commit's
   (reversed for CVE cases). Check: run `scripts/upstream_excerpt.py` and compare; skip commits
   whose change sits in a class body rather than a function.
+- **Fair findings on controls** (2026-11-24). A control can contain a real latent quirk (py-0067's
+  in-place list mutation). Rule: when the reviewer agent spots one, add it to `known_issues` so a
+  model that flags it isn't charged a false positive.
 - **Controls next to security fixes.** Never take a control from a security fix or from the same
   file as one.
 

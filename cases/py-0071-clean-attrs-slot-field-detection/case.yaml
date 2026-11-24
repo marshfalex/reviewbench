@@ -1,0 +1,22 @@
+id: py-0071-clean-attrs-slot-field-detection
+title: "attrs: simplify detection of slotted base-class fields"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/python-attrs/attrs/commit/4b1d869e9ad36c0e8f97f6a407d1fbe4c97f23c9
+  license: MIT
+  notes: Merged 2024-03. Every line the commit added to src/attr/_make.py is still present on upstream main as
+    of 2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and the
+    changed functions; pr.diff has exactly the upstream commit's changed lines in that file. Label
+    is "no known defect", not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues:
+- match: none
+  file: src/attr/_make.py
+  note: the helper now returns None instead of False when the attribute isn't in base_attr_map.
+    Callers only use it as a condition, so it's harmless, but a finding about it is fair.

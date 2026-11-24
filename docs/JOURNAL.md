@@ -426,3 +426,11 @@ Append-only. One short entry per working session: what was done, what was learne
   earns a valid finding instead of a false positive on a control.
 - Lesson for controls (added to LESSONS): "no known defect" isn't "no issue a reviewer could fairly
   raise". Record such quirks as known_issues.
+
+## 2026-11-24 — controls reach 36 (py-0068..0071)
+- Jinja2 a150ff74 and ac3ac6c9, click 0435112, attrs 4b1d869. Independent reviewer: 4/4 PASS;
+  py-0071's None-vs-False return recorded as a known issue. Roadmap item done: 36 controls, 31 of
+  them real upstream PRs from 8 projects. At 0 false alarms the Wilson upper bound on control FPR
+  is now ~9% (vs 24% at n = 12), so the noise flag becomes meaningful in v0.2.
+- v0.2 now holds 44 cases beyond v0.1's 27. The next major step (a version bump and full re-run)
+  is a direction call for the owner.

@@ -1,0 +1,35 @@
+diff --git a/src/jinja2/compiler.py b/src/jinja2/compiler.py
+--- a/src/jinja2/compiler.py
++++ b/src/jinja2/compiler.py
+@@ -30,7 +30,7 @@ class CodeGenerator:
+         self, node: t.Union[nodes.Filter, nodes.Test], frame: Frame, is_filter: bool
+     ) -> t.Iterator[None]:
+         if self.environment.is_async:
+-            self.write("await auto_await(")
++            self.write("(await auto_await(")
+ 
+         if is_filter:
+             self.write(f"{self.filters[node.name]}(")
+@@ -65,14 +65,14 @@ class CodeGenerator:
+         self.write(")")
+ 
+         if self.environment.is_async:
+-            self.write(")")
++            self.write("))")
+ 
+     @optimizeconst
+     def visit_Call(
+         self, node: nodes.Call, frame: Frame, forward_caller: bool = False
+     ) -> None:
+         if self.environment.is_async:
+-            self.write("await auto_await(")
++            self.write("(await auto_await(")
+         if self.environment.sandboxed:
+             self.write("environment.call(context, ")
+         else:
+@@ -88,4 +88,4 @@ class CodeGenerator:
+         self.signature(node, frame, extra_kwargs)
+         self.write(")")
+         if self.environment.is_async:
+-            self.write(")")
++            self.write("))")

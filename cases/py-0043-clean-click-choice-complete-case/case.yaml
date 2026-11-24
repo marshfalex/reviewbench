@@ -1,0 +1,18 @@
+id: py-0043-clean-click-choice-complete-case
+title: "click: case-insensitive Choice completion honours case_sensitive=False"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/pallets/click/commit/b964c1e2cba3915983a6e2f5fcb7f489acd9b33f
+  license: BSD-3-Clause
+  notes: Merged 2020-10. Every line the commit added is still present in src/click/types.py on click main as of
+    2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and only
+    Choice.shell_complete; pr.diff has exactly the upstream commit's changed lines. Label is "no known defect",
+    not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

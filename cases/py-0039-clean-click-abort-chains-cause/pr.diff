@@ -1,0 +1,16 @@
+diff --git a/src/click/core.py b/src/click/core.py
+index bd04f7b..3aca22d 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -121,9 +121,9 @@ class BaseCommand:
+                     # even always obvious that `rv` indicates success/failure
+                     # by its truthiness/falsiness
+                     ctx.exit()
+-            except (EOFError, KeyboardInterrupt):
++            except (EOFError, KeyboardInterrupt) as e:
+                 echo(file=sys.stderr)
+-                raise Abort() from None
++                raise Abort() from e
+             except ClickException as e:
+                 if not standalone_mode:
+                     raise

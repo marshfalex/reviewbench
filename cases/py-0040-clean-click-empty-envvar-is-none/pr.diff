@@ -1,0 +1,13 @@
+diff --git a/src/click/core.py b/src/click/core.py
+index cb78948..230cc8b 100644
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -56,4 +56,7 @@ class Option:
+             envvar = f"{ctx.auto_envvar_prefix}_{self.name.upper()}"
+             rv = os.environ.get(envvar)
+ 
+-        return rv
++            if rv:
++                return rv
++
++        return None

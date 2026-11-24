@@ -1,0 +1,18 @@
+id: py-0039-clean-click-abort-chains-cause
+title: "click: keep the original exception as the cause when converting EOFError/KeyboardInterrupt to Abort"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/pallets/click/commit/422e211018e9ef8ff9a840878464d35c4c6519ac
+  license: BSD-3-Clause
+  notes: Merged 2022-10. Every line the commit added is still present in src/click/core.py on click main as of
+    2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and only
+    BaseCommand.main; pr.diff has exactly the upstream commit's changed lines. Label is "no known defect",
+    not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

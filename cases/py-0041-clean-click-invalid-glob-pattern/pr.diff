@@ -1,0 +1,43 @@
+diff --git a/src/click/utils.py b/src/click/utils.py
+index 930c2c8..8916e03 100644
+--- a/src/click/utils.py
++++ b/src/click/utils.py
+@@ -1,5 +1,6 @@
+ # Excerpt of src/click/utils.py from an upstream project; code outside the functions below is omitted.
+ import os
++import re
+ import sys
+ import typing as t
+ from functools import update_wrapper
+@@ -31,7 +32,7 @@ def _expand_args(
+     See :func:`glob.glob`, :func:`os.path.expanduser`, and
+     :func:`os.path.expandvars`.
+ 
+-    This intended for use on Windows, where the shell does not do any
++    This is intended for use on Windows, where the shell does not do any
+     expansion. It may not exactly match what a Unix shell would do.
+ 
+     :param args: List of command line arguments to expand.
+@@ -39,6 +40,10 @@ def _expand_args(
+     :param env: Expand environment variables.
+     :param glob_recursive: ``**`` matches directories recursively.
+ 
++    .. versionchanged:: 8.1
++        Invalid glob patterns are treated as empty expansions rather
++        than raising an error.
++
+     .. versionadded:: 8.0
+ 
+     :meta private:
+@@ -54,7 +59,10 @@ def _expand_args(
+         if env:
+             arg = os.path.expandvars(arg)
+ 
+-        matches = glob(arg, recursive=glob_recursive)
++        try:
++            matches = glob(arg, recursive=glob_recursive)
++        except re.error:
++            matches = []
+ 
+         if not matches:
+             out.append(arg)

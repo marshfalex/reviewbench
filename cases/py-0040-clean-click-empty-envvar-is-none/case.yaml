@@ -1,0 +1,18 @@
+id: py-0040-clean-click-empty-envvar-is-none
+title: "click: treat an empty auto-envvar value as unset"
+language: python
+difficulty: hard
+since: "0.2"
+tags: [control, no-known-defect, upstream]
+source:
+  kind: upstream
+  ref: https://github.com/pallets/click/commit/8d7f03dac8739afed890af0c0921965786c5e83c
+  license: BSD-3-Clause
+  notes: Merged 2022-03. Every line the commit added is still present in src/click/core.py on click main as of
+    2026-11-24, so no later fix is known. repo/ holds the file's top-level imports and only
+    Option.resolve_envvar_value; pr.diff has exactly the upstream commit's changed lines. Label is "no known defect",
+    not "proven clean" (SPEC §10).
+bugs: []
+context:
+  related: []
+known_issues: []

@@ -1,6 +1,7 @@
-id: py-0029-django-admindocs-template-traversal
+id: py-0036-django-admindocs-template-traversal
 title: admindocs template view joins the template name without safe_join
 language: python
+since: '0.2'
 difficulty: easy
 tags:
 - security

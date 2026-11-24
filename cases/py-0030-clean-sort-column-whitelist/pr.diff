@@ -1,0 +1,15 @@
+diff --git a/app/products.py b/app/products.py
+index 47e80c9..acdb742 100644
+--- a/app/products.py
++++ b/app/products.py
+@@ -1,4 +1,8 @@
+-def list_products(db, limit: int = 50):
++from app.sorting import SortColumn
++
++
++def list_products(db, sort: SortColumn = SortColumn.NAME, limit: int = 50):
++    # Identifiers can't be bound as parameters; sort is a SortColumn, never raw user input.
+     return db.execute(
+-        "SELECT id, name, price_cents FROM products ORDER BY name LIMIT ?", (limit,)
++        f"SELECT id, name, price_cents FROM products ORDER BY {sort.value}, id LIMIT ?", (limit,)
+     ).fetchall()

@@ -86,8 +86,137 @@ Append-only. One short entry per working session: what was done, what was learne
   one. With the guard disabled, 6 of them fail.
 - Next: CVE batch 2 (batch 1 merged in #9).
 
+## 2026-11-23 — design review with the owner (v0.2 decisions)
+- A structured grilling of the plan with the owner. The decisions are in SPEC §10 and a new
+  "v0.2 redesign" roadmap section; nothing is implemented yet.
+- Main finding: the benchmark looks too easy. Cerebras qwen-3.8-27b caught 54/54 per-run at L0
+  (Wilson lower bound ~93%) with 0/12 control false alarms, including every author-labeled "hard"
+  case. A pre-registered ceiling rule decides it once groq, gemini and nemotron finish.
+- Corrected during the review: a noise flag on the control-FPR *upper* bound would flag every
+  model (0/12 already gives ~24%), so the flag uses the point estimate, and controls go to ≥36.
+- Held-out: `heldout_ok` was set without checking providers' training terms. Held-out runs are
+  paused until a dated data-use table exists. No workflow references `REVIEWBENCH_HELDOUT` and no
+  committed result mentions held-out cases, so they very likely never left the private repo; the
+  owner will confirm from the run logs.
+- Next: the ceiling write-up, then the provider data-use table.
+
+## 2026-11-23 — provider errors were being counted as finished runs
+- While pulling numbers for the ceiling write-up: gemini and nemotron results are marked `complete`
+  but ~200 of their 243 reviews each are `exception: HTTPError: 429` (plus a few 503s). Their
+  leaderboard rows (6/6, 100%) rest on the few cases that got through, and the scheduler would
+  never rerun them.
+- Cause: on the last retry, a 429 fell through to `raise_for_status()`. The runner recorded it as a
+  generic exception, which resume treats as done, and the run kept going instead of stopping.
+- Fix: a final 429 is `rate_limited`; 5xx is retried, then recorded as `transient`. `retryable()`
+  also recognizes the old `HTTPError: 429/5xx` strings, so the existing files are repaired: a file
+  holding retryable errors is `partial`, `find_resumable` picks it up, and `lineup.completed` no
+  longer counts it. The next scheduled runs will redo only the failed reviews.
+- Ceiling check so far (L0, public, per-run recall, Wilson lower bound): cerebras 54/54 (93.4%),
+  groq 58/69 (73.7%). gemini and nemotron can't be judged until they rerun. Groq also had control
+  false alarms in 3/12 runs (25%), which is over the 20% noise flag.
+- Next: the leaderboard should mark partial results. Then the ceiling write-up, once gemini and
+  nemotron finish.
+
+## 2026-11-23 — leaderboard marks results with failed reviews
+- The leaderboard now marks a row `(partial) (N reviews failed, to retry)` whenever its level holds
+  retryable errors, even if the file says `complete` (the pre-#16 files do). Gemini and Nemotron
+  no longer read as finished 6/6 results.
+- Next: the ceiling write-up, once the scheduled runs have retried gemini and nemotron.
+
+## 2026-11-23 — provider data-use table
+- Added `docs/providers.md`. No lineup provider qualifies for held-out cases today: Gemini free and
+  Mistral Experiment train on inputs (Mistral by default, with an opt-out); OpenRouter free depends
+  on the host; Groq and Cerebras say they don't retain data, but neither public text forbids
+  training. Groq's no-training clause reportedly sits in its Services Agreement, which we couldn't read.
+- Groq was `heldout_ok: true`; it's now `false`. A held-out run approval now needs a "yes" row.
+- Decision: "not stated" counts as no. The point of held-out cases is that nobody can train on
+  them, so the burden is on the terms.
+- Next: owner checks Groq's agreement and/or switches off Mistral training if they want a held-out
+  model; sessions continue with cross-file L2 cases.
+## 2026-11-23 — automerge workflow (owner request)
+- The owner wants merges automatic. `.github/workflows/automerge.yml` merges a Claude-branch PR
+  when `ci` passes on its current head, unless it's gated (.github/, pyproject.toml, prompt/schema,
+  matcher, BENCH_VERSION, or adding `heldout_ok: true`). Gated PRs get `needs-owner` and wait.
+  The owner can hold any PR by adding that label.
+- Uses `workflow_run`, which always runs the copy on `main`, so a PR can't weaken its own gate.
+- Merges done with GITHUB_TOKEN don't trigger other workflows; the push-to-main `ci` run won't fire
+  for them. That's acceptable: the same commit already passed `ci` on the PR.
+
+## 2026-11-23 — first cross-file (L2-only) cases
+- py-0028 (authz bypass: `if not can_edit(...)` where can_edit returns an always-truthy Decision),
+  py-0029 (seconds TTL added to a millisecond clock: sessions last 28.8 s), and py-0030 (control:
+  f-string ORDER BY whose column is an Enum whitelisted in another file). Checked that the fact
+  needed to judge each one appears in the prompt at L2 only, never at L0/L1.
+- New case.yaml field `since: "0.2"`. These cases are validated now but not run until
+  BENCH_VERSION is 0.2, so v0.1's 27-case set stays frozen while gemini/nemotron finish.
+  Bumping BENCH_VERSION is gated (owner).
+- Expected signal: a model that "catches" py-0028/29 at L0 is guessing; py-0030 at L0 should tempt
+  SQL-injection false alarms that L2 removes. That's the context hypothesis in one table.
+- Commits are now authored as the owner (their GitHub noreply address), with Claude as co-author.
+- Next: large noisy-diff cases, then more controls toward 36.
+
+## 2026-11-23 — leaderboard: per-run recall first, noise flag, prompt hash
+- Leaderboard rows are sorted by per-run recall within each context level, with unfinished
+  results last (otherwise gemini's 12/12 on a sliver of cases outranked groq's 58/69).
+- Noise flag (SPEC §10): groq is flagged at L0 and L1 (control FPR 3/12 = 25%); nobody exceeds
+  3 counted findings per review.
+- New results files store `prompt_sha256` (prompt + output schema). Resuming a file made with a
+  different prompt is refused, so one result never mixes prompts. Older files have no hash;
+  resuming them stamps the current one (the prompt hasn't changed since v0.1 started).
+- Split the roadmap item: blind adjudication + κ is still open.
+- Next: blind adjudication, then large noisy-diff cases.
+
+## 2026-11-23 — blind adjudication and a second rater
+- `reviewbench adjudicate-blind <results...>` pools findings across results files, shuffles them
+  (seeded) and shows only the case title and the finding: no model, provider, file name or finding
+  id. Verdicts carry `"blind": true` and are saved after each answer, so quitting loses nothing.
+- `--rater second` re-judges a fixed 20% sample (hash of the finding id, so it's stable as results
+  grow) of the primary *human* verdicts into a separate `.second.json`; `reviewbench agreement`
+  prints agreement and Cohen's kappa. The second rater could later be an LLM, labeled as such.
+- Caught my own arithmetic error in the kappa test (assumed pe = .5); the code was right.
+- Doing the pass is an `[owner]` item (it's human judgment). Next: large noisy-diff cases.
+
+## 2026-11-23 — first noisy-diff cases
+- py-0031: a 154-line typing/docstring refactor of 12 views; delete_project alone loses
+  @login_required. py-0032: a 116-line typing refactor of a listing module; paginate's offset
+  changes from (page - 1) * size to page * size, so page 1 shows the second page.
+- Caught a dud before shipping: in my first py-0031 draft the unprotected view read
+  `request.user.id`, so an anonymous call crashed with AttributeError before deleting anything. The
+  "bug" wasn't exploitable. Now the store relies on the decorator and deletes by project id. Lesson
+  for future cases: trace the planted bug to its actual harm, don't stop at "looks wrong".
+- Both are `since: "0.2"`.
+- Next: ceiling write-up once gemini/nemotron finish; more controls; more noisy diffs.
+
+## 2026-11-23 — first upstream controls (click)
+- py-0033 (click 589ca31, help text form-feed truncation) and py-0034 (click 36e3765, dots in the
+  completion env var name): real merged PRs, BSD-3-Clause, used as-is. New `source.kind: upstream`.
+- "No later fix" check: the changed lines are unchanged on click main today. Dropped b36e3ed
+  (multiple flags): its lines were rewritten later, so it may have needed fixing.
+- Dead end: `git log -S` on a `--filter=blob:none` clone fetches blobs one by one and timed out.
+  Grepping upstream main for the changed lines is a cheap proxy; a full clone would allow a real
+  `git log -L` check.
+- Next: keep adding upstream controls (requests, urllib3, Jinja2, Flask all permissive) in batches
+  of ~5; ceiling write-up once gemini/nemotron finish.
+
+## 2026-11-23 — risk register
+- Owner asked for realism. Wrote `docs/RISKS.md`: what could make the numbers wrong, most serious
+  first. The headline: **0 of ~750 v0.1 findings have a human verdict**, so every precision figure
+  on the leaderboard is meaningless today, and groq's noise flag rests on 6 rule verdicts.
+- Other big ones: n = 23 bugs can't rank models; synthetic cases are LLM-written (and Claude
+  wrote the recent ones: a self-grading risk); held-out (5) is too small to detect contamination.
+- Added four roadmap items that fix the reporting side now, without waiting for the owner.
+- Next session: "stop reporting unmeasured precision" first; it's the most misleading number we
+  publish.
+
+## 2026-11-23 — precision hidden until it's measured
+- Leaderboard and per-run reports now print "not measured (N of M unjudged)" for precision until
+  80% of the findings that need a human verdict have one. Every v0.1 row now says "not measured".
+- The noise flag's control-FPR reason says "≥" when control findings are unjudged (confirmed
+  false positives are only a lower bound).
+- Done in report.py on purpose: scoring.py is gated under automerge, and this didn't need it.
+
 ## 2026-11-20 — CVE batch 2
-- Added py-0028..py-0031, the same method as batch 1:
+- Added py-0035..py-0038 (`since: "0.2"`; renumbered from py-0028..31 after main took those ids), the same method as batch 1:
   - GitPython CVE-2023-41040 (64ebb9f, the commit titled "Fix CVE-2023-41040": rejects `..` in
     ref paths)
   - Django CVE-2021-33203 (dfaba12: `safe_join` in admindocs)

@@ -9,7 +9,7 @@
   "L1",
   "L2"
  ],
- "status": "partial",
+ "status": "complete",
  "cases": {
   "py-0001-sql-injection": {
    "title": "SQL query built with an f-string",
@@ -5535,10 +5535,1079 @@
    "case": "py-0023-requests-auth-https-downgrade",
    "level": "L1",
    "run": 0,
-   "error": "rate_limited: retry-after 1337s (quota)",
+   "error": null,
+   "summary": "Authorization header may be leaked on redirects to same host with different scheme or port.",
+   "usage": {
+    "input_tokens": 2878,
+    "output_tokens": 919,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L1/r0/f0",
+     "path": "requests/sessions.py",
+     "line": 197,
+     "category": "security",
+     "severity": "high",
+     "title": "Reduced redirect auth stripping condition",
+     "explanation": "The auth stripping logic now only checks hostname equality, ignoring changes in scheme or port. Redirects to the same host on a different scheme (http\u2192https) or port can leak the Authorization header to an unintended endpoint. Restore the original checks for hostname, port, and scheme, e.g., `if (original_parsed.hostname != redirect_parsed.hostname or original_parsed.port != redirect_parsed.port or original_parsed.scheme != redirect_parsed.scheme):`."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 400 Client Error: Bad Request for url: https://api.groq.com/openai/v1/chat/completions",
    "summary": "",
    "usage": {},
    "findings": []
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Authorization header may be leaked on redirects that change scheme or port",
+   "usage": {
+    "input_tokens": 2878,
+    "output_tokens": 2781,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L1/r2/f0",
+     "path": "requests/sessions.py",
+     "line": 193,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header not stripped on scheme or port change",
+     "explanation": "The rebuild_auth method now only compares hostnames when deciding whether to drop the Authorization header. Redirects that keep the same hostname but change the scheme (http \u2192 https) or port can cause credentials to be sent to a different endpoint, leading to credential leakage. Restore the original check that also compares hostname, port, and scheme (or compare the full netloc) before deleting the header."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Authorization header may be leaked across scheme or port changes due to weakened host comparison",
+   "usage": {
+    "input_tokens": 2878,
+    "output_tokens": 2790,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L2/r0/f0",
+     "path": "requests/sessions.py",
+     "line": 199,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header not stripped on scheme or port change",
+     "explanation": "The original code removed the Authorization header when any of hostname, port, or scheme differed between the original request and the redirect target. The new code only checks hostname, so redirects that change only the scheme (http \u2192 https) or port (e.g., 80 \u2192 443) will retain the Authorization header, potentially leaking credentials to an unintended endpoint. Restore the original comparison (hostname, port, and scheme) or explicitly include scheme and port checks to prevent credential leakage."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Reduced redirect auth stripping may leak credentials",
+   "usage": {
+    "input_tokens": 2878,
+    "output_tokens": 549,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L2/r1/f0",
+     "path": "requests/sessions.py",
+     "line": 260,
+     "category": "security",
+     "severity": "high",
+     "title": "Authorization header not removed on scheme or port change",
+     "explanation": "The rebuild_auth method now only compares hostnames when deciding to strip the Authorization header. If a redirect changes the scheme (http \u2192 https) or port while keeping the same hostname, the Authorization header will be retained and sent to the new endpoint, potentially leaking credentials. Restore the original checks for hostname, port, and scheme, e.g., `if (original_parsed.hostname != redirect_parsed.hostname or original_parsed.port != redirect_parsed.port or original_parsed.scheme != redirect_parsed.scheme):`."
+    }
+   ]
+  },
+  {
+   "case": "py-0023-requests-auth-https-downgrade",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Authorization header may be leaked on redirects to same host with different scheme or port.",
+   "usage": {
+    "input_tokens": 2878,
+    "output_tokens": 919,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0023-requests-auth-https-downgrade/L2/r2/f0",
+     "path": "requests/sessions.py",
+     "line": 197,
+     "category": "security",
+     "severity": "high",
+     "title": "Reduced redirect auth stripping condition",
+     "explanation": "The auth stripping logic now only checks hostname equality, ignoring changes in scheme or port. Redirects to the same host on a different scheme (http\u2192https) or port can leak the Authorization header to an unintended endpoint. Restore the original checks for hostname, port, and scheme, e.g., `if (original_parsed.hostname != redirect_parsed.hostname or original_parsed.port != redirect_parsed.port or original_parsed.scheme != redirect_parsed.scheme):`."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Security regression: removal of Cookie header from default redirect sanitization",
+   "usage": {
+    "input_tokens": 661,
+    "output_tokens": 599,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L0/r0/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 189,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer stripped on redirects",
+     "explanation": "The default set of headers removed on redirects previously included \"Cookie\" to prevent leaking session cookies to third\u2011party hosts. The change drops \"Cookie\" from DEFAULT_REMOVE_HEADERS_ON_REDIRECT, allowing cookies to be forwarded on redirects, which can expose user credentials. Restore \"Cookie\" in the frozenset or make the change configurable with a clear deprecation path."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Removing \"Cookie\" from default headers stripped on redirects introduces a security regression.",
+   "usage": {
+    "input_tokens": 661,
+    "output_tokens": 381,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L0/r1/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 190,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer removed on redirects",
+     "explanation": "The default set of headers stripped during a redirect previously included \"Cookie\" to prevent credential leakage across domains. By removing it, cookies may be sent to redirected hosts, potentially exposing session data to untrusted parties. Restore \"Cookie\" in DEFAULT_REMOVE_HEADERS_ON_REDIRECT or make the default configurable with a safe fallback."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Security regression: Cookie header no longer stripped on redirects, potentially leaking credentials.",
+   "usage": {
+    "input_tokens": 661,
+    "output_tokens": 492,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L0/r2/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 187,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header not removed on redirects",
+     "explanation": "The default set of headers to strip on redirects was reduced to only \"Authorization\", dropping \"Cookie\". This allows cookies to be forwarded to redirected URLs, which can leak session credentials to third\u2011party hosts. Re\u2011add \"Cookie\" to DEFAULT_REMOVE_HEADERS_ON_REDIRECT or require callers to explicitly include it."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Security regression: default removal of Cookie header on redirects was removed.",
+   "usage": {
+    "input_tokens": 4664,
+    "output_tokens": 472,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L1/r0/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 187,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer stripped on redirects",
+     "explanation": "The DEFAULT_REMOVE_HEADERS_ON_REDIRECT constant was changed to only include \"Authorization\". Without \"Cookie\" being removed, redirects to third\u2011party domains may include the original request's cookies, potentially leaking session credentials. Restore the original behavior by adding \"Cookie\" back to the set, e.g., `frozenset([\"Cookie\", \"Authorization\"])`."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Security regression: Cookie header no longer stripped on redirects",
+   "usage": {
+    "input_tokens": 4664,
+    "output_tokens": 475,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L1/r1/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 187,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing removal of Cookie header on redirects",
+     "explanation": "The DEFAULT_REMOVE_HEADERS_ON_REDIRECT constant was changed to only include \"Authorization\", omitting \"Cookie\". This allows cookies to be sent to redirected hosts, potentially leaking session credentials. Restore the original behavior by including \"Cookie\" in the set, e.g., frozenset([\"Cookie\", \"Authorization\"])."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Security regression: default removal of Cookie header on redirects was removed, risking credential leakage.",
+   "usage": {
+    "input_tokens": 4664,
+    "output_tokens": 637,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L1/r2/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 71,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer stripped on redirects",
+     "explanation": "The DEFAULT_REMOVE_HEADERS_ON_REDIRECT constant was changed to only include \"Authorization\". Without \"Cookie\" being removed, cookies may be forwarded to redirected domains, potentially leaking session credentials. Restore the original behavior by including \"Cookie\" in the frozenset, e.g., `frozenset([\"Cookie\", \"Authorization\"])`."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Security regression: Cookie header no longer stripped on cross-host redirects, risking credential leakage.",
+   "usage": {
+    "input_tokens": 5367,
+    "output_tokens": 731,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L2/r0/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 71,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header not removed on cross-host redirects",
+     "explanation": "The default `DEFAULT_REMOVE_HEADERS_ON_REDIRECT` was changed to only include \"Authorization\". Previously it also contained \"Cookie\", which is removed when a redirect leads to a different host. Without stripping cookies, sensitive session data can be forwarded to third\u2011party domains, creating a credential\u2011leakage vulnerability. Restore the original default or make the omission explicit with a deprecation warning. Fix: change the line back to `DEFAULT_REMOVE_HEADERS_ON_REDIRECT = frozenset([\"Cookie\", \"Authorization\"])` or add a comment explaining the security impact if the change is intentional."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Security regression: Cookie header no longer stripped on cross-host redirects, risking credential leakage.",
+   "usage": {
+    "input_tokens": 5367,
+    "output_tokens": 731,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L2/r1/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 71,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header not removed on cross-host redirects",
+     "explanation": "The default `DEFAULT_REMOVE_HEADERS_ON_REDIRECT` was changed to only include \"Authorization\". Previously it also contained \"Cookie\", which is removed when a redirect leads to a different host. Without stripping cookies, sensitive session data can be forwarded to third\u2011party domains, creating a credential\u2011leakage vulnerability. Restore the original default or make the omission explicit with a deprecation warning. Fix: change the line back to `DEFAULT_REMOVE_HEADERS_ON_REDIRECT = frozenset([\"Cookie\", \"Authorization\"])` or add a comment explaining the security impact if the change is intentional."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Security regression: Cookie header no longer stripped on cross-host redirects",
+   "usage": {
+    "input_tokens": 5367,
+    "output_tokens": 414,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L2/r2/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 187,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header not removed on cross-host redirects",
+     "explanation": "The default set of headers removed during a redirect was reduced to only \"Authorization\", dropping \"Cookie\". When a request is redirected to a different host, the Cookie header may be forwarded, leaking session credentials to an unintended domain. Re\u2011add \"Cookie\" to DEFAULT_REMOVE_HEADERS_ON_REDIRECT (e.g., frozenset([\"Cookie\", \"Authorization\"])) or ensure the header is stripped elsewhere."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Regression in XML attribute filter allowing spaces in attribute names, leading to malformed markup.",
+   "usage": {
+    "input_tokens": 965,
+    "output_tokens": 554,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L0/r0/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 84,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Attribute names with spaces are no longer rejected",
+     "explanation": "The previous implementation raised a ValueError when a key contained whitespace, preventing generation of invalid XML/HTML attribute strings. The new implementation silently includes such keys, producing output like `foo bar=\"value\"` which is not a valid attribute and can break rendering or enable injection attacks. Reinstate validation (e.g., using the original regex check) or sanitize keys before inclusion."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The XML attribute filter no longer validates attribute names, allowing spaces which can produce malformed markup.",
+   "usage": {
+    "input_tokens": 965,
+    "output_tokens": 731,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L0/r1/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 84,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Attribute names with spaces are no longer rejected",
+     "explanation": "The previous implementation raised a ValueError when a dict key contained whitespace, preventing generation of invalid XML/HTML. The new implementation removes this check, so keys like \"data id\" will be rendered as `data id=\"value\"`, which is not a valid attribute name and can break rendering or cause security issues. Re\u2011introduce validation (e.g., using the original regex) and raise an error for keys containing spaces, or sanitize/transform such keys before rendering."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The xmlattr filter now permits keys with spaces, generating malformed attribute strings.",
+   "usage": {
+    "input_tokens": 965,
+    "output_tokens": 842,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L0/r2/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 84,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Attribute names with spaces are no longer rejected",
+     "explanation": "The previous implementation raised a ValueError when a dict key contained whitespace, preventing generation of invalid XML/HTML. The new implementation removes that check and includes such keys in the output, producing attribute strings like `foo bar=\"value\"` which are not valid markup and can break templates or enable injection attacks. Reinstate validation (e.g., using the original regex) and raise an error for keys containing spaces, or explicitly sanitize/strip spaces before rendering."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Removal of key-space validation in xmlattr filter introduces malformed attribute names and potential injection issues.",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 495,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L1/r0/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 84,
+     "category": "correctness",
+     "severity": "high",
+     "title": "xmlattr now allows keys with spaces, producing invalid HTML/XML",
+     "explanation": "The previous implementation rejected attribute names containing spaces with a ValueError, ensuring generated markup is syntactically valid. The new implementation removes this check, allowing keys like \"data foo\" to be emitted as `data foo=\"value\"`. Browsers may interpret this as separate attributes or malformed markup, leading to broken templates and possible attribute injection attacks. Re\u2011introduce validation (e.g., using a regex similar to the removed `_space_re`) and raise a clear error when a key contains whitespace."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Removed validation for spaces in XML attribute names, allowing malformed markup and potential injection.",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 952,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L1/r1/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 94,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Missing validation for spaces in attribute keys",
+     "explanation": "The previous implementation raised a ValueError when a dict key contained whitespace, preventing generation of invalid SGML/XML attributes. The new code removes this check, so keys like \"data id\" produce output such as `data id=\"value\"`, which is not valid HTML/XML and can be exploited for attribute injection or XSS. Re\u2011introduce the whitespace validation (e.g., using a compiled regex) and raise a clear error for keys containing spaces, or sanitize the key before rendering."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Removed validation that attribute names must not contain spaces, allowing generation of invalid XML/HTML attributes.",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 717,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L1/r2/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 92,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Attribute names with spaces are no longer rejected",
+     "explanation": "The previous implementation raised a ValueError when a key contained whitespace, preventing malformed SGML/XML attributes. The new implementation silently includes such keys, producing output like `foo bar=\"value\"` which is invalid markup and can lead to attribute injection or rendering errors. Re\u2011introduce the whitespace check (e.g., using the original `_space_re` regex) and raise a clear exception for keys containing spaces."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Removed validation that attribute names must not contain spaces, allowing generation of invalid XML/HTML attributes.",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 717,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L2/r0/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 92,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Attribute names with spaces are no longer rejected",
+     "explanation": "The previous implementation raised a ValueError when a key contained whitespace, preventing malformed SGML/XML attributes. The new implementation silently includes such keys, producing output like `foo bar=\"value\"` which is invalid markup and can lead to attribute injection or rendering errors. Re\u2011introduce the whitespace check (e.g., using the original `_space_re` regex) and raise a clear exception for keys containing spaces."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Removed validation that attribute names must not contain spaces, allowing generation of invalid XML/HTML attributes.",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 717,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L2/r1/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 92,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Attribute names with spaces are no longer rejected",
+     "explanation": "The previous implementation raised a ValueError when a key contained whitespace, preventing malformed SGML/XML attributes. The new implementation silently includes such keys, producing output like `foo bar=\"value\"` which is invalid markup and can lead to attribute injection or rendering errors. Re\u2011introduce the whitespace check (e.g., using the original `_space_re` regex) and raise a clear exception for keys containing spaces."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Allowing spaces in XML/HTML attribute names reintroduces attribute injection risk.",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 638,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L2/r2/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 84,
+     "category": "security",
+     "severity": "high",
+     "title": "Attribute name validation removed, enabling injection via spaces",
+     "explanation": "The previous implementation rejected keys containing spaces, preventing malformed attribute names that could be used to inject extra attributes (e.g., `foo bar=\"value\"` becomes two attributes `foo` and `bar=\"value\"`). The new code no longer checks for spaces, allowing user\u2011controlled keys to break out of the intended attribute context and potentially introduce XSS or other injection attacks. Re\u2011introduce the space check (e.g., using the original `_space_re` regex) and raise a `ValueError` when a key contains whitespace."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Missing directory traversal protection when following symlinks in static file handling",
+   "usage": {
+    "input_tokens": 899,
+    "output_tokens": 1003,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r0/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 124,
+     "category": "security",
+     "severity": "high",
+     "title": "Bypassing directory containment check when follow_symlinks=True",
+     "explanation": "The refactor resolves the file path before checking that it is inside the static directory, but only performs the `relative_to` check when `self._follow_symlinks` is false. When `self._follow_symlinks` is true, a malicious symlink can point outside the static root, allowing path traversal and exposure of arbitrary files. Restore the containment check for both cases, e.g., always call `filepath.relative_to(self._directory)` after `resolve()` and raise HTTPForbidden on failure."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r0/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 197,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing containment validation for symlinked static files",
+     "explanation": "In the request handling block the same logic is applied: the path is resolved before the `relative_to` check, and the check is skipped when `self._follow_symlinks` is true. This re\u2011introduces the same symlink escape vulnerability. Ensure the `relative_to` validation runs regardless of the `follow_symlinks` flag, or perform a safe check before following symlinks."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Security regression: symlink handling no longer validates resolved paths, allowing directory traversal.",
+   "usage": {
+    "input_tokens": 899,
+    "output_tokens": 771,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r1/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 124,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing directory containment check when following symlinks",
+     "explanation": "The refactor removed the normalization and relative path check for the case where `self._follow_symlinks` is True. Now `filepath = self._directory.joinpath(filename).resolve()` is performed and no `relative_to` validation is applied, so a symlink inside the static directory that points outside can be served, leading to a directory\u2011traversal vulnerability. Fix by validating that the resolved path is still within `self._directory` (e.g., `resolved_path = self._directory.joinpath(filename).resolve(); resolved_path.relative_to(self._directory)`), regardless of the `follow_symlinks` flag, or by performing the same normalization logic as before."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r1/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 197,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing directory containment check when following symlinks (second occurrence)",
+     "explanation": "Same issue as above in the later block: when `self._follow_symlinks` is True the code resolves the path without ensuring it stays inside the static directory, allowing symlink\u2011based traversal. Reinstate the `relative_to` check for both branches or perform a post\u2011resolve containment validation."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Security issue: symlink handling now bypasses directory traversal protection when follow_symlinks is enabled.",
+   "usage": {
+    "input_tokens": 899,
+    "output_tokens": 930,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r2/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 124,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing directory traversal check for symlinked files",
+     "explanation": "When `self._follow_symlinks` is True the code resolves the path before verifying it stays inside `self._directory`. This allows a symlink inside the static directory to point outside, exposing files outside the intended static root. Re\u2011introduce the `relative_to` check (or equivalent) for the symlink case, e.g. resolve the path, then if `self._follow_symlinks` is False enforce `filepath.relative_to(self._directory)`, otherwise still enforce the check after resolution to prevent escape."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r2/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 197,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing directory traversal check in request handling for symlinks",
+     "explanation": "The same issue appears in the request\u2011handling block: when `self._follow_symlinks` is True the code resolves the file path without confirming it is a sub\u2011path of the static directory, allowing symlink attacks. Add a `filepath.relative_to(self._directory)` validation (or equivalent) regardless of the `follow_symlinks` flag, or perform the check after resolution for both branches."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Symlink handling in url_for can expose hashes of files outside the static directory.",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 1168,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L1/r0/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 150,
+     "category": "security",
+     "severity": "high",
+     "title": "Symlink traversal in version hash generation",
+     "explanation": "When `append_version` is True, the code resolves the target path before checking `self._follow_symlinks`. `Path.resolve()` follows symlinks, so a malicious symlink inside the static directory can point to an arbitrary file outside the directory. The resolver then reads that external file to compute a version hash, leaking information about files the server should not expose. Fix by performing the symlink check *before* calling `resolve()`, e.g., use `Path(self._directory, filename).absolute()` or `Path(...).resolve(strict=False)` only when `self._follow_symlinks` is True, and skip hash generation when symlinks are disallowed."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Symlink handling in url_for can expose hashes of files outside the static directory.",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 1168,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L1/r1/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 150,
+     "category": "security",
+     "severity": "high",
+     "title": "Symlink traversal in version hash generation",
+     "explanation": "When `append_version` is True, the code resolves the target path before checking `self._follow_symlinks`. `Path.resolve()` follows symlinks, so a malicious symlink inside the static directory can point to an arbitrary file outside the directory. The resolver then reads that external file to compute a version hash, leaking information about files the server should not expose. Fix by performing the symlink check *before* calling `resolve()`, e.g., use `Path(self._directory, filename).absolute()` or `Path(...).resolve(strict=False)` only when `self._follow_symlinks` is True, and skip hash generation when symlinks are disallowed."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Security regression: path traversal allowed when follow_symlinks is True due to missing directory containment check.",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 2115,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L1/r2/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 138,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing directory containment check in url_for",
+     "explanation": "When `self._follow_symlinks` is True the code resolves the requested file path without first verifying that the normalized path stays inside `self._directory`. An attacker can use \"..\" segments (e.g., \"../secret.txt\") to escape the static directory and obtain a version hash for files outside the intended root, potentially leading to unauthorized access when the file is later served. Fix by normalizing the path and calling `relative_to(self._directory)` before `resolve()`, similar to the original implementation."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L1/r2/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 197,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing directory containment check in _handle",
+     "explanation": "The request handler resolves the file path with `self._directory.joinpath(filename).resolve()` without first ensuring the path (after normalisation) is within the static directory when `self._follow_symlinks` is True. This re\u2011introduces a path\u2011traversal vulnerability via \"..\" components. Add a `Path(os.path.normpath(...)).relative_to(self._directory)` check before calling `resolve()`, or perform the containment check after resolution for both symlink modes."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Symlink handling in url_for can expose hashes of files outside the static directory.",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 1168,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r0/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 150,
+     "category": "security",
+     "severity": "high",
+     "title": "Symlink traversal in version hash generation",
+     "explanation": "When `append_version` is True, the code resolves the target path before checking `self._follow_symlinks`. `Path.resolve()` follows symlinks, so a malicious symlink inside the static directory can point to an arbitrary file outside the directory. The resolver then reads that external file to compute a version hash, leaking information about files the server should not expose. Fix by performing the symlink check *before* calling `resolve()`, e.g., use `Path(self._directory, filename).absolute()` or `Path(...).resolve(strict=False)` only when `self._follow_symlinks` is True, and skip hash generation when symlinks are disallowed."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Symlink traversal vulnerability introduced by simplifying path resolution logic",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 1800,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r1/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 158,
+     "category": "security",
+     "severity": "high",
+     "title": "Symlink escape allowed when follow_symlinks=True in url_for",
+     "explanation": "The new code resolves the file path before checking whether it stays inside the static directory. When `self._follow_symlinks` is True the subsequent `filepath.relative_to(self._directory)` check is skipped, allowing a symlink inside the static directory to point outside and be served. This can lead to directory traversal and exposure of arbitrary files. Fix by always verifying that the resolved path is a sub\u2011path of `self._directory`, e.g.:\n```python\nfilepath = (self._directory / filename).resolve()\nfilepath.relative_to(self._directory)  # always enforce\n```\nand then apply the symlink\u2011following logic only to the decision of whether to follow the symlink during resolution."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r1/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 210,
+     "category": "security",
+     "severity": "high",
+     "title": "Symlink escape allowed when follow_symlinks=True in request handling",
+     "explanation": "In `_handle` the path is resolved before any directory containment check, and the containment check (`filepath.relative_to(self._directory)`) is performed only when `self._follow_symlinks` is False. With `follow_symlinks=True` a malicious symlink can cause the server to read files outside the configured static directory. Apply the same containment verification regardless of the `follow_symlinks` flag, e.g.:\n```python\nfilepath = (self._directory / filename).resolve()\nfilepath.relative_to(self._directory)  # enforce for all cases\n```\nThis restores the original security guarantee."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Path traversal vulnerability introduced when follow_symlinks=True",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 1633,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r2/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 150,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal possible in url_for when follow_symlinks=True",
+     "explanation": "The code resolves the requested filename with `Path.resolve()` before verifying that the resulting path is inside the static directory. When `follow_symlinks` is True, a crafted filename like \"../secret.txt\" (or a symlink that points outside) will be resolved to a location outside the configured directory and then used to generate a versioned URL, exposing files outside the static root. The original implementation performed a `relative_to` check before calling `resolve()` for the follow\u2011symlinks case. Fix by restoring the pre\u2011resolve check: for `self._follow_symlinks` compute a normalized path, call `relative_to(self._directory)`, then resolve; otherwise keep the existing logic."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r2/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 190,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal possible in _handle when follow_symlinks=True",
+     "explanation": "The request handler builds the file path with `self._directory.joinpath(filename).resolve()` and only checks `relative_to` when `follow_symlinks` is False. With `follow_symlinks=True` an attacker can request \"../secret.txt\" or a symlink that points outside the static directory, causing the server to serve files outside the intended root. Reinstate the original safety check: if `self._follow_symlinks` is True, first normalize the path and verify it is within `self._directory` before calling `resolve()`; otherwise keep the existing resolve\u2011then\u2011check logic."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks introduces a security risk and breaks the public API.",
+   "usage": {
+    "input_tokens": 1595,
+    "output_tokens": 810,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r0/f0",
+     "path": "git/repo/base.py",
+     "line": 210,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing validation for unsafe clone options",
+     "explanation": "The previous implementation rejected URLs or clone options that used unsafe protocols (e.g., `ext::`) unless the caller explicitly set `unsafe_protocols=True`. The recent changes removed the `unsafe_options` check, allowing potentially dangerous protocols to be used silently, which can lead to remote code execution. Re\u2011introduce the validation (or a safer alternative) before invoking `_clone` and raise `UnsafeOptionsUsedError` when unsafe options are detected."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r0/f1",
+     "path": "git/repo/base.py",
+     "line": 240,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Public API change: removed `unsafe_protocols` parameter and exception",
+     "explanation": "The `clone` and `clone_from` methods previously accepted an `unsafe_protocols` flag and could raise `UnsafeOptionsUsedError`. Removing these breaks backward compatibility for callers that rely on the flag or catch the exception. Add deprecation warnings and retain the parameters (or provide a compatibility shim) to avoid breaking existing code."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks introduces a security risk and breaks the public API.",
+   "usage": {
+    "input_tokens": 1595,
+    "output_tokens": 810,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r1/f0",
+     "path": "git/repo/base.py",
+     "line": 210,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing validation for unsafe clone options",
+     "explanation": "The previous implementation rejected URLs or clone options that used unsafe protocols (e.g., `ext::`) unless the caller explicitly set `unsafe_protocols=True`. The recent changes removed the `unsafe_options` check, allowing potentially dangerous protocols to be used silently, which can lead to remote code execution. Re\u2011introduce the validation (or a safer alternative) before invoking `_clone` and raise `UnsafeOptionsUsedError` when unsafe options are detected."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r1/f1",
+     "path": "git/repo/base.py",
+     "line": 240,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Public API change: removed `unsafe_protocols` parameter and exception",
+     "explanation": "The `clone` and `clone_from` methods previously accepted an `unsafe_protocols` flag and could raise `UnsafeOptionsUsedError`. Removing these breaks backward compatibility for callers that rely on the flag or catch the exception. Add deprecation warnings and retain the parameters (or provide a compatibility shim) to avoid breaking existing code."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks and related API elements introduces security risk and breaks backward compatibility.",
+   "usage": {
+    "input_tokens": 1595,
+    "output_tokens": 1085,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r2/f0",
+     "path": "git/repo/base.py",
+     "line": 215,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe protocol options no longer validated",
+     "explanation": "The previous implementation rejected clone operations that used unsafe protocols or config options unless the caller set `unsafe_protocols=True`. The recent change removes this validation, allowing URLs like `ext::` or `--config protocol.xxx` to be used unchecked, which can lead to arbitrary command execution. Re\u2011introduce the validation (or a safer alternative) and raise an appropriate exception when unsafe options are detected."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r2/f1",
+     "path": "git/repo/base.py",
+     "line": 190,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Removed `unsafe_protocols` parameter from `clone` method",
+     "explanation": "The method signature no longer accepts the `unsafe_protocols` flag. Existing callers that pass this argument will now receive a `TypeError`, breaking the public API. Restore the parameter (with default `False`) and forward it to the internal validation logic, or document the breaking change and provide a compatibility shim."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r2/f2",
+     "path": "git/repo/base.py",
+     "line": 40,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Deleted `UnsafeOptionsUsedError` exception class",
+     "explanation": "External code may import or catch `UnsafeOptionsUsedError` from `git.exc`. Removing the class causes `ImportError` or `NameError` at runtime. Re\u2011add the exception class (even as a subclass of `GitError`) or provide a backward\u2011compatible alias to preserve the public interface."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks reintroduces a security risk allowing unsafe Git options without explicit permission.",
+   "usage": {
+    "input_tokens": 5127,
+    "output_tokens": 816,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r0/f0",
+     "path": "git/repo/base.py",
+     "line": 215,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing unsafe protocol validation in Repo.clone",
+     "explanation": "The previous implementation validated `multi_options` and the URL for unsafe protocols (e.g., `ext::`) and raised `UnsafeOptionsUsedError` unless `unsafe_protocols` was explicitly allowed. The recent change removed this validation, allowing callers to pass potentially dangerous options to `git clone` without restriction, which can lead to command injection or execution of arbitrary code. Re\u2011introduce the validation (or keep the `unsafe_options` method and the `unsafe_protocols` flag) and raise `UnsafeOptionsUsedError` when unsafe options are detected."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r0/f1",
+     "path": "git/repo/base.py",
+     "line": 257,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing unsafe protocol validation in Repo.clone_from",
+     "explanation": "Similar to `Repo.clone`, the `clone_from` class method previously checked for unsafe options and raised `UnsafeOptionsUsedError` when needed. The check has been removed, permitting unsafe URLs or `--config` options to be used silently. This re\u2011exposes the repository to the same security issues. Restore the validation logic and raise `UnsafeOptionsUsedError` when unsafe protocols or options are present."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks introduces security risk and breaks API compatibility.",
+   "usage": {
+    "input_tokens": 5127,
+    "output_tokens": 970,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r1/f0",
+     "path": "git/repo/base.py",
+     "line": 215,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe protocol options no longer validated",
+     "explanation": "The previous implementation rejected URLs or clone options that used unsafe protocols (e.g., \"ext::\") unless the caller explicitly set `unsafe_protocols=True`. The recent change removed the `unsafe_options` check, allowing potentially dangerous protocols to be used silently, which can lead to command injection or arbitrary code execution. Re\u2011introduce the validation (or a safer whitelist) and raise `UnsafeOptionsUsedError` when unsafe options are detected."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r1/f1",
+     "path": "git/repo/base.py",
+     "line": 242,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "API break: removed `unsafe_protocols` parameter from `clone_from`",
+     "explanation": "`clone_from` previously accepted an `unsafe_protocols` keyword argument; after the change this argument is no longer in the signature, causing `TypeError` for existing callers that pass it. Restore the parameter (defaulting to `False`) and forward it to the internal safety check, or document the breaking change and provide a compatibility shim."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks allows potentially dangerous Git options without explicit authorization.",
+   "usage": {
+    "input_tokens": 5127,
+    "output_tokens": 656,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r2/f0",
+     "path": "git/repo/base.py",
+     "line": 191,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe Git protocols/options no longer validated",
+     "explanation": "The previous implementation prevented use of unsafe protocols (e.g., `ext::`) and dangerous `--config protocol.*` options unless the caller set `unsafe_protocols=True`. The recent changes removed the `UnsafeOptionsUsedError` class, the `unsafe_options` helper, and the validation checks in `clone` and `clone_from`. This re\u2011enables execution of potentially malicious commands via crafted URLs or options, exposing the application to command injection or arbitrary code execution. Re\u2011introduce the validation logic (or a safer alternative) and raise an explicit exception when unsafe options are detected."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Removal of unsafe protocol validation introduces a security risk allowing potentially dangerous git options without explicit consent.",
+   "usage": {
+    "input_tokens": 5127,
+    "output_tokens": 848,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r0/f0",
+     "path": "git/repo/base.py",
+     "line": 215,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe git protocols/options no longer validated in Repo.clone",
+     "explanation": "The recent changes removed the `unsafe_options` check and the `UnsafeOptionsUsedError` raise in `Repo.clone`. This permits callers to pass unsafe protocols (e.g., `ext::`) or configuration options that can execute arbitrary commands on the host, re\u2011introducing a known security vulnerability. Re\u2011add the validation logic (or a safer whitelist) and raise `UnsafeOptionsUsedError` when unsafe options are detected."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r0/f1",
+     "path": "git/repo/base.py",
+     "line": 242,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe git protocols/options no longer validated in Repo.clone_from",
+     "explanation": "Similarly, `Repo.clone_from` no longer checks for unsafe options before invoking `_clone`, allowing the same class of attacks via the class method. Restore the `unsafe_options` validation and raise `UnsafeOptionsUsedError` when needed."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Removal of unsafe protocol validation and exception introduces security risk and breaks public API.",
+   "usage": {
+    "input_tokens": 5127,
+    "output_tokens": 843,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r1/f0",
+     "path": "git/repo/base.py",
+     "line": 184,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe protocol options no longer validated",
+     "explanation": "The previous implementation checked for unsafe protocols (e.g., \"ext::\") and config options that could be used to execute arbitrary commands, raising `UnsafeOptionsUsedError` unless the caller explicitly set `unsafe_protocols=True`. The recent changes removed this validation, allowing callers to clone repositories with unsafe options without any warning or restriction, which can lead to command injection or other security issues. Re\u2011introduce the validation logic (or a safer alternative) and raise an appropriate exception when unsafe options are detected."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r1/f1",
+     "path": "git/exc.py",
+     "line": 37,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Public exception class removed, breaking API compatibility",
+     "explanation": "`UnsafeOptionsUsedError` was part of the public `git.exc` module and could be imported by user code or internal modules that catch it. Its removal causes `ImportError` for existing callers and may break error\u2011handling logic. Restore the class (possibly marked as deprecated) to maintain backward compatibility, or provide an alias to the new exception type."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks reintroduces security risk",
+   "usage": {
+    "input_tokens": 7687,
+    "output_tokens": 751,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r2/f0",
+     "path": "git/repo/base.py",
+     "line": 226,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe Git protocols/options no longer validated",
+     "explanation": "The previous implementation prevented use of unsafe protocols (e.g., `ext::`) and dangerous `--config protocol.*` options unless an explicit `unsafe_protocols` flag was set, raising `UnsafeOptionsUsedError`. The recent changes removed the `UnsafeOptionsUsedError` class, the `unsafe_options` helper, and the validation checks in `clone` and `clone_from`. This re\u2011enables potentially dangerous options, allowing remote code execution or configuration injection when cloning untrusted repositories. Re\u2011introduce the validation logic (or a safer alternative) and keep the `UnsafeOptionsUsedError` exception to require an explicit opt\u2011in for unsafe operations."
+    }
+   ]
   }
  ]
 }

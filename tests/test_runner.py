@@ -254,3 +254,167 @@ def test_lineup_plan_skips_missing_keys_and_complete(tmp_path, monkeypatch):
     monkeypatch.setenv("MISTRAL_API_KEY", "m")
     entries = plan(tmp_path / "lineup.yaml", res, lister=lambda p: ["models/gemini-3.0-flash"], log=lambda m: None)
     assert entries == [{"provider": "gemini", "model": "gemini-3.0-flash", "k": "3", "levels": "L0,L1,L2"}]
+
+
+def test_complete_run_missing_new_cases_is_resumed(tmp_path):
+    from reviewbench import BENCH_VERSION
+    from reviewbench.lineup import completed
+    from reviewbench.runner import find_resumable
+
+    doc = {"bench_version": BENCH_VERSION, "status": "complete", "provider": "p", "model": "m",
+           "k": 3, "levels": ["L0"], "cases": {"a": {}}, "records": []}
+    (tmp_path / "r.json").write_text(json.dumps(doc))
+    assert completed(tmp_path, "p", "m", 3, ["L0"], {"a"})
+    assert find_resumable(tmp_path, "p", "m", 3, ["L0"], {"a"}) is None
+    assert not completed(tmp_path, "p", "m", 3, ["L0"], {"a", "b"})
+    assert find_resumable(tmp_path, "p", "m", 3, ["L0"], {"a", "b"}) == tmp_path / "r.json"
+
+
+def _fake_post(monkeypatch, statuses):
+    import requests
+
+    from reviewbench.adapters import openai_compat
+
+    class Resp:
+        def __init__(self, code):
+            self.status_code, self.headers, self.text = code, {"retry-after": "1"}, ""
+
+        def raise_for_status(self):
+            raise requests.HTTPError(f"{self.status_code} Error")
+
+    seq = iter(statuses)
+    monkeypatch.setattr(openai_compat.time, "sleep", lambda s: None)
+    monkeypatch.setattr(requests, "post", lambda *a, **k: Resp(next(seq)))
+    monkeypatch.setenv("GROQ_API_KEY", "gsk_test")
+    return openai_compat.GroqReviewer()
+
+
+def test_last_429_is_rate_limited_not_an_exception(monkeypatch):
+    reviewer = _fake_post(monkeypatch, [429] * 6)
+    assert reviewer._review("prompt").error == "rate_limited: retries exhausted"
+
+
+def test_5xx_is_retried_then_recorded_as_transient(monkeypatch):
+    reviewer = _fake_post(monkeypatch, [503] * 6)
+    assert reviewer._review("prompt").error == "transient: HTTP 503"
+
+
+def test_retryable_covers_legacy_http_errors():
+    from reviewbench.runner import retryable
+
+    assert retryable("exception: HTTPError: 429 Client Error: Too Many Requests for url: x")
+    assert retryable("exception: HTTPError: 503 Server Error: Service Unavailable for url: x")
+    assert retryable("transient: HTTP 502") and retryable("rate_limited: quota")
+    assert not retryable("exception: HTTPError: 400 Client Error: Bad Request for url: x")
+    assert not retryable("unparseable_output: x") and not retryable(None)
+
+
+def test_complete_file_with_provider_errors_is_resumed(tmp_path):
+    from reviewbench.lineup import completed
+    from reviewbench.runner import find_resumable
+
+    cases = discover((CASES, "public"))[:2]
+    out = tmp_path / "r.json"
+    calls = []
+
+    def flaky(request):
+        calls.append(request)
+        if len(calls) == 1:
+            raise RuntimeError("HTTPError: 429 Client Error: Too Many Requests")
+        return _oracle(request)
+
+    doc = run(cases, ReplayReviewer(fn=flaky), ["L0"], 1, out, log=lambda m: None)
+    assert doc["status"] == "partial"  # a provider error left behind is not a finished run
+    args = (doc["provider"], doc["model"], 1, ["L0"])
+    # Mimic a file written by the old runner, which marked such runs complete.
+    out.write_text(json.dumps({**doc, "status": "complete"}))
+    assert find_resumable(tmp_path, *args) == out and not completed(tmp_path, *args)
+    doc2 = run(cases, ReplayReviewer(fn=flaky), ["L0"], 1, out, log=lambda m: None)
+    assert doc2["status"] == "complete" and not any(r["error"] for r in doc2["records"])
+    assert len(calls) == 3  # only the errored review was repeated
+
+
+def test_leaderboard_marks_results_with_failed_reviews(tmp_path):
+    cases = discover((CASES, "public"))[:2]
+    doc = run(cases, ReplayReviewer(fn=_oracle), ["L0"], 2, tmp_path / "a.json", log=lambda m: None)
+    assert "(partial)" not in leaderboard(tmp_path)
+    doc["records"][0]["error"] = "exception: HTTPError: 429 Client Error: Too Many Requests for url: x"
+    (tmp_path / "a.json").write_text(json.dumps(doc))  # still says status "complete", like the old files
+    assert "(partial) (1 reviews failed, to retry)" in leaderboard(tmp_path)
+
+
+def test_results_record_prompt_hash_and_refuse_to_mix(tmp_path, monkeypatch):
+    import pytest
+
+    from reviewbench import runner
+
+    cases = discover((CASES, "public"))[:1]
+    out = tmp_path / "r.json"
+    doc = run(cases, ReplayReviewer(fn=_oracle), ["L0"], 1, out, log=lambda m: None)
+    assert doc["prompt_sha256"] == runner.prompt_hash() and len(doc["prompt_sha256"]) == 16
+    monkeypatch.setattr(runner, "SYSTEM_PROMPT", runner.SYSTEM_PROMPT + " changed")
+    assert runner.prompt_hash() != doc["prompt_sha256"]
+    with pytest.raises(ValueError, match="different prompt"):
+        run(cases, ReplayReviewer(fn=_oracle), ["L0"], 2, out, log=lambda m: None)
+
+
+def test_leaderboard_sorts_by_per_run_recall_and_flags_noise(tmp_path):
+    cases = [c for c in discover((CASES, "public")) if c.id == "py-0001-sql-injection"]
+    hit = Finding("app/users.py", 6, "security", "critical", "SQL injection", "f-string")
+    noise = [Finding("app/users.py", 100 + i, "style", "medium", "nit", "x") for i in range(4)]
+    run(cases, ReplayReviewer(model="weak", fn=lambda p: []), ["L0"], 1, tmp_path / "a.json",
+        log=lambda m: None)
+    run(cases, ReplayReviewer(model="strong", fn=lambda p: [hit, *noise]), ["L0"], 1,
+        tmp_path / "b.json", log=lambda m: None)
+    md = leaderboard(tmp_path)
+    assert md.index("`strong`") < md.index("`weak`")
+    strong = next(line for line in md.splitlines() if "`strong`" in line)
+    weak = next(line for line in md.splitlines() if "`weak`" in line)
+    assert "⚠ noisy: 5.0 findings/review" in strong and "noisy" not in weak
+
+
+def test_blind_adjudication_hides_model_and_second_rater_gives_kappa(tmp_path):
+    from reviewbench.adjudicate import (
+        agreement,
+        in_second_sample,
+        interactive_blind,
+        load_second,
+        load_verdicts,
+    )
+
+    cases = [c for c in discover((CASES, "public")) if c.id == "py-0001-sql-injection"]
+    noise = [Finding("app/users.py", 100 + i, "style", "medium", f"nit {i}", "x") for i in range(10)]
+    paths = []
+    for name in ("secret-model-a", "secret-model-b"):
+        p = tmp_path / f"{name}.json"
+        run(cases, ReplayReviewer(model=name, fn=lambda _: noise), ["L0"], 1, p, log=lambda m: None)
+        paths.append(p)
+    shown = []
+    n = interactive_blind(paths, ask=lambda _: "i", show=shown.append)
+    assert n == 20
+    text = "\n".join(shown)
+    assert "secret-model" not in text and "replay" not in text and "/r0/f" not in text
+    v = load_verdicts(paths[0])
+    assert len(v) == 10 and all(x["blind"] and x["verdict"] == "invalid" for x in v.values())
+
+    sampled = sum(in_second_sample(k) for p in paths for k in load_verdicts(p))
+    assert interactive_blind(paths, rater="second", ask=lambda _: "i", show=lambda _: None) == sampled
+    assert sum(len(load_second(p)) for p in paths) == sampled
+    a = agreement(paths)
+    assert a["n"] == sampled and a["agree"] == sampled
+
+
+def test_precision_hidden_until_findings_are_judged(tmp_path):
+    from reviewbench.adjudicate import save_verdicts
+
+    cases = [c for c in discover((CASES, "public")) if c.id == "py-0001-sql-injection"]
+    hit = Finding("app/users.py", 6, "security", "critical", "SQL injection", "f-string")
+    extra = [Finding("app/users.py", 100 + i, "style", "medium", f"nit {i}", "x") for i in range(5)]
+    p = tmp_path / "a.json"
+    doc = run(cases, ReplayReviewer(model="m", fn=lambda _: [hit, *extra]), ["L0"], 1, p, log=lambda m: None)
+    row = next(line for line in leaderboard(tmp_path).splitlines() if "`m`" in line)
+    assert "| not measured (5 of 5 unjudged) |" in row
+    ids = [f["id"] for f in doc["records"][0]["findings"][1:]]
+    save_verdicts(p, {i: {"verdict": "invalid", "by": "human", "note": ""} for i in ids})
+    row = next(line for line in leaderboard(tmp_path).splitlines() if "`m`" in line)
+    assert "1/6 (17%" in row and "not measured" not in row

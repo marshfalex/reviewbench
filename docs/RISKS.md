@@ -1,0 +1,69 @@
+# What could make ReviewBench's numbers wrong
+
+An honest list, most serious first. Each item says what it breaks, where it stands, and what fixes
+it. Sessions should treat these as standing priorities, and the findings report must repeat any
+that still apply. Last reviewed 2026-11-23.
+
+## 1. Precision is unmeasured
+**Breaks:** every precision number and the noise flag's control-FPR half.
+**Status:** 0 of ~750 v0.1 findings have a human verdict. Groq has 6 rule verdicts, and these
+produce its "3/12 control runs with FP". The leaderboard's "precision 100%" only counts findings
+that hit a planted bug, because unjudged findings are excluded. It is not evidence of low noise.
+**Fix:** the owner's blind adjudication pass (roadmap). Meanwhile (done 2026-11-23) reports show
+"not measured (N of M unjudged)" until 80% of the findings needing a verdict have one, and the
+noise flag marks the control FPR as a lower bound while control findings are unjudged.
+
+## 2. n is far too small to rank models
+**Breaks:** any claim that model A beats model B.
+**Status:** 23 planted bugs in v0.1; Wilson 95% intervals are 15–40 points wide, and most models
+overlap. 4 controls (12 runs) can't measure a false-positive rate at all.
+**Fix:** v0.2 targets: at least 100 planted bugs and 36 controls. Until then, report only
+differences whose intervals don't overlap, and say so.
+
+## 3. The cases are written by an LLM and judged on LLMs
+**Breaks:** external validity: planted bugs may be "LLM-shaped" (textbook, well-commented,
+small) and easier for LLMs than real bugs. Also a conflict of interest: Claude wrote the synthetic
+cases since py-0028, so evaluating Claude models on them would be self-grading.
+**Status:** 9 of 38 cases are real CVEs (4 of them held back for v0.2); 2 are real upstream controls; the rest are synthetic.
+**Fix:** shift the mix toward real bugs (CVE fixes, upstream postmortems, reverted commits). Report
+synthetic and real cases separately. Never evaluate a model family on cases its own family wrote
+without saying so in the table.
+
+## 4. Contamination
+**Breaks:** recall on public cases, especially CVEs, whose fixes and write-ups are in training data.
+**Status:** the held-out set is 5 cases, too few to detect a public-vs-held-out gap, and no
+provider is currently cleared to receive it (docs/providers.md).
+**Fix:** grow held-out to ≥30 real cases; clear one provider; report the gap with intervals.
+
+## 5. The matcher is crude
+**Breaks:** recall in both directions: a finding at the right line for the wrong reason counts
+as a catch, and a correct finding on the caller (not the planted line) counts as a miss.
+**Status:** file + line ±2, no check of what the finding says.
+**Fix:** the defect-check matcher (roadmap), plus a published hand audit of ~50 matches with the
+miss/false-match rate.
+
+## 6. Free-tier models aren't stable objects
+**Breaks:** reproducibility and comparisons over time.
+**Status:** providers can change quantization, routing (OpenRouter) or the model behind a name
+without notice; `auto:` lineup entries pick "the newest" model, so a resumed run could switch
+models. Results record the served model id, but nothing yet refuses a mismatch.
+**Fix:** refuse to resume a results file when the served model id changes; pin exact ids for any
+run that goes into a published comparison.
+
+## 7. One prompt
+**Breaks:** "model X is better" may really mean "the prompt suits model X".
+**Fix:** the prompt-sensitivity check (roadmap): 2–3 paraphrased prompts on one model.
+
+## 8. Unreviewed automation
+**Breaks:** case quality. Since 2026-11-23, non-gated PRs merge without human review. That day's
+work had two errors caught before merging (an unexploitable planted bug, a wrong expected value in
+a test); others may get through.
+**Fix:** every new case states its harm in one sentence that a reviewer could verify; the owner
+spot-checks a few cases per batch; anything found wrong becomes a regression test or a validator
+rule.
+
+## What this means for claims today
+The defensible statement right now is narrow: on 23 small, mostly synthetic Python bugs, the free
+models tested catch most of them at L0, and gpt-oss-120b misses more (per-run recall 84%, 95% CI
+74–91%) than qwen-3.8-27b (100%, 93–100). Nothing about precision, noise, real-world bug finding,
+or commercial reviewers is supported yet.

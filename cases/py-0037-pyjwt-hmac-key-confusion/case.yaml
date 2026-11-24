@@ -1,6 +1,7 @@
-id: py-0030-pyjwt-hmac-key-confusion
+id: py-0037-pyjwt-hmac-key-confusion
 title: HMAC key check goes back to an incomplete blocklist of public-key markers
 language: python
+since: '0.2'
 difficulty: hard
 tags:
 - security

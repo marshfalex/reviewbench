@@ -1,6 +1,7 @@
-id: py-0031-requests-proxy-auth-https-leak
+id: py-0038-requests-proxy-auth-https-leak
 title: Proxy-Authorization added to redirected requests even when they tunnel over HTTPS
 language: python
+since: '0.2'
 difficulty: hard
 tags:
 - security

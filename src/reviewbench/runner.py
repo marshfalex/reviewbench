@@ -9,7 +9,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 from reviewbench import BENCH_VERSION
-from reviewbench.adapters.base import SYSTEM_PROMPT, Reviewer
+from reviewbench.adapters.base import OUTPUT_SCHEMA, SYSTEM_PROMPT, Reviewer
 from reviewbench.cases import Case
 from reviewbench.context import build_request
 
@@ -49,8 +49,30 @@ def results_path(out_dir: Path, provider: str, model: str, today: dt.date | None
     return path
 
 
-def find_resumable(out_dir: Path, provider: str, model: str, k: int, levels: list[str]) -> Path | None:
-    """Newest partial results file for the same reviewer and settings, if any."""
+# Errors that say nothing about the model, only that the provider didn't answer: resume
+# re-runs these records. The HTTPError forms are what older adapter versions recorded.
+_RETRYABLE = re.compile(r"^(rate_limited|transient)|HTTPError: (429|5\d\d) ")
+
+
+def prompt_hash() -> str:
+    """Fingerprint of the reviewer prompt and output schema (SPEC §10: frozen per version)."""
+    import hashlib
+    blob = SYSTEM_PROMPT + "\n" + json.dumps(OUTPUT_SCHEMA, sort_keys=True)
+    return hashlib.sha256(blob.encode()).hexdigest()[:16]
+
+
+def retryable(error: str | None) -> bool:
+    return bool(error) and bool(_RETRYABLE.search(error))
+
+
+def has_retryable(doc: dict) -> bool:
+    return any(retryable(r.get("error")) for r in doc.get("records") or [])
+
+
+def find_resumable(out_dir: Path, provider: str, model: str, k: int, levels: list[str],
+                   case_ids: set[str] | None = None) -> Path | None:
+    """Newest partial results file for the same reviewer and settings, if any. A complete file
+    that lacks some of case_ids (cases added since it ran) also counts, so only new cases run."""
     for path in sorted(out_dir.glob("*.json"), reverse=True):
         if path.name.endswith(".adjudications.json"):
             continue
@@ -59,6 +81,7 @@ def find_resumable(out_dir: Path, provider: str, model: str, k: int, levels: lis
         except (OSError, json.JSONDecodeError):
             continue
         partial = doc.get("status") == "partial" or (doc.get("heldout") or {}).get("status") == "partial"
+        partial = partial or bool((case_ids or set()) - set(doc.get("cases") or {})) or has_retryable(doc)
         if (partial and doc.get("bench_version") == BENCH_VERSION
                 and doc.get("provider") == provider and doc.get("model") == model
                 and doc.get("k") == k and doc.get("levels") == levels):
@@ -77,8 +100,13 @@ def run(cases: list[Case], reviewer: Reviewer, levels: list[str], k: int, out_pa
     if out_path.exists():
         doc = json.loads(out_path.read_text())
         done = {(r["case"], r["level"], r["run"]) for r in doc["records"]
-                if not (r.get("error") or "").startswith("rate_limited")}
+                if not retryable(r.get("error"))}
         doc["records"] = [r for r in doc["records"] if (r["case"], r["level"], r["run"]) in done]
+        old = doc.get("prompt_sha256")
+        if old and old != prompt_hash():
+            raise ValueError(f"{out_path.name} was run with a different prompt ({old}); "
+                             f"resuming it with {prompt_hash()} would mix prompts in one result")
+        doc.setdefault("prompt_sha256", prompt_hash())
         doc["cases"].update({c.id: case_truth(c) for c in cases})
         log(f"resuming {out_path.name}: {len(done)} reviews already done")
     else:
@@ -87,6 +115,7 @@ def run(cases: list[Case], reviewer: Reviewer, levels: list[str], k: int, out_pa
             "created": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
             "provider": reviewer.provider, "model": reviewer.model, "k": k, "levels": levels,
             "status": "partial",
+            "prompt_sha256": prompt_hash(),
             "cases": {c.id: case_truth(c) for c in cases},
             "records": [],
         }
@@ -122,6 +151,6 @@ def run(cases: list[Case], reviewer: Reviewer, levels: list[str], k: int, out_pa
                     # Every later call would hit the same quota; stop and let --resume retry it.
                     log("rate limited (quota); stopping with status partial. Resume later.")
                     return doc
-    doc["status"] = "complete"
+    doc["status"] = "partial" if has_retryable(doc) else "complete"
     out_path.write_text(json.dumps(doc, indent=1))
     return doc

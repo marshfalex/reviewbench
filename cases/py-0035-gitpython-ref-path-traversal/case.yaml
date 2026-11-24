@@ -1,6 +1,7 @@
-id: py-0028-gitpython-ref-path-traversal
+id: py-0035-gitpython-ref-path-traversal
 title: Reference lookup no longer rejects '..' in ref paths
 language: python
+since: '0.2'
 difficulty: easy
 tags:
 - security

@@ -120,8 +120,12 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
       `frozen: true` in lineup.yaml and stay on the leaderboard as partial. Added four auto-picked
       models on Groq and Cerebras.
 - Decision 2026-11-24 (owner): **fix scoring before the v0.2 bump**, in this order:
-  - [ ] **Multiple line ranges per bug** (the CVE second-call-site / near-miss problem); then fold
-        py-0051's known_issue into a second range. Gated (scoring.py): owner merges.
+  - [x] **Multiple line ranges per bug** (`bugs[].also`); py-0051's second call site is now an
+        also-location (its known issue stays, for findings elsewhere in that file). Gated (scoring.py): owner merges.
+  - [ ] **At the v0.2 bump, update v0.1 ground truth in the same PR:** give py-0026 and py-0027
+        `also` locations for their second call sites (now known_issues), and widen the batch-1
+        CVE ranges to the vulnerable hunk. Not before: v0.1 runs still in progress must keep the
+        frozen truth.
   - [ ] **Matcher defect check** (a hit must also name the defect). Gated: owner merges.
   - [ ] **Bump BENCH_VERSION to 0.2** and let the lineup re-run every active model. Gated.
 

@@ -27,8 +27,12 @@ def norm(text: str) -> str:
 
 
 def bug_matches(finding: dict, bug: dict, tol: int = LINE_TOLERANCE) -> bool:
-    lo, hi = bug["lines"]
-    return finding["path"] == bug["file"] and lo - tol <= int(finding["line"]) <= hi + tol
+    """A finding catches a bug at its main location or any `also` location (same tolerance)."""
+    locations = [(bug["file"], bug["lines"])] + [(a["file"], a["lines"]) for a in bug.get("also") or []]
+    for file, (lo, hi) in locations:
+        if finding["path"] == file and lo - tol <= int(finding["line"]) <= hi + tol:
+            return True
+    return False
 
 
 def known_matches(finding: dict, known: dict) -> bool:

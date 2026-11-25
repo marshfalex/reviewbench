@@ -1,7 +1,12 @@
+from pathlib import Path
+
 import pytest
 
+from reviewbench.cases import discover, validate_case
 from reviewbench.scoring import classify, norm, score
 from reviewbench.stats import fmt_rate, wilson_interval
+
+CASES = Path(__file__).resolve().parents[1] / "cases"
 
 BUG = {"file": "app/x.py", "lines": [10, 12], "class": "c", "cwe": None, "severity": "high"}
 
@@ -113,3 +118,22 @@ def test_cohen_kappa_known_values():
     pairs = [("valid", "valid")] * 10 + [("invalid", "invalid")] * 5 \
         + [("valid", "invalid")] * 3 + [("invalid", "valid")] * 2
     assert abs(cohen_kappa(pairs) - (0.75 - 0.53) / (1 - 0.53)) < 1e-9
+
+
+def test_bug_also_locations_count_as_hits():
+    from reviewbench.scoring import bug_matches
+
+    bug = {"file": "a.py", "lines": [10, 12], "also": [{"file": "b.py", "lines": [40, 41]}]}
+    f = lambda path, line: {"path": path, "line": line}  # noqa: E731
+    assert bug_matches(f("a.py", 11), bug) and bug_matches(f("b.py", 43), bug)  # within ±2
+    assert not bug_matches(f("b.py", 44), bug) and not bug_matches(f("c.py", 40), bug)
+    assert bug_matches(f("a.py", 10), {"file": "a.py", "lines": [10, 12]})  # old truth, no "also"
+
+
+def test_case_with_also_location_loads_validates_and_snapshots():
+    from reviewbench.runner import case_truth
+
+    c = next(c for c in discover((CASES, "public")) if c.id == "py-0051-urllib3-303-body-not-dropped")
+    assert c.bugs[0].also == (("src/urllib3/connectionpool.py", (356, 358)),)
+    assert validate_case(c) == []
+    assert case_truth(c)["bugs"][0]["also"] == [{"file": "src/urllib3/connectionpool.py", "lines": [356, 358]}]

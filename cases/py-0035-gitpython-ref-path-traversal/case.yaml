@@ -27,6 +27,13 @@ bugs:
   severity: medium
   description: ref_path is joined onto the .git directory and opened without rejecting '..', so a reference name
     such as '../../etc/passwd' (e.g. from user input to Repo.rev_parse) reads files outside the repository.
+  defect_terms:
+  - traversal
+  - ../
+  - outside
+  - arbitrary file
+  - escape
+  - sanitiz
 context:
   related: []
 known_issues: []

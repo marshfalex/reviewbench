@@ -2,21 +2,36 @@ id: py-0029-ttl-seconds-vs-ms-clock
 title: Session expiry adds a TTL in seconds to a millisecond clock
 language: python
 difficulty: hard
-since: "0.2"
-tags: [units, sessions, cross-file]
+since: '0.2'
+tags:
+- units
+- sessions
+- cross-file
 source:
   kind: synthetic
   ref: reviewbench v0.2 cross-file proof of concept
   license: MIT
 bugs:
 - file: app/sessions.py
-  lines: [9, 11]
+  lines:
+  - 9
+  - 11
   class: time_unit_mismatch
   cwe: CWE-682
   severity: medium
-  description: clock.now() returns milliseconds but SESSION_TTL_SECONDS is in seconds, so sessions
-    expire after 28.8 s instead of 8 h. Needs SESSION_TTL_SECONDS * 1000. Only visible with
-    app/clock.py.
+  description: clock.now() returns milliseconds but SESSION_TTL_SECONDS is in seconds, so sessions expire after
+    28.8 s instead of 8 h. Needs SESSION_TTL_SECONDS * 1000. Only visible with app/clock.py.
+  defect_terms:
+  - milli
+  - '1000'
+  - unit mismatch
+  - units
+  - '28.8'
+  - too soon
+  - too early
+  - immediately
 context:
-  related: [app/clock.py, app/config.py]
+  related:
+  - app/clock.py
+  - app/config.py
 known_issues: []

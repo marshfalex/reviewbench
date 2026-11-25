@@ -24,7 +24,8 @@ def case_truth(case: Case) -> dict:
             "source_kind": case.source.get("kind"),
             "bugs": [{"file": b.file, "lines": list(b.lines), "class": b.cls, "cwe": b.cwe,
                       "severity": b.severity,
-                      **({"also": [{"file": f, "lines": list(r)} for f, r in b.also]} if b.also else {})}
+                      **({"also": [{"file": f, "lines": list(r)} for f, r in b.also]} if b.also else {}),
+                      **({"defect_terms": list(b.defect_terms)} if b.defect_terms else {})}
                      for b in case.bugs],
             "known_issues": [asdict(k) for k in case.known_issues]}
 

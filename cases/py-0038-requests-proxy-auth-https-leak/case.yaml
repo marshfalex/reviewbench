@@ -29,6 +29,14 @@ bugs:
   description: rebuild_proxies sets Proxy-Authorization on the request itself even for https:// destinations. Those
     go through a CONNECT tunnel, so the header is sent inside TLS to the destination server and leaks the proxy
     credentials to it.
+  defect_terms:
+  - proxy-authorization
+  - proxy auth
+  - credential
+  - leak
+  - https
+  - tunnel
+  - connect
 context:
   related: []
 known_issues: []

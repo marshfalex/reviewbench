@@ -59,6 +59,13 @@ different served model to an existing file (the review is not written; the job f
 **Fix:** refuse to resume a results file when the served model id changes; pin exact ids for any
 run that goes into a published comparison.
 
+## 6b. Provider variance
+**Breaks:** "model X scores Y" when X runs on several providers.
+**Status:** the same model differs by provider in v0.1 (qwen 3.8-27b L0: 100% on cerebras, 90% on
+groq; gpt-oss-120b: 84% on groq, 72% on cerebras), with overlapping intervals.
+**Fix:** always label results provider + model; never pool providers; report the spread when a
+model runs on more than one.
+
 ## 7. One prompt
 **Breaks:** "model X is better" may really mean "the prompt suits model X".
 **Fix:** the prompt-sensitivity check (roadmap): 2–3 paraphrased prompts on one model.

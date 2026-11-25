@@ -32,6 +32,9 @@ class Bug:
     # Other places the same defect lives (e.g. a second call site); a finding at any of them catches
     # the bug. Each is (file, (start, end)), post-PR line numbers.
     also: tuple[tuple[str, tuple[int, int]], ...] = ()
+    # If set, a finding must also mention one of these (case/Unicode-insensitive substrings) in its
+    # title or explanation to catch the bug: the right line for the wrong reason isn't a catch.
+    defect_terms: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -116,7 +119,8 @@ def load_case(case_dir: Path, split: str = "public") -> Case:
         bugs = [Bug(file=b["file"], lines=(int(b["lines"][0]), int(b["lines"][-1])), cls=b["class"],
                     cwe=b.get("cwe"), severity=b["severity"], description=b["description"],
                     also=tuple((a["file"], (int(a["lines"][0]), int(a["lines"][-1])))
-                               for a in (b.get("also") or [])))
+                               for a in (b.get("also") or [])),
+                    defect_terms=tuple(str(t) for t in (b.get("defect_terms") or [])))
                 for b in (m.get("bugs") or [])]
         known = [KnownIssue(match=k["match"], file=k.get("file"), note=k.get("note", ""))
                  for k in (m.get("known_issues") or [])]
@@ -166,6 +170,8 @@ def validate_case(case: Case) -> list[str]:
             errs.append(f"bug lines {b.lines} out of range for {b.file} ({n} lines)")
         if b.file not in case.changed_files:
             errs.append(f"bug file {b.file} is not touched by pr.diff")
+        if any(not t.strip() for t in b.defect_terms):
+            errs.append("bug defect_terms must be non-empty strings")
         for f, (lo, hi) in b.also:
             if f not in files:
                 errs.append(f"bug also-location file {f} not in post-PR tree")

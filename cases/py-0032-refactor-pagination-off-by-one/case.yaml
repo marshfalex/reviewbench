@@ -2,21 +2,37 @@ id: py-0032-refactor-pagination-off-by-one
 title: Typing refactor of a listing module turns 1-based pages into a skipped first page
 language: python
 difficulty: hard
-since: "0.2"
-tags: [correctness, pagination, noisy-diff, refactor]
+since: '0.2'
+tags:
+- correctness
+- pagination
+- noisy-diff
+- refactor
 source:
   kind: synthetic
   ref: reviewbench v0.2 noisy-diff proof of concept
   license: MIT
 bugs:
 - file: app/listing.py
-  lines: [26, 30]
+  lines:
+  - 26
+  - 30
   class: off_by_one_pagination
   cwe: CWE-193
   severity: medium
-  description: Pages are 1-based (parse_page never returns less than 1), but the refactored
-    paginate computes offset = page * size instead of (page - 1) * size, so page 1 shows the second
-    page and the first page of results can never be fetched.
+  description: Pages are 1-based (parse_page never returns less than 1), but the refactored paginate computes offset
+    = page * size instead of (page - 1) * size, so page 1 shows the second page and the first page of results can
+    never be fetched.
+  defect_terms:
+  - off-by-one
+  - off by one
+  - offset
+  - page - 1
+  - 1-based
+  - first page
+  - skip
+  - zero-based
+  - 0-based
 context:
   related: []
 known_issues: []

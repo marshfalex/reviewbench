@@ -27,6 +27,15 @@ bugs:
   severity: medium
   description: The PR narrows the key check in do_xmlattr from [\s/>=] to whitespace only. A key containing /, >
     or = can then close the tag or inject extra attributes when untrusted keys reach the filter (XSS).
+  defect_terms:
+  - xss
+  - inject
+  - escape
+  - quote
+  - close the tag
+  - solidus
+  - attribute name
+  - invalid char
 context:
   related: []
 known_issues: []

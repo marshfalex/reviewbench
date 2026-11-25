@@ -1,20 +1,20 @@
 # groq / qwen/qwen3.8-27b — ReviewBench v0.1
 
-Created 2026-11-25T00:43:06+00:00, k=3 runs per case and level, status `partial`. Rates are hits/n (%, Wilson 95% CI).
+Created 2026-11-25T00:43:06+00:00, k=3 runs per case and level, status `complete`. Rates are hits/n (%, Wilson 95% CI).
 
 ## public
 
 | level | difficulty | any-of-k recall | all-of-k recall | per-run recall | precision (adjudicated) | control runs w/ FP | unadjudicated | errors |
 |---|---|---|---|---|---|---|---|---|
-| L0 | all | 21/22 (95%, 78–99) | 20/22 (91%, 72–98) | 62/66 runs; per-bug mean 94% (95% CI 76–99, 22 bugs) | not measured (5 of 9 unjudged) | 3/12 (25%, 9–53) | 5 | 0 |
-| L0 | easy | 14/14 (100%, 78–100) | 14/14 (100%, 78–100) | 42/42 runs; per-bug mean 100% (95% CI 78–100, 14 bugs) | not measured (5 of 9 unjudged) | 3/12 (25%, 9–53) | 3 | 0 |
-| L0 | hard | 7/8 (88%, 53–98) | 6/8 (75%, 41–93) | 20/24 runs; per-bug mean 83% (95% CI 49–96, 8 bugs) | not measured (5 of 9 unjudged) | n/a | 2 | 0 |
-| L1 | all | 21/21 (100%, 84–100) | 21/21 (100%, 84–100) | 63/63 runs; per-bug mean 100% (95% CI 85–100, 21 bugs) | not measured (1 of 4 unjudged) | 3/12 (25%, 9–53) | 1 | 3 |
-| L1 | easy | 14/14 (100%, 78–100) | 14/14 (100%, 78–100) | 42/42 runs; per-bug mean 100% (95% CI 78–100, 14 bugs) | not measured (1 of 4 unjudged) | 3/12 (25%, 9–53) | 1 | 0 |
+| L0 | all | 21/23 (91%, 73–98) | 20/23 (87%, 68–96) | 62/69 runs; per-bug mean 90% (95% CI 71–97, 23 bugs) | not measured (8 of 12 unjudged) | 3/12 (25%, 9–53) | 8 | 0 |
+| L0 | easy | 14/15 (93%, 70–99) | 14/15 (93%, 70–99) | 42/45 runs; per-bug mean 93% (95% CI 70–99, 15 bugs) | not measured (8 of 12 unjudged) | 3/12 (25%, 9–53) | 6 | 0 |
+| L0 | hard | 7/8 (88%, 53–98) | 6/8 (75%, 41–93) | 20/24 runs; per-bug mean 83% (95% CI 49–96, 8 bugs) | not measured (8 of 12 unjudged) | n/a | 2 | 0 |
+| L1 | all | 21/22 (95%, 78–99) | 21/22 (95%, 78–99) | 63/66 runs; per-bug mean 95% (95% CI 78–99, 22 bugs) | not measured (1 of 4 unjudged) | 3/12 (25%, 9–53) | 1 | 3 |
+| L1 | easy | 14/15 (93%, 70–99) | 14/15 (93%, 70–99) | 42/45 runs; per-bug mean 93% (95% CI 70–99, 15 bugs) | not measured (1 of 4 unjudged) | 3/12 (25%, 9–53) | 1 | 0 |
 | L1 | hard | 7/7 (100%, 65–100) | 7/7 (100%, 65–100) | 21/21 runs; per-bug mean 100% (95% CI 65–100, 7 bugs) | not measured (1 of 4 unjudged) | n/a | 0 | 3 |
-| L2 | all | 21/21 (100%, 84–100) | 21/21 (100%, 84–100) | 63/63 runs; per-bug mean 100% (95% CI 85–100, 21 bugs) | not measured (3 of 3 unjudged) | 0/12 (0%, 0–24) | 3 | 0 |
-| L2 | easy | 14/14 (100%, 78–100) | 14/14 (100%, 78–100) | 42/42 runs; per-bug mean 100% (95% CI 78–100, 14 bugs) | not measured (3 of 3 unjudged) | 0/12 (0%, 0–24) | 3 | 0 |
-| L2 | hard | 7/7 (100%, 65–100) | 7/7 (100%, 65–100) | 21/21 runs; per-bug mean 100% (95% CI 65–100, 7 bugs) | not measured (3 of 3 unjudged) | n/a | 0 | 0 |
+| L2 | all | 22/23 (96%, 79–99) | 22/23 (96%, 79–99) | 65/68 runs; per-bug mean 96% (95% CI 79–99, 23 bugs) | not measured (3 of 3 unjudged) | 0/12 (0%, 0–24) | 3 | 1 |
+| L2 | easy | 14/15 (93%, 70–99) | 14/15 (93%, 70–99) | 42/45 runs; per-bug mean 93% (95% CI 70–99, 15 bugs) | not measured (3 of 3 unjudged) | 0/12 (0%, 0–24) | 3 | 0 |
+| L2 | hard | 8/8 (100%, 68–100) | 8/8 (100%, 68–100) | 23/23 runs; per-bug mean 100% (95% CI 68–100, 8 bugs) | not measured (3 of 3 unjudged) | n/a | 0 | 1 |
 
 ## Per case
 
@@ -97,3 +97,7 @@ Created 2026-11-25T00:43:06+00:00, k=3 runs per case and level, status `partial`
 | py-0025-jinja2-xmlattr-key-injection | L2 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
 | py-0026-aiohttp-static-symlink-traversal | L0 | 2/3 | 4 | 3 | 0 | 0 | 2 | 0 |
 | py-0026-aiohttp-static-symlink-traversal | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 3 |
+| py-0026-aiohttp-static-symlink-traversal | L2 | 2/2 | 2 | 2 | 0 | 0 | 0 | 1 |
+| py-0027-gitpython-clone-ext-protocol-rce | L0 | 0/3 | 0 | 3 | 0 | 0 | 3 | 0 |
+| py-0027-gitpython-clone-ext-protocol-rce | L1 | 0/3 | 0 | 3 | 0 | 0 | 0 | 0 |
+| py-0027-gitpython-clone-ext-protocol-rce | L2 | 0/3 | 0 | 3 | 0 | 0 | 0 | 0 |

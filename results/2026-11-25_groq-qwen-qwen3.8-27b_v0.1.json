@@ -9,7 +9,7 @@
   "L1",
   "L2"
  ],
- "status": "partial",
+ "status": "complete",
  "prompt_sha256": "d08c51ab869c7874",
  "cases": {
   "py-0001-sql-injection": {
@@ -6251,10 +6251,317 @@
    "case": "py-0026-aiohttp-static-symlink-traversal",
    "level": "L1",
    "run": 2,
-   "error": "rate_limited: retries exhausted",
+   "error": "exception: HTTPError: 400 Client Error: Bad Request for url: https://api.groq.com/openai/v1/chat/completions",
    "summary": "",
    "usage": {},
    "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR refactors path resolution in `StaticResource` to use `Path.resolve()` directly, removing the previous `os.path.normpath` check. This introduces a security vulnerability where symlinks pointing outside the static directory are served when `follow_symlinks=True`, and it changes the behavior for `follow_symlinks=False` to allow symlinked files (which previously would have been rejected if the symlink target was outside the directory, though the old code was also flawed). The primary issue is the lack of a containment check when `follow_symlinks=True`.",
+   "usage": {
+    "input_tokens": 2506,
+    "output_tokens": 535,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r0/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 121,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing path containment check when follow_symlinks is True",
+     "explanation": "When `follow_symlinks` is `True`, the code resolves the path but does not verify that the resolved path is still within `self._directory`. This allows an attacker to create a symlink inside the static directory that points to a sensitive file outside the directory (e.g., `/etc/passwd`), which will then be served. The previous code attempted to check `normalized_path.relative_to(self._directory)` before resolving, which provided some protection against direct traversal, but the new code removes this check entirely for the `follow_symlinks=True` case. A fix should ensure that even when following symlinks, the final resolved path is contained within the static directory (or explicitly document that this feature allows serving files outside the directory, which is generally unsafe)."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r0/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 188,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing path containment check when follow_symlinks is True in _handle",
+     "explanation": "Similar to the `url_for` method, the `_handle` method resolves the path without checking if it remains within `self._directory` when `follow_symlinks` is `True`. This allows serving files outside the static directory via symlinks. The check `filepath.relative_to(self._directory)` is only performed when `follow_symlinks` is `False`. This is a critical security flaw for any application using `follow_symlinks=True`."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR refactors path resolution in `StaticResource` to use `Path.resolve()` directly, removing the previous `os.path.normpath` check. This introduces a security vulnerability where symlinks pointing outside the static directory are served when `follow_symlinks=True`, and it changes the behavior for `follow_symlinks=False` to allow symlinked files (which previously would have been rejected if the symlink target was outside the directory, though the old code was also flawed). The primary issue is the lack of a containment check when `follow_symlinks=True`.",
+   "usage": {
+    "input_tokens": 2506,
+    "output_tokens": 535,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r1/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 121,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing path containment check when follow_symlinks is True",
+     "explanation": "When `follow_symlinks` is `True`, the code resolves the path but does not verify that the resolved path is still within `self._directory`. This allows an attacker to create a symlink inside the static directory that points to a sensitive file outside the directory (e.g., `/etc/passwd`), which will then be served. The previous code attempted to check `normalized_path.relative_to(self._directory)` before resolving, which provided some protection against direct traversal, but the new code removes this check entirely for the `follow_symlinks=True` case. A fix should ensure that even when following symlinks, the final resolved path is contained within the static directory (or explicitly document that this feature allows serving files outside the directory, which is generally unsafe)."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r1/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 188,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing path containment check when follow_symlinks is True in _handle",
+     "explanation": "Similar to the `url_for` method, the `_handle` method resolves the path without checking if it remains within `self._directory` when `follow_symlinks` is `True`. This allows serving files outside the static directory via symlinks. The check `filepath.relative_to(self._directory)` is only performed when `follow_symlinks` is `False`. This is a critical security flaw for any application using `follow_symlinks=True`."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 2,
+   "error": "exception: HTTPError: 400 Client Error: Bad Request for url: https://api.groq.com/openai/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes the `unsafe_protocols` safety check and the `UnsafeOptionsUsedError` exception, allowing `git clone` to be invoked with dangerous protocols (e.g., `ext::`) or options (e.g., `--upload-pack`, `protocol.` config) without explicit user consent. This re-introduces a known security vulnerability (CVE-2023-40590) where malicious repositories or URLs can execute arbitrary code.",
+   "usage": {
+    "input_tokens": 1631,
+    "output_tokens": 366,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r0/f0",
+     "path": "git/repo/base.py",
+     "line": 200,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of unsafe protocol protection allows arbitrary code execution",
+     "explanation": "The `unsafe_protocols` parameter and the `unsafe_options` check have been removed from `Repo.clone` and `Repo.clone_from`. This allows users to clone URLs starting with `ext::` or pass `--upload-pack` options without an explicit opt-in flag, enabling arbitrary command execution via Git's external transport mechanism. The check should be restored to prevent accidental or malicious exploitation."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r0/f1",
+     "path": "git/exc.py",
+     "line": 37,
+     "category": "security",
+     "severity": "high",
+     "title": "Removal of UnsafeOptionsUsedError exception",
+     "explanation": "The `UnsafeOptionsUsedError` exception class is removed, which was used to signal when unsafe Git options were detected. Removing it without replacing the underlying safety logic breaks the error handling contract for security-sensitive operations."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes the `unsafe_protocols` safety check and the `UnsafeOptionsUsedError` exception, allowing `git clone` to be invoked with dangerous protocols (e.g., `ext::`) or options (e.g., `--upload-pack`, `protocol.` config) without explicit user consent. This re-introduces a known security vulnerability (CVE-2023-40590) where malicious URLs or options can lead to arbitrary code execution.",
+   "usage": {
+    "input_tokens": 1631,
+    "output_tokens": 393,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r1/f0",
+     "path": "git/repo/base.py",
+     "line": 200,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of unsafe protocol protection allows arbitrary code execution",
+     "explanation": "The `unsafe_protocols` parameter and the `unsafe_options` check have been removed from `Repo.clone` and `Repo.clone_from`. This allows callers to pass URLs starting with `ext::` or `multi_options` containing `--upload-pack` or `protocol.` configuration without raising an error. This enables arbitrary command execution via the `ext::` protocol or malicious upload-pack scripts, which was the specific vulnerability fixed by the original introduction of this check."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r1/f1",
+     "path": "git/exc.py",
+     "line": 37,
+     "category": "security",
+     "severity": "high",
+     "title": "Removal of UnsafeOptionsUsedError exception",
+     "explanation": "The `UnsafeOptionsUsedError` exception class is removed. While this is a consequence of the logic removal, it breaks any external code that might have been catching this specific exception to handle unsafe protocol attempts, and it removes the semantic distinction for this security error."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes the `unsafe_protocols` safety check and the `UnsafeOptionsUsedError` exception, allowing `git clone` to be invoked with dangerous protocols (e.g., `ext::`) or options (e.g., `--upload-pack`, `protocol.` config) without explicit user consent. This re-introduces a known security vulnerability (CVE-2023-40590) where malicious URLs or options can lead to arbitrary code execution.",
+   "usage": {
+    "input_tokens": 1631,
+    "output_tokens": 418,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r2/f0",
+     "path": "git/repo/base.py",
+     "line": 200,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of unsafe protocol protection allows arbitrary code execution",
+     "explanation": "The `unsafe_protocols` parameter and the `unsafe_options` check have been removed from `Repo.clone` and `Repo.clone_from`. This allows callers to pass URLs starting with `ext::` or `multi_options` containing `--upload-pack` or `protocol.` configuration without raising an error. This enables arbitrary command execution via the `ext::` protocol or malicious upload-pack scripts, which was the specific vulnerability this check was designed to prevent (CVE-2023-40590). The check and the `unsafe_protocols` flag must be restored."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r2/f1",
+     "path": "git/exc.py",
+     "line": 40,
+     "category": "security",
+     "severity": "high",
+     "title": "Removal of UnsafeOptionsUsedError exception",
+     "explanation": "The `UnsafeOptionsUsedError` exception class has been removed. This exception is required to signal to users that they are attempting to use unsafe git protocols or options without explicitly opting in. Its removal is part of the regression that allows unsafe operations to proceed silently."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes the `unsafe_protocols` parameter and the `UnsafeOptionsUsedError` exception, which disables the security check preventing the use of unsafe git protocols (like `ext::`) and options (like `--upload-pack` or `protocol.` config) during cloning. This exposes the application to arbitrary command execution and other security risks.",
+   "usage": {
+    "input_tokens": 5440,
+    "output_tokens": 231,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r0/f0",
+     "path": "git/repo/base.py",
+     "line": 217,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of unsafe protocol protection",
+     "explanation": "The `unsafe_protocols` parameter and the `unsafe_options` check have been removed from `clone` and `clone_from`. This allows users to pass unsafe URLs (e.g., `ext::sh -c 'malicious_command'`) or options (e.g., `--upload-pack`) without any warning or exception, leading to potential arbitrary command execution or data exfiltration."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes the `unsafe_protocols` parameter and the `UnsafeOptionsUsedError` exception, which disables the security check preventing the use of unsafe git protocols (like `ext::`) and options (like `--upload-pack` or `protocol.` config) during cloning. This exposes the application to arbitrary command execution and other security risks.",
+   "usage": {
+    "input_tokens": 5440,
+    "output_tokens": 231,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r1/f0",
+     "path": "git/repo/base.py",
+     "line": 217,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of unsafe protocol protection",
+     "explanation": "The `unsafe_protocols` parameter and the `unsafe_options` check have been removed from `clone` and `clone_from`. This allows users to pass unsafe URLs (e.g., `ext::sh -c 'malicious_command'`) or options (e.g., `--upload-pack`) without any warning or exception, leading to potential arbitrary command execution or data exfiltration."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes the `unsafe_protocols` parameter and the `UnsafeOptionsUsedError` exception, which disables the security check preventing the use of unsafe git protocols (like `ext::`) and options (like `--upload-pack` or `protocol.` config) during cloning. This exposes the application to arbitrary code execution and other security risks.",
+   "usage": {
+    "input_tokens": 5440,
+    "output_tokens": 231,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r2/f0",
+     "path": "git/repo/base.py",
+     "line": 217,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of unsafe protocol protection",
+     "explanation": "The `unsafe_protocols` parameter and the `unsafe_options` check have been removed from `clone` and `clone_from`. This allows users to pass unsafe URLs (e.g., `ext::sh -c 'malicious_command'`) or options (e.g., `--upload-pack`) without any warning or exception, leading to potential arbitrary code execution or data exfiltration."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes the `unsafe_protocols` check and the `UnsafeOptionsUsedError` exception, allowing `git clone` to be invoked with unsafe protocols (e.g., `ext::`) or options (e.g., `--upload-pack`, `--config protocol.*`) without explicit user consent. This re-introduces a security vulnerability where malicious URLs or options could lead to arbitrary code execution or data exfiltration.",
+   "usage": {
+    "input_tokens": 5440,
+    "output_tokens": 235,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r0/f0",
+     "path": "git/repo/base.py",
+     "line": 217,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of unsafe protocol validation allows arbitrary code execution",
+     "explanation": "The `unsafe_protocols` parameter and the `unsafe_options` check have been removed from `clone` and `clone_from`. This allows users to pass URLs starting with `ext::` or options like `--upload-pack` which can execute arbitrary commands on the system. The fix is to restore the `unsafe_protocols` parameter and the validation logic that raises `UnsafeOptionsUsedError` when unsafe options are detected without explicit permission."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes the `unsafe_protocols` parameter and the `UnsafeOptionsUsedError` exception, which disables the security check that prevents cloning from `ext::` URLs or using `--upload-pack` and `protocol.` configuration options. This reintroduces a known vulnerability (CVE-2024-32021) allowing arbitrary command execution via malicious git URLs.",
+   "usage": {
+    "input_tokens": 5440,
+    "output_tokens": 249,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r1/f0",
+     "path": "git/repo/base.py",
+     "line": 217,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of unsafe protocol validation allows arbitrary command execution",
+     "explanation": "The `unsafe_protocols` parameter and the `unsafe_options` check have been removed from `clone` and `clone_from`. This allows users to pass `ext::` URLs or `--upload-pack` options, which can lead to arbitrary command execution (CVE-2024-32021). The check should be restored or replaced with a more robust mechanism to prevent these unsafe operations."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes the `unsafe_protocols` parameter and the `UnsafeOptionsUsedError` exception, which disables the security check that prevents cloning from `ext::` URLs or using `--upload-pack` and `protocol.` configuration options. This reintroduces a known vulnerability (CVE-2024-32021) allowing arbitrary command execution via malicious git URLs.",
+   "usage": {
+    "input_tokens": 5440,
+    "output_tokens": 249,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r2/f0",
+     "path": "git/repo/base.py",
+     "line": 217,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of unsafe protocol validation allows arbitrary command execution",
+     "explanation": "The `unsafe_protocols` parameter and the `unsafe_options` check have been removed from `clone` and `clone_from`. This allows users to pass `ext::` URLs or `--upload-pack` options, which can lead to arbitrary command execution (CVE-2024-32021). The check should be restored or replaced with a more robust mechanism to prevent these unsafe operations."
+    }
+   ]
   }
  ]
 }

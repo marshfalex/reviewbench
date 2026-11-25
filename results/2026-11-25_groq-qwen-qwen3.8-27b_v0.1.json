@@ -5834,7 +5834,424 @@
    "case": "py-0024-urllib3-cookie-redirect",
    "level": "L2",
    "run": 0,
-   "error": "rate_limited: retry-after 2379s (quota)",
+   "error": null,
+   "summary": "The PR removes 'Cookie' from the default list of headers stripped on cross-host redirects, creating a security vulnerability where session cookies may be leaked to third-party domains.",
+   "usage": {
+    "input_tokens": 5711,
+    "output_tokens": 192,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L2/r0/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 190,
+     "category": "security",
+     "severity": "high",
+     "title": "Removal of 'Cookie' from default redirect header stripping",
+     "explanation": "Removing 'Cookie' from `DEFAULT_REMOVE_HEADERS_ON_REDIRECT` means that when a request is redirected to a different host, the `Cookie` header is no longer stripped by default. This can lead to session cookies being sent to third-party domains, potentially leaking sensitive session data. The fix is to revert the change and keep 'Cookie' in the frozenset: `DEFAULT_REMOVE_HEADERS_ON_REDIRECT = frozenset([\"Cookie\", \"Authorization\"])`."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes 'Cookie' from the default list of headers stripped on cross-host redirects, creating a security vulnerability where session cookies may be leaked to third-party domains.",
+   "usage": {
+    "input_tokens": 5711,
+    "output_tokens": 192,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L2/r1/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 190,
+     "category": "security",
+     "severity": "high",
+     "title": "Removal of 'Cookie' from default redirect header stripping",
+     "explanation": "Removing 'Cookie' from `DEFAULT_REMOVE_HEADERS_ON_REDIRECT` means that when a request is redirected to a different host, the `Cookie` header is no longer stripped by default. This can lead to session cookies being sent to third-party domains, potentially leaking sensitive session data. The fix is to revert the change and keep 'Cookie' in the frozenset: `DEFAULT_REMOVE_HEADERS_ON_REDIRECT = frozenset([\"Cookie\", \"Authorization\"])`."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes 'Cookie' from the default list of headers stripped on cross-host redirects, creating a security vulnerability where session cookies may be leaked to third-party domains.",
+   "usage": {
+    "input_tokens": 5711,
+    "output_tokens": 192,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L2/r2/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 190,
+     "category": "security",
+     "severity": "high",
+     "title": "Removal of 'Cookie' from default redirect header stripping",
+     "explanation": "Removing 'Cookie' from `DEFAULT_REMOVE_HEADERS_ON_REDIRECT` means that when a request is redirected to a different host, the `Cookie` header is no longer stripped by default. This can lead to session cookies being sent to third-party domains, potentially leaking sensitive session data. The fix is to revert the change and keep 'Cookie' in the frozenset: `DEFAULT_REMOVE_HEADERS_ON_REDIRECT = frozenset([\"Cookie\", \"Authorization\"])`."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes the validation that prevented keys containing spaces from being used in the `xmlattr` filter. This allows the generation of malformed HTML/XML attributes (e.g., `foo bar=\"value\"`), which can lead to broken markup or potential security issues if the output is parsed by a browser or XML parser.",
+   "usage": {
+    "input_tokens": 938,
+    "output_tokens": 231,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L0/r0/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 87,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Removal of space validation in xmlattr keys",
+     "explanation": "The previous implementation raised a `ValueError` if a key contained a space. The new implementation removes this check, allowing keys like `data-foo bar` to produce invalid HTML attributes such as `data-foo bar=\"value\"`. This can result in broken markup or unexpected behavior in browsers. The validation should be restored or the documentation should clearly warn that keys must not contain spaces."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes the validation that prevented keys containing spaces from being used in the `xmlattr` filter. This allows the generation of malformed HTML/XML attributes (e.g., `foo bar=\"value\"`), which can lead to broken markup or potential security issues if the output is parsed by a browser or XML parser.",
+   "usage": {
+    "input_tokens": 938,
+    "output_tokens": 231,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L0/r1/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 87,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Removal of space validation in xmlattr keys",
+     "explanation": "The previous implementation raised a `ValueError` if a key contained a space. The new implementation removes this check, allowing keys like `data-foo bar` to produce invalid HTML attributes such as `data-foo bar=\"value\"`. This can result in broken markup or unexpected behavior in browsers. The validation should be restored or the documentation should clearly warn that keys must not contain spaces."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes the validation that prevented keys containing spaces from being used in the `xmlattr` filter. This allows the generation of malformed HTML/XML attributes (e.g., `foo bar=\"value\"`), which can lead to broken markup or potential security issues if the output is parsed by a browser or XML parser.",
+   "usage": {
+    "input_tokens": 938,
+    "output_tokens": 231,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L0/r2/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 87,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Removal of space validation in xmlattr keys",
+     "explanation": "The previous implementation raised a `ValueError` if a key contained a space. The new implementation removes this check, allowing keys like `data-foo bar` to produce invalid HTML attributes such as `data-foo bar=\"value\"`. This can result in broken markup or unexpected behavior in browsers. The validation should be restored or the documentation should clearly warn that keys must not contain spaces."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes the validation that prevented attribute keys containing spaces from being used in the `xmlattr` filter. This reverts a security fix (introduced in 3.1.3) that mitigated HTML/attribute injection. Keys with spaces can now be used to inject arbitrary HTML attributes or tags into the output, leading to potential XSS or DOM manipulation vulnerabilities.",
+   "usage": {
+    "input_tokens": 1698,
+    "output_tokens": 274,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L1/r0/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 92,
+     "category": "security",
+     "severity": "high",
+     "title": "Reintroduction of HTML attribute injection via keys with spaces",
+     "explanation": "The removal of the `_space_re` check allows keys containing spaces (e.g., `\"class=\\\"x\\\" onclick=\\\"alert(1)\\\"\"`) to be passed to `escape()`. While `escape()` handles quotes, the space allows the key to be split into multiple attributes or tags in the resulting HTML string. This reverts the security fix from Jinja 3.1.3. The check `if _space_re.search(key) is not None: raise ValueError(...)` should be restored."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes the validation that prevented attribute keys containing spaces from being used in the `xmlattr` filter. This reverts a security fix (introduced in 3.1.3) that mitigated HTML/attribute injection. While values are escaped, keys with spaces can still be used to inject arbitrary HTML tags or attributes into the output.",
+   "usage": {
+    "input_tokens": 1698,
+    "output_tokens": 266,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L1/r1/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 92,
+     "category": "security",
+     "severity": "high",
+     "title": "Reintroduction of HTML injection via attribute keys",
+     "explanation": "The removal of the `_space_re` check allows keys containing spaces (e.g., `\"class=\"x\" onclick=\"alert(1)\"\"` or `\"<script>\"`) to be passed to `escape()`. Since `escape()` does not escape spaces, these keys can break out of the intended attribute context or inject new tags/attributes into the HTML output. The previous version raised a `ValueError` to prevent this. The fix is to restore the validation that raises an error if a key contains whitespace."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes the validation that prevented attribute keys containing spaces from being used in the `xmlattr` filter. This reverts a security fix (introduced in 3.1.3) that mitigated HTML/attribute injection. While values are escaped, keys with spaces can still be used to inject arbitrary HTML tags or attributes into the output, leading to XSS or markup corruption.",
+   "usage": {
+    "input_tokens": 1698,
+    "output_tokens": 251,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L1/r2/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 92,
+     "category": "security",
+     "severity": "high",
+     "title": "Reintroduction of HTML injection via attribute keys",
+     "explanation": "The removal of the `ValueError` check for spaces in keys allows keys like `\"class=\" onmouseover=\"alert(1)\"` to be passed to `escape()`. Since `escape()` does not escape spaces, the resulting string will contain unescaped quotes and spaces, allowing the injection of new attributes or tags into the HTML output. This reverts the security fix from Jinja 3.1.3."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes the validation that prevented attribute keys containing spaces from being used in the `xmlattr` filter. This reverts a security fix (introduced in 3.1.3) that mitigated HTML/attribute injection. Keys with spaces can now be used to inject arbitrary HTML attributes or tags into the output, leading to potential XSS or DOM manipulation vulnerabilities.",
+   "usage": {
+    "input_tokens": 1698,
+    "output_tokens": 274,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L2/r0/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 92,
+     "category": "security",
+     "severity": "high",
+     "title": "Reintroduction of HTML attribute injection via keys with spaces",
+     "explanation": "The removal of the `_space_re` check allows keys containing spaces (e.g., `\"class=\\\"x\\\" onclick=\\\"alert(1)\\\"\"`) to be passed to `escape()`. While `escape()` handles quotes, the space allows the key to be split into multiple attributes or tags in the resulting HTML string. This reverts the security fix from Jinja 3.1.3. The check `if _space_re.search(key) is not None: raise ValueError(...)` should be restored."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes the validation that prevented attribute keys containing spaces from being used in the `xmlattr` filter. This reverts a security fix (introduced in 3.1.3) that mitigated HTML/attribute injection. Keys with spaces can now be used to inject arbitrary HTML attributes or tags into the output, leading to potential XSS or DOM manipulation vulnerabilities.",
+   "usage": {
+    "input_tokens": 1698,
+    "output_tokens": 274,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L2/r1/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 92,
+     "category": "security",
+     "severity": "high",
+     "title": "Reintroduction of HTML attribute injection via keys with spaces",
+     "explanation": "The removal of the `_space_re` check allows keys containing spaces (e.g., `\"class=\\\"x\\\" onclick=\\\"alert(1)\\\"\"`) to be passed to `escape()`. While `escape()` handles quotes, the space allows the key to be split into multiple attributes or tags in the resulting HTML string. This reverts the security fix from Jinja 3.1.3. The check `if _space_re.search(key) is not None: raise ValueError(...)` should be restored."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes the validation that prevented attribute keys containing spaces from being used in the `xmlattr` filter. This reverts a security fix (introduced in 3.1.3) that prevented potential HTML/attribute injection or malformed markup when keys are not strictly controlled.",
+   "usage": {
+    "input_tokens": 1698,
+    "output_tokens": 397,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L2/r2/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 88,
+     "category": "security",
+     "severity": "high",
+     "title": "Reintroduction of attribute injection via keys with spaces",
+     "explanation": "The previous version raised a `ValueError` if a key contained a space (`_space_re.search(key)`). This check was added in 3.1.3 to prevent malformed HTML or potential injection issues when keys are derived from user input. By removing this check, keys like `\"class=\" onmouseover=\"alert(1)\"` (if spaces are allowed or encoded) or simply keys with spaces that break the attribute structure can now be passed to `escape(key)`. While `escape` handles HTML entities, a key with a space will result in `key=\"value\"` becoming `key=\"value\"` which is invalid HTML if the key itself contains a quote or space that breaks the attribute boundary in a way `escape` doesn't fully protect against in all contexts (e.g., if the key is `\" onmouseover=\"alert(1)\"`, `escape` turns it into `&quot; onmouseover=&quot;alert(1)&quot;`, which is safe, but the original intent of the 3.1.3 fix was to strictly enforce valid attribute names). More critically, removing the explicit validation reverts a documented security hardening. The fix is to restore the check for spaces in keys."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR refactors path resolution logic in `StaticResource` to simplify symlink handling. However, it introduces a security vulnerability by removing the `os.path.normpath` check that prevented directory traversal attacks when `follow_symlinks` is enabled. Additionally, the logic for `follow_symlinks=False` is inverted, causing valid static files to be rejected.",
+   "usage": {
+    "input_tokens": 855,
+    "output_tokens": 686,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r0/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 121,
+     "category": "security",
+     "severity": "critical",
+     "title": "Directory traversal vulnerability when follow_symlinks is True",
+     "explanation": "The original code used `os.path.normpath` to ensure the path remained within the static directory before resolving symlinks. The new code removes this check. If `follow_symlinks` is True, an attacker can use a path like `../../etc/passwd` (or a symlink pointing outside) to access files outside the static directory because `resolve()` will follow the path/symlink and the subsequent `relative_to` check is skipped."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r0/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 123,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Valid static files rejected when follow_symlinks is False",
+     "explanation": "The condition `if not self._follow_symlinks:` is inverted. When `follow_symlinks` is False (the default), the code now executes `filepath.relative_to(self._directory)`. Since `filepath` is the resolved absolute path and `self._directory` is likely a relative or different absolute path, this will raise a `ValueError` for valid files, causing them to be treated as forbidden or not found."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r0/f2",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 188,
+     "category": "security",
+     "severity": "critical",
+     "title": "Directory traversal vulnerability in _resolve_path when follow_symlinks is True",
+     "explanation": "Similar to the first finding, the removal of `os.path.normpath` allows directory traversal when `follow_symlinks` is True. The `resolve()` call will resolve the path, and the `relative_to` check is skipped, allowing access to files outside the static directory."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r0/f3",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 189,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Valid static files rejected in _resolve_path when follow_symlinks is False",
+     "explanation": "The condition `if not self._follow_symlinks:` is inverted. When `follow_symlinks` is False, the code executes `filepath.relative_to(self._directory)`, which will fail for valid files due to path mismatch, causing them to be rejected."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR refactors path resolution logic in `StaticResource` to simplify symlink handling. However, it introduces a security vulnerability by removing the `os.path.normpath` check that prevented directory traversal attacks when `follow_symlinks` is enabled. Additionally, the logic for `follow_symlinks=False` is inverted, causing valid static files to be rejected.",
+   "usage": {
+    "input_tokens": 855,
+    "output_tokens": 686,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r1/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 121,
+     "category": "security",
+     "severity": "critical",
+     "title": "Directory traversal vulnerability when follow_symlinks is True",
+     "explanation": "The original code used `os.path.normpath` to ensure the path remained within the static directory before resolving symlinks. The new code removes this check. If `follow_symlinks` is True, an attacker can use a path like `../../etc/passwd` (or a symlink pointing outside) to access files outside the static directory because `resolve()` will follow the path/symlink and the subsequent `relative_to` check is skipped."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r1/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 123,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Valid static files rejected when follow_symlinks is False",
+     "explanation": "The condition `if not self._follow_symlinks:` is inverted. When `follow_symlinks` is False (the default), the code now executes `filepath.relative_to(self._directory)`. Since `filepath` is the resolved absolute path and `self._directory` is likely a relative or different absolute path, this will raise a `ValueError` for valid files, causing them to be treated as forbidden or not found."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r1/f2",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 188,
+     "category": "security",
+     "severity": "critical",
+     "title": "Directory traversal vulnerability in _resolve_path when follow_symlinks is True",
+     "explanation": "Similar to the first finding, the removal of `os.path.normpath` allows directory traversal when `follow_symlinks` is True. The `resolve()` call will resolve the path, and the `relative_to` check is skipped, allowing access to files outside the static directory."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r1/f3",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 189,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Valid static files rejected in _resolve_path when follow_symlinks is False",
+     "explanation": "The condition `if not self._follow_symlinks:` is inverted. When `follow_symlinks` is False, the code executes `filepath.relative_to(self._directory)`, which will fail for valid files due to path mismatch, causing them to be rejected."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR refactors path resolution logic in `StaticResource` to simplify symlink handling. However, it introduces a security vulnerability by removing the pre-resolution path normalization check when `follow_symlinks` is enabled. This allows path traversal attacks (e.g., via `../`) to bypass the directory boundary check, as `Path.resolve()` resolves symlinks and normalizes the path, causing `relative_to()` to succeed even for paths outside the intended directory.",
+   "usage": {
+    "input_tokens": 855,
+    "output_tokens": 1611,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r2/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 122,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal vulnerability when follow_symlinks is enabled",
+     "explanation": "The original code checked `normalized_path.relative_to(self._directory)` on the *unresolved* path (after `os.path.normpath`) to prevent traversal. The new code only checks `filepath.relative_to(self._directory)` after `resolve()`. If `follow_symlinks` is True, `resolve()` will resolve symlinks and normalize `..` components. An attacker can use a path like `../../etc/passwd`. `resolve()` will produce `/etc/passwd`. If the static directory is `/var/www/static`, `relative_to` will raise `ValueError` (good). BUT, if the static directory itself is a symlink or if the traversal stays within the resolved root but escapes the logical directory via symlinks, the check might pass incorrectly. More critically, the removal of the pre-resolve check means that if `follow_symlinks` is True, the code relies solely on the post-resolve check. The original code's intent was to ensure the *logical* path didn't escape the directory before resolving. By removing the `os.path.normpath` check, the code is now vulnerable to cases where the resolved path is inside the directory but the logical path was not, or more likely, it simply removes a defense-in-depth layer. Actually, the main issue is that `resolve()` on a path with `..` will normalize it. If the directory is `/a/b` and file is `../../c`, resolve is `/c`. `relative_to` fails. So where is the bug? The bug is that the original code explicitly prevented traversal *before* resolving symlinks. The new code allows the path to be resolved first. If `follow_symlinks` is True, and there is a symlink inside the static directory that points outside, the original code would catch it if the symlink name itself was part of a traversal? No. The real issue is that `resolve()` can change the path in ways that `relative_to` might not catch if the directory itself is a symlink. However, the most direct problem is that the `os.path.normpath` check was a specific guard against `..` sequences in the filename *before* any symlink resolution. Removing it means that if `follow_symlinks` is True, the code is less secure against certain edge cases involving symlinks and traversal. Specifically, if `self._directory` is a symlink, `resolve()` on the directory and the file might behave differently. But the most significant regression is that the check `normalized_path.relative_to(self._directory)` was performed on the *unresolved* path. This ensured that even if symlinks were followed later, the initial path structure didn't escape. The new code skips this. If `follow_symlinks` is True, the code now allows any path that resolves to within the directory. This is generally safer for symlinks, but the removal of the normpath check is a regression in defense-in-depth. Wait, looking closer: if `follow_symlinks` is False, the new code does `filepath = ...resolve()` then `filepath.relative_to(...)`. `resolve()` on a non-symlink path with `..` will normalize it. So `../../etc/passwd` becomes `/etc/passwd`. `relative_to` fails. So it's safe. If `follow_symlinks` is True, same thing. So where is the vulnerability? The vulnerability is that `resolve()` can raise `FileNotFoundError` if the path doesn't exist. The original code caught `FileNotFoundError` in the `except` block. The new code also catches it. However, the original code's `normalized_path.relative_to` check was done *before* `resolve()`. This meant that if the path contained `..` that escaped the directory, it would raise `ValueError` immediately. The new code does `resolve()` first. If the path escapes the directory, `resolve()` returns the escaped path, and `relative_to` raises `ValueError`. So the outcome is similar. BUT, there is a subtle difference: `os.path.normpath` does not resolve symlinks. `Path.resolve()` does. If `follow_symlinks` is True, the original code checked the logical path, then resolved. The new code resolves, then checks. This is actually *more* secure for symlink escapes. So why is it a problem? The problem is that `resolve()` can be slow and has side effects (stat calls). But more importantly, the removal of the `os.path.normpath` check means that if the path is something like `foo/../../bar`, `normpath` would make it `bar`. `resolve` would also make it `bar`. The key is that the original code explicitly handled the `follow_symlinks` flag by *not* resolving symlinks in the check phase if the flag was false? No, the original code did `normalized_path.relative_to` regardless, then `resolve` if follow_symlinks. The new code always `resolve`s. If `follow_symlinks` is False, the original code did `unresolved_path.resolve()` which *does* resolve symlinks in Python 3.6+? No, `Path.resolve()` always resolves symlinks. The original code's `else` branch did `filepath = unresolved_path.resolve()`. So it always resolved. The difference is the *check*. Original: Check logical path, then resolve. New: Resolve, then check logical path (of the resolved path). This is a security regression because `resolve()` can change the path in a way that `relative_to` might pass even if the logical path was malicious? No, `relative_to` on the resolved path is the correct way to check if the file is inside the directory. The original code's check on the *unresolved* path was actually *less* secure because it didn't account for symlinks pointing outside. So the new code is *more* secure? Wait, the PR description says \"Report only real... problems\". If the new code is more secure, there is no problem. Let's re-read the diff. The diff removes the `if self._follow_symlinks:` branch in the check. It now always does `filepath = ...resolve()` and then `if not self._follow_symlinks: filepath.relative_to(...)`. This means if `follow_symlinks` is True, it does NOT check `relative_to` at all! It just resolves and uses the path. This is the bug. If `follow_symlinks` is True, the code skips the `relative_to` check entirely. This allows path traversal via `../` because there is no check that the resolved path is inside the directory. The original code *always* did the `relative_to` check (on the normalized path). The new code only does it if `follow_symlinks` is False. This is a critical security vulnerability."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 0,
+   "error": "exception: HTTPError: 400 Client Error: Bad Request for url: https://api.groq.com/openai/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 1,
+   "error": "exception: HTTPError: 400 Client Error: Bad Request for url: https://api.groq.com/openai/v1/chat/completions",
+   "summary": "",
+   "usage": {},
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 2,
+   "error": "rate_limited: retries exhausted",
    "summary": "",
    "usage": {},
    "findings": []

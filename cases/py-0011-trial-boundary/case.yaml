@@ -18,6 +18,19 @@ bugs:
   cwe: CWE-193
   severity: medium
   description: <= trial_days gives a 15-day trial; should be <.
+  defect_terms:
+  - off-by-one
+  - off by one
+  - boundary
+  - 15 day
+  - 15-day
+  - inclusive
+  - including
+  - strictly less
+  - < trial_days
+  - extra day
+  - one day too
+  - day after the trial
 context:
   related: []
 known_issues: []

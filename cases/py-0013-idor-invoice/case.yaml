@@ -19,6 +19,15 @@ bugs:
   cwe: CWE-639
   severity: critical
   description: Any logged-in user can read any invoice by id; no owner_id check.
+  defect_terms:
+  - idor
+  - authoriz
+  - other user
+  - any user
+  - any invoice
+  - ownership
+  - owner check
+  - owner_id check
 context:
   related:
   - app/models.py

@@ -96,8 +96,19 @@ def test_lineup_case_ids_exclude_later_cases(tmp_path, monkeypatch, capsys):
     seen = {}
     monkeypatch.setattr("reviewbench.lineup.plan", lambda *a, **k: seen.setdefault("ids", k["case_ids"]) and [])
     cli.main(["lineup", "--results-dir", str(tmp_path)])
-    assert "py-0028-truthy-permission-decision" not in seen["ids"]
-    assert "py-0001" not in seen["ids"] and len(seen["ids"]) == 27
+    # Under BENCH_VERSION 0.2 every case is active; cases for a later version would be held back.
+    assert "py-0028-truthy-permission-decision" in seen["ids"]
+    assert len(seen["ids"]) == len(ALL)
+
+
+def test_later_version_cases_are_held_back(monkeypatch, tmp_path):
+    """The `since` filter still works now that every committed case is active (review finding)."""
+    import reviewbench
+    from reviewbench.cases import active
+
+    monkeypatch.setattr(reviewbench, "BENCH_VERSION", "0.1")
+    assert {c.id for c in active(ALL)} == {c.id for c in ALL if c.since == "0.1"}
+    assert len(active(ALL)) == 27 and active(ALL, "0.2") == ALL
 
 
 def test_no_two_cases_share_an_upstream_commit():

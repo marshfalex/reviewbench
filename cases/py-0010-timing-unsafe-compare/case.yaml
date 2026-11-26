@@ -18,6 +18,11 @@ bugs:
   cwe: CWE-208
   severity: high
   description: == on the HMAC digest leaks timing; use hmac.compare_digest.
+  defect_terms:
+  - timing
+  - compare_digest
+  - constant-time
+  - constant time
 context:
   related: []
 known_issues:

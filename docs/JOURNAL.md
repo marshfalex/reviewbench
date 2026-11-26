@@ -479,3 +479,21 @@ Append-only. One short entry per working session: what was done, what was learne
   code's own identifiers (`format`, `path`, `verify`, `pool`, `decision`, `key`) or substrings that
   hit unrelated words (`cert` in "certain", `unit` in "community", `..` in any ellipsis), so they
   filtered nothing. Tightened py-0028/29/35/36/49/50/51/52 to defect-concept terms. Lesson added.
+
+## 2026-11-26 — v0.2 bump
+- BENCH_VERSION 0.2: 71 cases (35 bug cases incl. 13 CVEs; 36 controls incl. 31 upstream PRs).
+- v0.1 ground truth updated in the same PR, as planned:
+  - Every v0.1 bug gets defect_terms, tightened after LESSONS' "terms that filter nothing".
+    Independent review flagged more generic terms (`rce` in "source", `tie` in "properties", `cent`
+    in "percent", identifiers like `pickle`, `login_required`, `<=`); fixed. Tightening then dropped
+    two correct catches ("skip or duplicate rows when timestamps collide"; "up to and including
+    trial_days"), found by reading every miss; terms widened for those. Final: 756/791 (95.6%)
+    location catches name the defect; the other 35 are right-line-wrong-reason, mostly "missing
+    HTTP status check" on the double-charge bug (planted bug: missing idempotency key).
+  - Batch-1 CVE ranges are widened to the vulnerable hunk (py-0023..0027).
+  - py-0026 and py-0027 get `also` locations for their second call sites.
+- Frozen v0.1 results are untouched (scored from their own truth snapshots); the v0.1
+  leaderboard table is byte-identical.
+- The lineup now re-runs the four active fast models on all 71 cases (639 reviews each).
+- Tests that hard-coded "v0.1" now follow BENCH_VERSION; a new test keeps the `since` hold-back
+  covered now that every committed case is active (review finding). Draft terms file removed (applied).

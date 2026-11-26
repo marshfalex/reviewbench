@@ -20,13 +20,20 @@ source:
 bugs:
 - file: src/urllib3/util/retry.py
   lines:
-  - 190
-  - 190
+  - 187
+  - 193
   class: credential_leak_on_redirect
   cwe: CWE-200
   severity: medium
   description: Cookie is no longer in the headers stripped on cross-origin redirects, so a manually set Cookie header
     (session token) is sent to whatever host a redirect points to.
+  defect_terms:
+  - cookie
+  - cross-origin
+  - cross origin
+  - different host
+  - strip
+  - leak
 context:
   related:
   - src/urllib3/poolmanager.py

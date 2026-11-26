@@ -18,6 +18,14 @@ bugs:
   cwe: CWE-862
   severity: critical
   description: DELETE /admin/users has neither @login_required nor an is_admin check.
+  defect_terms:
+  - authenticat
+  - authoriz
+  - admin check
+  - unauthenticated
+  - access control
+  - any user can
+  - privilege
 context:
   related:
   - app/models.py

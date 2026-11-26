@@ -19,13 +19,20 @@ source:
 bugs:
 - file: src/jinja2/filters.py
   lines:
-  - 88
-  - 92
+  - 84
+  - 95
   class: attribute_injection
   cwe: CWE-79
   severity: medium
   description: Keys are only HTML-escaped, and escaping does not touch spaces or '=', so a user-controlled key like
     'onclick=alert(1) x' injects extra attributes (XSS) into the rendered tag.
+  defect_terms:
+  - xss
+  - inject
+  - escape
+  - quote
+  - attribute name
+  - space
 context:
   related: []
 known_issues: []

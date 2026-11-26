@@ -76,8 +76,9 @@ def test_leaderboard_groups_by_version(tmp_path):
     other = {**doc, "bench_version": "0.0"}
     (tmp_path / "b.json").write_text(json.dumps(other))
     md = leaderboard(tmp_path)
-    assert "## v0.1 — public cases" in md and "## v0.0 — public cases" in md
-    assert md.index("v0.1") < md.index("v0.0")
+    from reviewbench import BENCH_VERSION
+    assert f"## v{BENCH_VERSION} — public cases" in md and "## v0.0 — public cases" in md
+    assert md.index(f"v{BENCH_VERSION}") < md.index("v0.0")
 
 
 def test_groq_long_retry_after_is_recorded_not_slept(monkeypatch):

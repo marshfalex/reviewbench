@@ -20,13 +20,21 @@ source:
 bugs:
 - file: requests/sessions.py
   lines:
-  - 200
-  - 201
+  - 197
+  - 203
   class: credential_leak_on_redirect
   cwe: CWE-522
   severity: high
   description: Authorization is stripped only when the hostname changes, so a redirect from https://host to http://host
     (or to another port) re-sends the credentials, in cleartext on the http hop.
+  defect_terms:
+  - authorization header
+  - redirect
+  - credential
+  - downgrade
+  - https to http
+  - scheme
+  - strip
 context:
   related: []
 known_issues: []

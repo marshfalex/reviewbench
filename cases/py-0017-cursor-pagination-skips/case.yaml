@@ -20,6 +20,17 @@ bugs:
   severity: medium
   description: created_at is not unique, so rows sharing the boundary timestamp are skipped; needs (created_at,
     id) tiebreak.
+  defect_terms:
+  - unique
+  - tiebreak
+  - tie-break
+  - duplicate timestamp
+  - same timestamp
+  - same created_at
+  - collid
+  - collision
+  - skip
+  - duplicate rows
 context:
   related:
   - app/schema.sql

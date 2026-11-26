@@ -18,6 +18,17 @@ bugs:
   cwe: CWE-193
   severity: high
   description: start = page * per_page skips the first page for a 1-indexed page.
+  defect_terms:
+  - off-by-one
+  - off by one
+  - page - 1
+  - first page
+  - 1-indexed
+  - 1-based
+  - zero-based
+  - 0-based
+  - skips the first
+  - skipped
 context:
   related: []
 known_issues: []

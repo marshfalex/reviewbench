@@ -18,6 +18,15 @@ bugs:
   cwe: CWE-918
   severity: high
   description: Fetching a user-supplied URL reaches internal services and metadata endpoints.
+  defect_terms:
+  - ssrf
+  - metadata
+  - request forgery
+  - allowlist
+  - private ip
+  - '169.254'
+  - internal service
+  - internal network
 context:
   related: []
 known_issues:

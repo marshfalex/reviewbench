@@ -18,6 +18,12 @@ bugs:
   cwe: CWE-502
   severity: critical
   description: Unpickling attacker-controlled cookie data allows code execution.
+  defect_terms:
+  - deserializ
+  - code execution
+  - remote code
+  - arbitrary code
+  - untrusted data
 context:
   related: []
 known_issues: []

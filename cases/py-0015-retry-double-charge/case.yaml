@@ -18,8 +18,15 @@ bugs:
   class: retry_double_charge
   cwe: null
   severity: high
-  description: A timeout after the server processed the POST causes a second charge; needs an idempotency
-    key.
+  description: A timeout after the server processed the POST causes a second charge; needs an idempotency key.
+  defect_terms:
+  - idempoten
+  - double charge
+  - charged twice
+  - charge twice
+  - duplicate charge
+  - duplicate payment
+  - twice
 context:
   related: []
 known_issues: []

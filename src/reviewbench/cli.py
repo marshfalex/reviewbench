@@ -184,6 +184,13 @@ def cmd_charts(args) -> int:
     return 0
 
 
+def cmd_compare(args) -> int:
+    from reviewbench import BENCH_VERSION
+    from reviewbench.compare import compare_table
+    print(compare_table(Path(args.results_dir), args.version or BENCH_VERSION))
+    return 0
+
+
 def cmd_lineup(args) -> int:
     from reviewbench.lineup import plan
 
@@ -264,6 +271,10 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--results-dir", default="results")
     p.add_argument("--out", default="results/charts")
     p.set_defaults(fn=cmd_charts)
+    p = sub.add_parser("compare", help="paired per-bug comparisons between complete reviewers")
+    p.add_argument("--results-dir", default="results")
+    p.add_argument("--version", default=None, help="benchmark version (default: current)")
+    p.set_defaults(fn=cmd_compare)
 
     args = ap.parse_args(argv)
     return args.fn(args)

@@ -180,3 +180,32 @@ def test_calibration_script_reports_right_line_wrong_reason():
         json.dump(doc, fh)
     total, named, misses = cal.calibrate({"py-9999": ["sql"]}, [fh.name])
     assert (total, named) == (2, 1) and misses == [("m", "py-9999-x", "L1", "Style nit")]
+
+
+def test_paired_comparison_is_deterministic_and_adjusts_for_many_comparisons():
+    from reviewbench.compare import paired
+
+    a = {("c", i): 1.0 for i in range(20)}
+    b = {("c", i): (0.0 if i < 6 else 1.0) for i in range(20)}  # A catches 6 bugs B misses
+    r1, r2 = paired(a, b), paired(a, b)
+    assert r1 == r2  # fixed seed
+    assert abs(r1["diff"] - 0.30) < 1e-9 and (r1["a_more"], r1["b_more"], r1["n"]) == (6, 0, 20)
+    lo, hi = r1["ci95"]
+    assert 0 < lo <= 0.30 <= hi
+    wide = paired(a, b, comparisons=50)["ci_adjusted"]
+    assert wide[0] <= lo and wide[1] >= hi  # more comparisons -> wider interval
+    assert paired({("c", 0): 1.0}, {("c", 0): 0.0}) is None  # too few shared bugs
+    assert paired(a, {("x", 1): 1.0}) is None  # no shared bugs
+
+
+def test_one_sided_few_bugs_is_not_significant_after_correction():
+    """Review finding: 6 bugs to 0 out of 23 (p≈0.031) must not be starred with 18 comparisons."""
+    from reviewbench.compare import paired, sign_flip_p
+
+    a = {("c", i): 1.0 for i in range(23)}
+    b = {("c", i): (0.0 if i < 6 else 1.0) for i in range(23)}
+    r = paired(a, b, comparisons=18)
+    assert abs(r["p"] - 2 / 2**6) < 1e-12  # exact: 2 of 64 sign patterns are as extreme
+    assert r["p_adjusted"] > 0.05
+    assert abs(sign_flip_p([1.0] * 10) - 2 / 2**10) < 1e-12
+    assert sign_flip_p([0.0, 0.0]) == 1.0

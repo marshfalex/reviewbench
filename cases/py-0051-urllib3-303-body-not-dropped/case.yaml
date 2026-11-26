@@ -34,6 +34,13 @@ bugs:
     lines:
     - 356
     - 358
+  defect_terms:
+  - '303'
+  - redirect
+  - content-type
+  - content-length
+  - leak
+  - sensitive
 context:
   related: []
 known_issues:

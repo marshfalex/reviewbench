@@ -85,7 +85,10 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
 - [ ] **More noisy-diff cases (3+),** including one noisy-diff *control* and one real-world refactor
       PR (reversed CVE fix inside a larger change).
 - [ ] **Data-driven hardness labels** from v0.1 results, after the v0.1 lineup completes.
-- [ ] **Matching-rule defect check** plus a hand-audited sample of matches.
+- [x] **Matching-rule defect check** plus a hand-audited sample of matches. Done 2026-11-25: on
+      the 791 v0.1 location catches, the 10 that don't name the defect were read one by one, and
+      all are right-line-wrong-reason (calibrate_defect_terms.py prints them). A wider audit of
+      the 781 that do name it is left to the owner's blind adjudication pass.
 - [ ] **Prompt sensitivity check:** 2–3 paraphrased prompts × 1 free model.
 - [ ] **Rewrite the README problem statement** to say ReviewBench compares models behind a
       standard prompt; review products are a later, paid phase.
@@ -122,11 +125,13 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
 - Decision 2026-11-24 (owner): **fix scoring before the v0.2 bump**, in this order:
   - [x] **Multiple line ranges per bug** (`bugs[].also`); py-0051's second call site is now an
         also-location (its known issue stays, for findings elsewhere in that file). Gated (scoring.py): owner merges.
-  - [ ] **At the v0.2 bump, update v0.1 ground truth in the same PR:** give py-0026 and py-0027
+  - [ ] **At the v0.2 bump, update v0.1 ground truth in the same PR** (apply the draft
+        defect_terms too, re-running the calibration first): give py-0026 and py-0027
         `also` locations for their second call sites (now known_issues), and widen the batch-1
         CVE ranges to the vulnerable hunk. Not before: v0.1 runs still in progress must keep the
         frozen truth.
-  - [ ] **Matcher defect check** (a hit must also name the defect). Gated: owner merges.
+  - [x] **Matcher defect check** (`bugs[].defect_terms`; all v0.2 bug cases have terms; v0.1
+        draft terms in docs/drafts/v01-defect-terms.yaml). Gated: owner merges.
   - [ ] **Bump BENCH_VERSION to 0.2** and let the lineup re-run every active model. Gated.
 
 ## v0.2 — breadth and contributors

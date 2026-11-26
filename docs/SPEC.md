@@ -36,6 +36,7 @@ cases/py-0017-cursor-pagination-skips/
 | `bugs[].cwe` | no | e.g. `CWE-89`, or null |
 | `bugs[].severity` | yes | `critical`/`high`/`medium`/`low` (the bug's real severity; not used for matching) |
 | `bugs[].description` | yes | what is wrong |
+| `bugs[].defect_terms` | no (yes for new bug cases) | case/Unicode-insensitive substrings; a finding at the right location only catches the bug if its title or explanation contains one of them. Pick synonyms for the defect's core concept and calibrate with `scripts/calibrate_defect_terms.py` |
 | `bugs[].also` | no | `[{file, lines}]`: other places the same defect lives (e.g. a second call site). A finding at the main location **or** any of these, with the same ±2 tolerance, catches the bug. Files must exist in the post-PR tree; they need not be touched by the diff |
 | `context.related` | no | post-PR paths of other files a careful reviewer would open (used at L2) |
 | `known_issues` | no | `[{match, file?, note?}]`: real issues in the PR that were not planted. A finding whose title + explanation contains `match` (case/Unicode-insensitive), on `file` if given, counts as a **valid extra** automatically |
@@ -126,7 +127,8 @@ Only findings with severity **medium or higher** are counted; low-severity
 findings are ignored. Each counted finding gets exactly one label, in order:
 
 1. **hit** — `path == bug.file` and `bug.lines[0] - 2 <= line <= bug.lines[1] + 2`
-   (line tolerance ±2) for some planted bug;
+   (line tolerance ±2), or the same at one of the bug's `also` locations, for some planted bug;
+   and, if the bug lists `defect_terms`, the finding's title or explanation contains one of them;
 2. **known** — matches a `known_issues` entry (valid extra);
 3. **valid** / **invalid** — a human verdict in the results' adjudication file;
 4. **unadjudicated** — otherwise.
@@ -170,6 +172,10 @@ id; verdicts are marked `"blind": true`. With `--rater second` it re-judges a
 fixed 20% sample (by hash of the finding id) of the primary human verdicts into
 `<stem>.adjudications.second.json`, and `reviewbench agreement` reports Cohen's
 kappa between the two raters (SPEC §10).
+
+A finding at a bug's location that doesn't name the defect (fails its `defect_terms`) is not a
+hit; it reaches adjudication like any other finding. Judge it on its own claim: "valid" if what it
+says is a real issue, "invalid" otherwise. Don't re-judge it as a catch of the planted bug.
 
 When a verdict is "this is a real issue in the case", prefer adding it to the
 case's `known_issues` (and bumping the benchmark version) so every future

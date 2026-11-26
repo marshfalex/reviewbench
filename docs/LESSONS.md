@@ -53,6 +53,10 @@ Prefer turning a lesson into a test or validator rule over leaving it as advice.
 - **Fair findings on controls** (2026-11-24). A control can contain a real latent quirk (py-0067's
   in-place list mutation). Rule: when the reviewer agent spots one, add it to `known_issues` so a
   model that flags it isn't charged a false positive.
+- **Defect terms that filter nothing** (2026-11-25). Terms copied from the code's own identifiers
+  (`format`, `path`, `verify`) appear in every finding on that line, and short substrings match
+  unrelated words (`cert` in "certain", `..` in an ellipsis). Rule: a term names the defect
+  concept, not the code; avoid substrings under 4 characters unless distinctive (`303`, `../`).
 - **Controls next to security fixes.** Never take a control from a security fix or from the same
   file as one.
 

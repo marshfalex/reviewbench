@@ -27,6 +27,10 @@ bugs:
   description: inspect_format_method only recognizes callables named 'format', so str.format_map is called directly
     instead of through the sandboxed formatter. Template code can use format_map field lookups to reach attributes
     the sandbox blocks and escape it.
+  defect_terms:
+  - format_map
+  - sandbox
+  - escape
 context:
   related: []
 known_issues: []

@@ -137,3 +137,46 @@ def test_case_with_also_location_loads_validates_and_snapshots():
     assert c.bugs[0].also == (("src/urllib3/connectionpool.py", (356, 358)),)
     assert validate_case(c) == []
     assert case_truth(c)["bugs"][0]["also"] == [{"file": "src/urllib3/connectionpool.py", "lines": [356, 358]}]
+
+
+def test_defect_terms_require_the_finding_to_name_the_defect():
+    from reviewbench.scoring import bug_matches
+
+    bug = {"file": "a.py", "lines": [10, 12], "defect_terms": ["idempoten", "double charge"]}
+    on_topic = {"path": "a.py", "line": 11, "title": "Retry can double charge", "explanation": "x"}
+    off_topic = {"path": "a.py", "line": 11, "title": "Unchecked HTTP status", "explanation": "r.json()"}
+    unicode_hit = {"path": "a.py", "line": 11, "title": "No IDEMPOTENCY key", "explanation": ""}
+    assert bug_matches(on_topic, bug) and bug_matches(unicode_hit, bug)
+    assert not bug_matches(off_topic, bug)
+    assert not bug_matches({**on_topic, "line": 40}, bug)  # still needs the location
+    assert bug_matches(off_topic, {"file": "a.py", "lines": [10, 12]})  # no terms: location only
+
+
+def test_v02_bug_cases_all_have_defect_terms_and_snapshot_them():
+    from reviewbench.runner import case_truth
+
+    bugs = [c for c in discover((CASES, "public")) if c.since == "0.2" and c.bugs]
+    assert bugs and all(c.bugs[0].defect_terms for c in bugs)
+    assert all(validate_case(c) == [] for c in bugs)
+    assert case_truth(bugs[0])["bugs"][0]["defect_terms"] == list(bugs[0].bugs[0].defect_terms)
+    v01 = [c for c in discover((CASES, "public")) if c.since == "0.1" and c.bugs]
+    assert not any(c.bugs[0].defect_terms for c in v01)  # v0.1 truth stays frozen until the bump
+
+
+def test_calibration_script_reports_right_line_wrong_reason():
+    import importlib.util
+    import json
+
+    spec = importlib.util.spec_from_file_location("cal", CASES.parent / "scripts" / "calibrate_defect_terms.py")
+    cal = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cal)
+    import tempfile
+    doc = {"model": "m", "cases": {"py-9999-x": {"bugs": [{"file": "a.py", "lines": [1, 2]}]}},
+           "records": [{"case": "py-9999-x", "level": "L0", "error": None, "findings": [
+               {"path": "a.py", "line": 1, "severity": "high", "title": "SQL injection", "explanation": ""}]},
+                       {"case": "py-9999-x", "level": "L1", "error": None, "findings": [
+               {"path": "a.py", "line": 1, "severity": "high", "title": "Style nit", "explanation": ""}]}]}
+    with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as fh:
+        json.dump(doc, fh)
+    total, named, misses = cal.calibrate({"py-9999": ["sql"]}, [fh.name])
+    assert (total, named) == (2, 1) and misses == [("m", "py-9999-x", "L1", "Style nit")]

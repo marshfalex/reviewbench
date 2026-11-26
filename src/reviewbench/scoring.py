@@ -1,7 +1,8 @@
 """Scoring. Pure functions over result records -- no API calls (see docs/SPEC.md §Metrics).
 
 Every counted finding (severity medium or higher) in a run is exactly one of:
-  hit          -- on a planted bug's file, line within LINE_TOLERANCE of its range
+  hit          -- on a planted bug's file, line within LINE_TOLERANCE of its range (or an `also`
+                  range) and, if the bug lists defect_terms, naming the defect
   known        -- matches one of the case's known_issues  (a real, unplanted issue)
   valid        -- a human adjudicated it as a real issue
   invalid      -- a human adjudicated it as a false positive
@@ -27,12 +28,17 @@ def norm(text: str) -> str:
 
 
 def bug_matches(finding: dict, bug: dict, tol: int = LINE_TOLERANCE) -> bool:
-    """A finding catches a bug at its main location or any `also` location (same tolerance)."""
+    """A finding catches a bug at its main location or any `also` location (same tolerance) and,
+    when the bug lists defect_terms, only if its title or explanation names the defect."""
     locations = [(bug["file"], bug["lines"])] + [(a["file"], a["lines"]) for a in bug.get("also") or []]
-    for file, (lo, hi) in locations:
-        if finding["path"] == file and lo - tol <= int(finding["line"]) <= hi + tol:
-            return True
-    return False
+    if not any(finding["path"] == file and lo - tol <= int(finding["line"]) <= hi + tol
+               for file, (lo, hi) in locations):
+        return False
+    terms = bug.get("defect_terms")
+    if not terms:
+        return True
+    text = norm(finding.get("title", "") + " " + finding.get("explanation", ""))
+    return any(norm(t) in text for t in terms)
 
 
 def known_matches(finding: dict, known: dict) -> bool:

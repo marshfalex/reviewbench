@@ -459,3 +459,23 @@ Append-only. One short entry per working session: what was done, what was learne
   runs from the fast models would otherwise use different truth than the finished ones. Queued
   for the v0.2 bump PR.
 - Gated (scoring.py, runner.py): waits for the owner.
+
+## 2026-11-25 — defect check in the matcher; two new fast models finished
+- The lineup change worked: cerebras gpt-oss-120b and groq qwen3.8-27b each finished all 243 v0.1
+  reviews in under a day. groq `auto:versatile` and cerebras `auto:llama-3.3-70b` produced nothing,
+  probably because no model matched; check the job log before relying on them.
+- Same model, different provider, different numbers (L0 per-run recall, per-bug 95% CIs): qwen
+  3.8-27b 100% (86–100) on cerebras vs 90% (71–97) on groq; gpt-oss-120b 84% (65–94) on groq vs
+  72% (52–86) on cerebras. The intervals overlap, so it's not a finding yet, but provider variance
+  belongs in RISKS and in how results are labelled (provider + model, never model alone).
+- Defect check: `bugs[].defect_terms`. A location hit must also name the defect. Calibrated first
+  on the four complete v0.1 runs with draft terms (not applied to v0.1 truth): 781/791 (98.7%)
+  location catches name the defect. I read all 10 that don't, and each is right-line-wrong-reason
+  (e.g. "unverified HTTP status" on the double-charge bug, "negative limit" on the cursor-skip
+  bug). So today's matcher over-credits ~1.3%. All 12 v0.2 bug cases have terms; the v0.1 draft
+  terms wait for the bump. Old results score identically (no terms in their snapshots).
+- Gated (scoring.py, runner.py): waits for the owner.
+- Independent review: code correct, old results identical. But several of my term lists used the
+  code's own identifiers (`format`, `path`, `verify`, `pool`, `decision`, `key`) or substrings that
+  hit unrelated words (`cert` in "certain", `unit` in "community", `..` in any ellipsis), so they
+  filtered nothing. Tightened py-0028/29/35/36/49/50/51/52 to defect-concept terms. Lesson added.

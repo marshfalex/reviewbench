@@ -26,6 +26,13 @@ bugs:
   severity: medium
   description: The template name from the URL is joined with a template directory using '/', not safe_join, so a
     staff user can read any file on the server via '../' in the template name.
+  defect_terms:
+  - traversal
+  - ../
+  - safe_join
+  - outside
+  - arbitrary file
+  - escape
 context:
   related: []
 known_issues: []

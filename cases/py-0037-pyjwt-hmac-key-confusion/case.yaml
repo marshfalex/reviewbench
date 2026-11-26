@@ -30,6 +30,16 @@ bugs:
   description: HMACAlgorithm.prepare_key only refuses keys containing a few RSA/X.509 markers. EC PEM keys and ssh-ed25519/ecdsa
     public keys pass, so with algorithms that include both HS* and an asymmetric algorithm, an attacker can sign
     an HS256 token with the public key as the HMAC secret and it verifies.
+  defect_terms:
+  - confusion
+  - public key
+  - hmac
+  - pem
+  - asymmetric
+  - ssh
+  - ecdsa
+  - ed25519
+  - algorithm
 context:
   related: []
 known_issues: []

@@ -27,6 +27,15 @@ bugs:
   description: send() picks a pool with get_connection(url, proxies), which keys pools only by URL. After one request
     to a host with verify=False, later requests to that host in the same Session reuse the unverified pool and skip
     certificate verification. The fix selects the pool using the request's TLS settings.
+  defect_terms:
+  - certificate
+  - unverified
+  - verify=false
+  - verify false
+  - reuse
+  - ssl
+  - cached
+  - insecure
 context:
   related: []
 known_issues: []

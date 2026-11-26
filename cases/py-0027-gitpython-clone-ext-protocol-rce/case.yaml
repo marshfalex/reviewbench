@@ -20,13 +20,26 @@ source:
 bugs:
 - file: git/repo/base.py
   lines:
-  - 236
-  - 239
+  - 231
+  - 241
   class: command_injection
   cwe: CWE-94
   severity: critical
   description: clone_from passes an untrusted URL and multi_options straight to git clone. An 'ext::sh -c ...' URL
     (with '-c protocol.ext.allow=always') or '--upload-pack' runs arbitrary commands.
+  defect_terms:
+  - 'ext::'
+  - command inject
+  - protocol
+  - remote code
+  - code execution
+  - upload-pack
+  - arbitrary command
+  also:
+  - file: git/repo/base.py
+    lines:
+    - 202
+    - 210
 context:
   related: []
 known_issues:

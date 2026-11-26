@@ -18,6 +18,14 @@ bugs:
   cwe: CWE-798
   severity: critical
   description: A live payment secret key is committed in source.
+  defect_terms:
+  - secret
+  - hard-coded
+  - hardcoded
+  - credential
+  - api key
+  - environment variable
+  - committed
 context:
   related: []
 known_issues:

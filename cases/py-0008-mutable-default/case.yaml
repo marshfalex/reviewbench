@@ -18,6 +18,11 @@ bugs:
   cwe: null
   severity: high
   description: tags=[] default is shared across calls and mutated.
+  defect_terms:
+  - mutable default
+  - mutable
+  - shared across
+  - default argument
 context:
   related: []
 known_issues:

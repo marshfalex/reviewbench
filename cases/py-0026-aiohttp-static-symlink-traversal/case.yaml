@@ -19,13 +19,24 @@ source:
 bugs:
 - file: aiohttp/web_urldispatcher.py
   lines:
-  - 188
-  - 190
+  - 185
+  - 192
   class: path_traversal
   cwe: CWE-22
   severity: high
   description: With follow_symlinks=True the resolved path is never checked against the static directory, so a request
     like /static/../../etc/passwd is served (directory traversal), not only symlinks inside the directory.
+  defect_terms:
+  - symlink
+  - traversal
+  - outside
+  - escape
+  - arbitrary file
+  also:
+  - file: aiohttp/web_urldispatcher.py
+    lines:
+    - 118
+    - 126
 context:
   related: []
 known_issues:

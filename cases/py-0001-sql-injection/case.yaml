@@ -18,6 +18,13 @@ bugs:
   cwe: CWE-89
   severity: critical
   description: username is interpolated into SQL, allowing injection.
+  defect_terms:
+  - sql inject
+  - injection
+  - parameteriz
+  - interpolat
+  - placeholder
+  - f-string
 context:
   related: []
 known_issues: []

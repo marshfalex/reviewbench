@@ -18,6 +18,15 @@ bugs:
   cwe: CWE-755
   severity: medium
   description: except Exception returns {} despite the docstring promising to raise; file never closed.
+  defect_terms:
+  - swallow
+  - file handle
+  - never closed
+  - not closed
+  - context manager
+  - broad except
+  - except exception
+  - hides the error
 context:
   related: []
 known_issues: []

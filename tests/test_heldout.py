@@ -90,7 +90,8 @@ def test_run_keeps_heldout_details_out_of_committed_results(heldout, monkeypatch
     md = out.with_suffix(".md").read_text()
     assert "## heldout" in md and "1 private case(s)" in md and "## public" in md
     board = leaderboard(heldout / "results")
-    assert "## v0.1 — heldout cases" in board and "## v0.1 — public cases" in board
+    from reviewbench import BENCH_VERSION
+    assert f"## v{BENCH_VERSION} — heldout cases" in board and f"## v{BENCH_VERSION} — public cases" in board
 
 
 def test_adjudicating_heldout_updates_only_the_aggregate(heldout, monkeypatch):

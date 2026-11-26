@@ -18,6 +18,14 @@ bugs:
   cwe: CWE-362
   severity: high
   description: reserve() reads and writes shared stock without holding the lock.
+  defect_terms:
+  - race
+  - without the lock
+  - without holding
+  - concurren
+  - thread
+  - atomic
+  - toctou
 context:
   related: []
 known_issues:

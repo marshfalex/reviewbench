@@ -18,6 +18,14 @@ bugs:
   cwe: CWE-524
   severity: high
   description: Cache key is only page, so one user's dashboard is served to others.
+  defect_terms:
+  - cache key
+  - other user
+  - another user
+  - leak
+  - cross-user
+  - per-user
+  - shared cache
 context:
   related: []
 known_issues: []

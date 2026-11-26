@@ -5,9 +5,10 @@ with a known bug (or a known-clean PR), see whether it finds the bug, and
 whether the other things it says are true. Re-run it when a new model ships
 and publish the numbers.
 
-ReviewBench v0.1: 27 Python cases: 22 synthetic (12 textbook bugs, 6 hard
-logic/context bugs, 4 clean controls) and 5 reversed fixes of real CVEs. 11 more cases
-(4 of them CVEs) are held back for v0.2. Spec: [docs/SPEC.md](docs/SPEC.md). Results:
+ReviewBench v0.2: 71 Python cases: 35 with a planted or real bug (13 of them reversed
+fixes of real CVEs) and 36 controls with no known defect (31 of them real merged PRs from 8
+open-source projects). A finding counts as a catch only at the bug's location and if it names
+the defect. v0.1 (27 cases) is frozen; its results stay in their own table. Spec: [docs/SPEC.md](docs/SPEC.md). Results:
 [results/LEADERBOARD.md](results/LEADERBOARD.md).
 
 ## Why

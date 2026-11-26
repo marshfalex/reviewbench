@@ -57,6 +57,9 @@ Prefer turning a lesson into a test or validator rule over leaving it as advice.
   (`format`, `path`, `verify`) appear in every finding on that line, and short substrings match
   unrelated words (`cert` in "certain", `..` in an ellipsis). Rule: a term names the defect
   concept, not the code; avoid substrings under 4 characters unless distinctive (`303`, `../`).
+- **Tightening terms creates false misses** (2026-11-26). Stricter defect_terms dropped two correct
+  catches. Rule: after changing terms, read every finding the calibration script reports as "would
+  no longer count", not just the count.
 - **Controls next to security fixes.** Never take a control from a security fix or from the same
   file as one.
 

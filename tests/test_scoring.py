@@ -152,15 +152,15 @@ def test_defect_terms_require_the_finding_to_name_the_defect():
     assert bug_matches(off_topic, {"file": "a.py", "lines": [10, 12]})  # no terms: location only
 
 
-def test_v02_bug_cases_all_have_defect_terms_and_snapshot_them():
+def test_all_bug_cases_have_defect_terms_and_snapshot_them():
     from reviewbench.runner import case_truth
 
-    bugs = [c for c in discover((CASES, "public")) if c.since == "0.2" and c.bugs]
+    bugs = [c for c in discover((CASES, "public")) if c.bugs]
     assert bugs and all(c.bugs[0].defect_terms for c in bugs)
     assert all(validate_case(c) == [] for c in bugs)
     assert case_truth(bugs[0])["bugs"][0]["defect_terms"] == list(bugs[0].bugs[0].defect_terms)
     v01 = [c for c in discover((CASES, "public")) if c.since == "0.1" and c.bugs]
-    assert not any(c.bugs[0].defect_terms for c in v01)  # v0.1 truth stays frozen until the bump
+    assert all(c.bugs[0].defect_terms for c in v01)  # applied at the v0.2 bump
 
 
 def test_calibration_script_reports_right_line_wrong_reason():

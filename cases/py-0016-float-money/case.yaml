@@ -18,6 +18,14 @@ bugs:
   cwe: CWE-1339
   severity: medium
   description: float sum and round() produce cent errors in totals charged to customers.
+  defect_terms:
+  - decimal
+  - rounding
+  - precision
+  - floating-point
+  - floating point
+  - binary float
+  - cents
 context:
   related:
   - app/checkout.py

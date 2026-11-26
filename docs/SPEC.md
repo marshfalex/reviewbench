@@ -1,4 +1,7 @@
-# ReviewBench specification — v0.1
+# ReviewBench specification — v0.2
+
+v0.2 (2026-11-26): 71 public cases; bugs may list `also` locations and `defect_terms`
+(§1, §5). v0.1 results stay frozen and are never compared with v0.2 results.
 
 This document defines the benchmark. Any change to the case set, the
 reviewer prompt or output schema, context assembly, or scoring requires a new

@@ -18,6 +18,13 @@ bugs:
   cwe: CWE-22
   severity: critical
   description: filename like ../../etc/passwd escapes UPLOAD_DIR.
+  defect_terms:
+  - traversal
+  - ../
+  - outside
+  - escape
+  - sanitiz
+  - arbitrary file
 context:
   related: []
 known_issues: []

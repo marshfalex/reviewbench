@@ -17,10 +17,11 @@ noise flag marks the control FPR as a lower bound while control findings are unj
 **Breaks:** any claim that model A beats model B.
 **Status:** 23 planted bugs in v0.1. The k = 3 runs per bug are not independent (byte-identical
 for cerebras at temperature 0; groq's catch/miss differs across runs on only 4 of 23 bugs), so
-intervals use the bug as the unit (since 2026-11-24). They are 15–40 points wide and every model
-pair overlaps. 4 controls (12 runs) can't measure a false-positive rate at all.
-**Fix:** v0.2 targets: at least 100 planted bugs and 36 controls. Until then, report only
-differences whose intervals don't overlap, and say so.
+intervals use the bug as the unit (since 2026-11-24). They are 15–40 points wide. Models see the
+same bugs, so compare them with a paired per-bug difference, not interval overlap (see "What this
+means for claims"). v0.2 has 36 controls; v0.1's 4 couldn't measure a false-positive rate.
+**Fix:** at least 100 planted bugs. Report paired differences with their interval and the number
+of comparisons made.
 
 ## 3. The cases are written by an LLM and judged on LLMs
 **Breaks:** external validity: planted bugs may be "LLM-shaped" (textbook, well-commented,
@@ -79,8 +80,11 @@ spot-checks a few cases per batch; anything found wrong becomes a regression tes
 rule.
 
 ## What this means for claims today
-The defensible statement right now is narrow: on 23 small, mostly synthetic Python bugs, the free
-models tested catch most of them from the diff alone (L0 per-run recall: qwen-3.8-27b 100%, 86–100;
-gpt-oss-120b 84%, 65–94; 95% CIs with the bug as the unit). The intervals overlap, so **no model
-ranking is supported**. Nothing about precision, noise, real-world bug finding, or commercial
-reviewers is supported yet.
+The defensible statement right now is narrow: on 23 small, mostly synthetic Python bugs (v0.1), the
+free models tested catch most of them from the diff alone. A **paired, bug-by-bug** comparison
+(the right test: every model sees the same bugs) suggests qwen 3.8-27b catches more than
+gpt-oss-120b on both providers: e.g. cerebras qwen vs cerebras gpt-oss at L0, +28 points (95% CI
++10 to +45), qwen ahead on 7 bugs and behind on none. Treat it as preliminary: 23 bugs, 12
+comparisons at once, and v0.1's narrow line windows (which hit gpt-oss's CVE near-misses hardest).
+It must be re-tested on v0.2 before being published as a result. Nothing about precision, noise,
+real-world bug finding, or commercial reviewers is supported yet.

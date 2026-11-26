@@ -177,6 +177,13 @@ def cmd_leaderboard(args) -> int:
     return 0
 
 
+def cmd_charts(args) -> int:
+    from reviewbench.charts import write_charts
+    for p in write_charts(Path(args.results_dir), Path(args.out)):
+        print(f"wrote {p}", file=sys.stderr)
+    return 0
+
+
 def cmd_lineup(args) -> int:
     from reviewbench.lineup import plan
 
@@ -253,6 +260,10 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("leaderboard", help="regenerate results/LEADERBOARD.md")
     p.add_argument("--results-dir", default="results")
     p.set_defaults(fn=cmd_leaderboard)
+    p = sub.add_parser("charts", help="write SVG recall charts (one per benchmark version)")
+    p.add_argument("--results-dir", default="results")
+    p.add_argument("--out", default="results/charts")
+    p.set_defaults(fn=cmd_charts)
 
     args = ap.parse_args(argv)
     return args.fn(args)

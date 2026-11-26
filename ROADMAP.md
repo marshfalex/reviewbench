@@ -49,8 +49,9 @@ Sessions take the **first unchecked item** whose prerequisites are met (see `CLA
 - [x] **Import public CVE cases, batch 3** (py-0049..0052, held for v0.2): CVE-2024-35195 requests, CVE-2023-45803 urllib3,
       CVE-2024-34064 Jinja2, CVE-2019-10906 Jinja2.
 - [ ] [owner] Adjudicate pending findings after each completed run (`python -m reviewbench adjudicate`).
-- [ ] **Leaderboard charts:** generate SVG charts (recall by category/level with Wilson error bars)
-      from results; embed in README and the findings report.
+- [x] **Leaderboard charts:** `reviewbench charts` writes `results/charts/recall_v<version>.svg`
+      (per-run recall, per-bug Wilson intervals, complete runs only); v0.1 chart in the README.
+      Embedding in the findings report waits for the v0.2 report.
 - [ ] **Launch post draft:** `docs/posts/v0.1.md` — a short thread-style write-up (headline
       finding, one chart, one concrete missed bug, link to method). The owner posts it.
 
@@ -151,6 +152,8 @@ Do these before the v0.2 items below. They come before remaining v0.1 items exce
 
 ## Ideas (unapproved)
 <!-- Sessions add ideas here; the owner promotes them above. -->
+- Regenerate charts in the benchmark workflow's leaderboard step (`python -m reviewbench charts`),
+  so they stay current like LEADERBOARD.md. A workflow change, so it's gated.
 - Store each review's raw model response, or at least count findings `parse_review` drops. The only
   miss in the first complete run (py-0004 at L1) looks like dropped findings: the summary names the
   bug but the findings list is empty. Today that can't be confirmed.

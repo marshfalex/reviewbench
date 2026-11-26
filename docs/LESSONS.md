@@ -6,8 +6,9 @@ Prefer turning a lesson into a test or validator rule over leaving it as advice.
 
 ## Pre-PR checklist (do all of these)
 1. `ruff check .`, `python -m reviewbench validate`, `pytest` pass.
-2. Every new test was run against the old code and **failed** there (`git stash push -- src`,
-   run the test, `git stash pop`). Afterwards, confirm the intended change is still in the tree.
+2. Every new test was run against the old code and **failed** there (`git stash push -u -- src`,
+   run the test, `git stash pop`; `-u` matters: without it a new, untracked module stays in place
+   and the "old code" still contains the fix). Afterwards, confirm the intended change is still in the tree.
 3. An **independent reviewer agent** (fresh context) reviewed the diff and its findings are fixed
    or explained in the PR description.
 4. No held-out case, CVE or project is named anywhere in the diff, commit message or PR text.
@@ -23,6 +24,10 @@ Prefer turning a lesson into a test or validator rule over leaving it as advice.
   unmeasured; say "not measured (N unjudged)". Check: `precision_cell` in `report.py`.
 - **Two estimators in one cell** (2026-11-24). "51/68 runs (74%)" put run counts next to a
   per-bug mean. Rule: label which estimator a number is.
+- **Unpaired tests on paired data** (2026-11-26). I twice used "do the per-model intervals
+  overlap?", first too loosely (per-run intervals), then too strictly: every model is scored on the
+  same bugs, so the right test is a paired, bug-by-bug difference. Rule: compare models with a
+  paired difference and its interval, and say how many comparisons were made.
 - **Ranking claims.** Never claim one model beats another unless the per-bug intervals don't
   overlap, and have an independent reviewer check the claim before it is published.
 

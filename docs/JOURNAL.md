@@ -497,3 +497,18 @@ Append-only. One short entry per working session: what was done, what was learne
 - The lineup now re-runs the four active fast models on all 71 cases (639 reviews each).
 - Tests that hard-coded "v0.1" now follow BENCH_VERSION; a new test keeps the `since` hold-back
   covered now that every committed case is active (review finding). Draft terms file removed (applied).
+
+## 2026-11-26 — v0.2 is live; recall charts
+- Owner merged #42: BENCH_VERSION 0.2. The scheduled lineup now runs the active models on all 71
+  cases. New cases from here go in as `since: "0.3"` so the v0.2 set doesn't change mid-run.
+- `reviewbench charts` writes an SVG per version: per-run recall per model and level, with per-bug
+  Wilson intervals; only complete runs, versions never mixed; noisy models flagged; labels escaped.
+  No plotting dependency. v0.1 chart in README.
+- **Correction, found by the independent review:** I wrote "all intervals overlap" in the README.
+  With four models that's false (cerebras qwen 86–100 vs cerebras gpt-oss 49–84 at L2). Worse,
+  overlap is the wrong test: every model sees the same bugs, so a paired per-bug difference is
+  right. Paired, qwen 3.8-27b catches more v0.1 bugs than gpt-oss-120b on both providers (e.g. +28
+  points, 95% CI +10 to +45, 7 bugs to 0). The findings report's "this data does not show qwen
+  catches more" was therefore wrong too; corrected, with caveats (23 bugs, 12 comparisons, v0.1
+  matcher), and flagged for re-test on v0.2. Lesson added: use paired tests for paired data.
+- The benchmark workflow doesn't regenerate charts yet (workflow change, gated); added as an idea.

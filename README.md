@@ -11,6 +11,10 @@ open-source projects). A finding counts as a catch only at the bug's location an
 the defect. v0.1 (27 cases) is frozen; its results stay in their own table. Spec: [docs/SPEC.md](docs/SPEC.md). Results:
 [results/LEADERBOARD.md](results/LEADERBOARD.md).
 
+![Per-run recall by model and context level, v0.1](results/charts/recall_v0.1.svg)
+
+Regenerate with `python -m reviewbench charts`. Rows are ordered by L0 recall for readability, not as a ranking. Every model is scored on the same bugs, so models should be compared bug by bug (paired), not by whether their intervals overlap. On v0.1 a paired comparison suggests qwen 3.8-27b catches more planted bugs than gpt-oss-120b; it is preliminary (23 mostly synthetic bugs, v0.1 scoring) and is being re-tested on v0.2. See [docs/RISKS.md](docs/RISKS.md).
+
 ## Why
 
 Vendor demos of AI code review show the hits. What you need to know before

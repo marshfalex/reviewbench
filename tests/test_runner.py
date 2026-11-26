@@ -566,3 +566,43 @@ def test_pick_auto_prefers_the_bigger_number_not_the_later_string():
     assert pick_auto(["gpt-oss-20b", "gpt-oss-120b", "gpt-oss-safeguard-120b"], "gpt-oss") == "gpt-oss-120b"
     assert pick_auto(["qwen3-32b", "qwen3-235b-a22b"], "qwen3") == "qwen3-235b-a22b"
     assert pick_auto(["model-3.9", "model-3.10"], "model") == "model-3.10"
+
+
+def test_charts_draw_complete_runs_only_and_never_mix_versions(tmp_path):
+    import xml.dom.minidom
+
+    from reviewbench.charts import write_charts
+
+    cases = [c for c in discover((CASES, "public")) if c.id == "py-0001-sql-injection"]
+    hit = Finding("app/users.py", 6, "security", "critical", "SQL injection", "f-string")
+    res = tmp_path / "results"
+    run(cases, ReplayReviewer(model="done", fn=lambda _: [hit]), ["L0", "L1"], 1, res / "a.json",
+        log=lambda m: None)
+    partial = run(cases, ReplayReviewer(model="half", fn=lambda _: [hit]), ["L0"], 1, res / "b.json",
+                  log=lambda m: None)
+    (res / "b.json").write_text(json.dumps({**partial, "status": "partial"}))
+    old = json.loads((res / "a.json").read_text())
+    (res / "c.json").write_text(json.dumps({**old, "bench_version": "0.0", "model": "old"}))
+    paths = write_charts(res, tmp_path / "charts")
+    names = sorted(p.name for p in paths)
+    from reviewbench import BENCH_VERSION
+    assert names == sorted(["recall_v0.0.svg", f"recall_v{BENCH_VERSION}.svg"])
+    cur = (tmp_path / "charts" / f"recall_v{BENCH_VERSION}.svg").read_text()
+    xml.dom.minidom.parseString(cur)  # well-formed
+    assert "replay / done" in cur and "replay / half" not in cur and "replay / old" not in cur
+
+
+def test_charts_escape_labels_and_skip_runs_with_failed_reviews(tmp_path):
+    from reviewbench.charts import chart_rows, svg
+
+    page = svg("9.9", [("evil / <script>&", {"L0": (0.5, 30.0, 70.0, 4)})])
+    assert "<script>" not in page and "&lt;script&gt;&amp;" in page
+    assert 'cx="540.0"' in page  # 50% lands mid-plot: x = 330 + 420 * 0.5
+
+    cases = [c for c in discover((CASES, "public")) if c.id == "py-0001-sql-injection"]
+    res = tmp_path / "r"
+    doc = run(cases, ReplayReviewer(model="flaky", fn=lambda _: []), ["L0"], 2, res / "a.json",
+              log=lambda m: None)
+    doc["records"][0]["error"] = "transient: HTTP 503"  # file still says complete, like old files
+    (res / "a.json").write_text(json.dumps(doc))
+    assert chart_rows(res) == {}

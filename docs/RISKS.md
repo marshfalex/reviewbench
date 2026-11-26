@@ -81,10 +81,8 @@ rule.
 
 ## What this means for claims today
 The defensible statement right now is narrow: on 23 small, mostly synthetic Python bugs (v0.1), the
-free models tested catch most of them from the diff alone. A **paired, bug-by-bug** comparison
-(the right test: every model sees the same bugs) suggests qwen 3.8-27b catches more than
-gpt-oss-120b on both providers: e.g. cerebras qwen vs cerebras gpt-oss at L0, +28 points (95% CI
-+10 to +45), qwen ahead on 7 bugs and behind on none. Treat it as preliminary: 23 bugs, 12
-comparisons at once, and v0.1's narrow line windows (which hit gpt-oss's CVE near-misses hardest).
-It must be re-tested on v0.2 before being published as a result. Nothing about precision, noise,
-real-world bug finding, or commercial reviewers is supported yet.
+free models tested catch most of them from the diff alone. Compared bug by bug (paired, exact
+sign-flip test, Bonferroni over 18 comparisons; `reviewbench compare`), qwen 3.8-27b catches more
+than gpt-oss-120b in every pairing, but **no difference is significant after correction** (best
+adjusted p = 0.14). So no model ranking is supported. v0.2 re-tests with 35 bugs. Nothing about
+precision, noise, real-world bug finding, or commercial reviewers is supported yet.

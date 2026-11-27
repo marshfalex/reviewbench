@@ -6,15 +6,15 @@ Created 2026-11-27T00:42:12+00:00, k=3 runs per case and level, status `partial`
 
 | level | difficulty | any-of-k recall | all-of-k recall | per-run recall | precision (adjudicated) | control runs w/ FP | unadjudicated | errors |
 |---|---|---|---|---|---|---|---|---|
-| L0 | all | 19/21 (90%, 71–97) | 19/21 (90%, 71–97) | 57/63 runs; per-bug mean 90% (95% CI 71–97, 21 bugs) | not measured (16 of 19 unjudged) | 3/12 (25%, 9–53) | 16 | 0 |
-| L0 | easy | 14/14 (100%, 78–100) | 14/14 (100%, 78–100) | 42/42 runs; per-bug mean 100% (95% CI 78–100, 14 bugs) | not measured (16 of 19 unjudged) | 3/12 (25%, 9–53) | 7 | 0 |
-| L0 | hard | 5/7 (71%, 36–92) | 5/7 (71%, 36–92) | 15/21 runs; per-bug mean 71% (95% CI 36–92, 7 bugs) | not measured (16 of 19 unjudged) | n/a | 9 | 0 |
-| L1 | all | 18/20 (90%, 70–97) | 15/20 (75%, 53–89) | 48/60 runs; per-bug mean 80% (95% CI 58–92, 20 bugs) | not measured (14 of 17 unjudged) | 3/12 (25%, 9–53) | 14 | 1 |
-| L1 | easy | 14/14 (100%, 78–100) | 12/14 (86%, 60–96) | 38/42 runs; per-bug mean 90% (95% CI 66–98, 14 bugs) | not measured (14 of 17 unjudged) | 3/12 (25%, 9–53) | 5 | 0 |
-| L1 | hard | 4/6 (67%, 30–90) | 3/6 (50%, 19–81) | 10/18 runs; per-bug mean 56% (95% CI 22–85, 6 bugs) | not measured (14 of 17 unjudged) | n/a | 9 | 1 |
-| L2 | all | 18/20 (90%, 70–97) | 16/20 (80%, 58–92) | 50/60 runs; per-bug mean 83% (95% CI 62–94, 20 bugs) | not measured (14 of 14 unjudged) | 0/12 (0%, 0–24) | 14 | 0 |
-| L2 | easy | 14/14 (100%, 78–100) | 13/14 (93%, 68–99) | 40/42 runs; per-bug mean 95% (95% CI 72–99, 14 bugs) | not measured (14 of 14 unjudged) | 0/12 (0%, 0–24) | 5 | 0 |
-| L2 | hard | 4/6 (67%, 30–90) | 3/6 (50%, 19–81) | 10/18 runs; per-bug mean 56% (95% CI 22–85, 6 bugs) | not measured (14 of 14 unjudged) | n/a | 9 | 0 |
+| L0 | all | 21/23 (91%, 73–98) | 20/23 (87%, 68–96) | 62/69 runs; per-bug mean 90% (95% CI 71–97, 23 bugs) | not measured (18 of 21 unjudged) | 3/12 (25%, 9–53) | 18 | 0 |
+| L0 | easy | 15/15 (100%, 80–100) | 14/15 (93%, 70–99) | 44/45 runs; per-bug mean 98% (95% CI 76–100, 15 bugs) | not measured (18 of 21 unjudged) | 3/12 (25%, 9–53) | 9 | 0 |
+| L0 | hard | 6/8 (75%, 41–93) | 6/8 (75%, 41–93) | 18/24 runs; per-bug mean 75% (95% CI 41–93, 8 bugs) | not measured (18 of 21 unjudged) | n/a | 9 | 0 |
+| L1 | all | 20/22 (91%, 72–98) | 16/22 (73%, 52–87) | 52/66 runs; per-bug mean 79% (95% CI 58–91, 22 bugs) | not measured (15 of 18 unjudged) | 3/12 (25%, 9–53) | 15 | 1 |
+| L1 | easy | 14/14 (100%, 78–100) | 12/14 (86%, 60–96) | 38/42 runs; per-bug mean 90% (95% CI 66–98, 14 bugs) | not measured (15 of 18 unjudged) | 3/12 (25%, 9–53) | 5 | 1 |
+| L1 | hard | 6/8 (75%, 41–93) | 4/8 (50%, 22–78) | 14/24 runs; per-bug mean 58% (95% CI 27–84, 8 bugs) | not measured (15 of 18 unjudged) | n/a | 10 | 0 |
+| L2 | all | 20/22 (91%, 72–98) | 16/22 (73%, 52–87) | 53/66 runs; per-bug mean 80% (95% CI 60–92, 22 bugs) | not measured (16 of 16 unjudged) | 0/12 (0%, 0–24) | 16 | 0 |
+| L2 | easy | 14/14 (100%, 78–100) | 13/14 (93%, 68–99) | 40/42 runs; per-bug mean 95% (95% CI 72–99, 14 bugs) | not measured (16 of 16 unjudged) | 0/12 (0%, 0–24) | 5 | 0 |
+| L2 | hard | 6/8 (75%, 41–93) | 3/8 (38%, 14–69) | 13/24 runs; per-bug mean 54% (95% CI 24–81, 8 bugs) | not measured (16 of 16 unjudged) | n/a | 11 | 0 |
 
 ## Per case
 
@@ -93,4 +93,10 @@ Created 2026-11-27T00:42:12+00:00, k=3 runs per case and level, status `partial`
 | py-0024-urllib3-cookie-redirect | L1 | 1/3 | 1 | 0 | 0 | 0 | 2 | 0 |
 | py-0024-urllib3-cookie-redirect | L2 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
 | py-0025-jinja2-xmlattr-key-injection | L0 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
-| py-0025-jinja2-xmlattr-key-injection | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 1 |
+| py-0025-jinja2-xmlattr-key-injection | L1 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
+| py-0025-jinja2-xmlattr-key-injection | L2 | 2/3 | 2 | 0 | 0 | 0 | 1 | 0 |
+| py-0026-aiohttp-static-symlink-traversal | L0 | 3/3 | 3 | 2 | 0 | 0 | 0 | 0 |
+| py-0026-aiohttp-static-symlink-traversal | L1 | 1/3 | 2 | 0 | 0 | 0 | 1 | 0 |
+| py-0026-aiohttp-static-symlink-traversal | L2 | 1/3 | 1 | 3 | 0 | 0 | 1 | 0 |
+| py-0027-gitpython-clone-ext-protocol-rce | L0 | 2/3 | 2 | 2 | 0 | 0 | 2 | 0 |
+| py-0027-gitpython-clone-ext-protocol-rce | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 1 |

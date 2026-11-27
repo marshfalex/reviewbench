@@ -7105,7 +7105,492 @@
    "case": "py-0025-jinja2-xmlattr-key-injection",
    "level": "L1",
    "run": 0,
-   "error": "rate_limited: retry-after 1464s (quota)",
+   "error": null,
+   "summary": "Security regression: xmlattr filter now allows attribute names with spaces, enabling malformed markup and potential injection.",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 702,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L1/r0/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 84,
+     "category": "security",
+     "severity": "high",
+     "title": "Removed validation for spaces in XML attribute keys",
+     "explanation": "The previous implementation raised a ValueError when an attribute key contained whitespace, preventing malformed HTML and possible attribute injection attacks. The new implementation drops this check, allowing keys like \"onload=alert(1)\" or keys with spaces, which can be interpreted as multiple attributes or break the markup, creating a security risk. Re\u2011introduce validation (e.g., using the original `_space_re` check) and raise an error for keys containing whitespace."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Security regression: removal of validation for spaces in XML attribute keys",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 1074,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L1/r1/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 84,
+     "category": "security",
+     "severity": "high",
+     "title": "Spaces in attribute keys are no longer rejected",
+     "explanation": "The previous implementation raised a ValueError when a dict key contained whitespace, preventing malformed attribute names that could be exploited for HTML injection. The new code removes this check, allowing keys like \"data foo\" which escape does not sanitize, resulting in attribute strings such as `data foo=\"value\"` that the browser may interpret as two separate attributes, opening a vector for XSS or markup corruption. Re\u2011introduce the whitespace validation (e.g., using a compiled regex or `if any(c.isspace() for c in key): raise ValueError(...)`) before building the attribute string."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Security regression: removal of validation for spaces in XML attribute keys",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 1074,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L1/r2/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 84,
+     "category": "security",
+     "severity": "high",
+     "title": "Spaces in attribute keys are no longer rejected",
+     "explanation": "The previous implementation raised a ValueError when a dict key contained whitespace, preventing malformed attribute names that could be exploited for HTML injection. The new code removes this check, allowing keys like \"data foo\" which escape does not sanitize, resulting in attribute strings such as `data foo=\"value\"` that the browser may interpret as two separate attributes, opening a vector for XSS or markup corruption. Re\u2011introduce the whitespace validation (e.g., using a compiled regex or `if any(c.isspace() for c in key): raise ValueError(...)`) before building the attribute string."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The changes introduce a regression in XML attribute handling and leave an unused import.",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 850,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L2/r0/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 95,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Attribute names with spaces are no longer rejected",
+     "explanation": "The previous implementation raised a ValueError when a dict key contained whitespace, preventing generation of invalid SGML/XML. The new implementation removes this check, allowing keys like \"data foo\" to be emitted as attribute names, which produces malformed markup and can break templates. Reinstate validation (e.g., using the original regex) or sanitize keys before inclusion."
+    },
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L2/r0/f1",
+     "path": "src/jinja2/filters.py",
+     "line": 5,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Unused import of `re`",
+     "explanation": "`re` is imported but no longer used after the removal of the `_space_re` regex, leading to dead code. Remove the import to keep the module clean."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The recent changes re\u2011enable keys with spaces in the xmlattr filter, removing a validation step that prevented malformed attribute names and could lead to injection attacks.",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 619,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L2/r1/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 84,
+     "category": "security",
+     "severity": "high",
+     "title": "Allowing spaces in XML/HTML attribute names",
+     "explanation": "The previous implementation raised a ValueError when a key contained whitespace, preventing creation of invalid attribute strings. The new code removes this check, so a malicious template could supply a key like \"onclick alert\" which, after escaping, becomes `onclick alert=\"...\"`. Browsers may interpret this as two separate attributes, enabling attribute injection (XSS). Re\u2011introduce validation (e.g., using a regex to reject whitespace) or explicitly sanitize/replace spaces before rendering."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The removal of key\u2011space validation in the xmlattr filter allows attribute names with spaces, leading to malformed markup and potential injection vulnerabilities.",
+   "usage": {
+    "input_tokens": 1677,
+    "output_tokens": 845,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L2/r2/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 115,
+     "category": "correctness",
+     "severity": "high",
+     "title": "xmlattr filter no longer validates attribute names for spaces",
+     "explanation": "The previous implementation raised a ValueError when a dictionary key contained whitespace, preventing generation of invalid SGML/XML attributes. The new implementation removes this check, so keys like \"data foo\" will be rendered as `data foo=\"value\"`, producing malformed markup and enabling attribute injection attacks. Re\u2011introduce validation (e.g., using the original `_space_re` regex) and raise an error for keys containing spaces, or sanitize/replace spaces before rendering."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The recent changes relax path validation for static resources, allowing symlink traversal outside the configured static directory.",
+   "usage": {
+    "input_tokens": 899,
+    "output_tokens": 860,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r0/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 124,
+     "category": "security",
+     "severity": "high",
+     "title": "Symlink traversal not prevented when follow_symlinks=True",
+     "explanation": "The refactor replaces the previous logic that normalised the path and verified it stayed within the static directory before resolving symlinks. Now the code always resolves the path first and only checks containment when follow_symlinks is disabled. When follow_symlinks is enabled, a malicious symlink can point outside the static root, causing the server to serve arbitrary files. Re\u2011introduce the containment check after resolution (or before, using normpath) for both branches, e.g., resolve the path, then verify `filepath.relative_to(self._directory)` regardless of follow_symlinks, raising HTTPForbidden on failure."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Missing directory traversal protection when follow_symlinks is enabled",
+   "usage": {
+    "input_tokens": 899,
+    "output_tokens": 1299,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r1/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 124,
+     "category": "security",
+     "severity": "high",
+     "title": "Bypassing relative path check when follow_symlinks=True",
+     "explanation": "The code only calls `filepath.relative_to(self._directory)` when `self._follow_symlinks` is false. When it is true, the check is omitted, allowing a crafted filename (e.g., containing \"..\" or a symlink) to resolve to a path outside the static directory, leading to directory traversal. Add the `relative_to` validation for both cases, e.g., perform the check before resolving or after resolve regardless of `self._follow_symlinks`."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r1/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 210,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing directory containment check in file serving path",
+     "explanation": "In the second block the same pattern is used: `filepath = self._directory.joinpath(filename).resolve()` followed by `if not self._follow_symlinks: filepath.relative_to(self._directory)`. When `self._follow_symlinks` is true the containment check is skipped, permitting path traversal via \"..\" or symlinks. Ensure the `relative_to` check runs irrespective of `self._follow_symlinks` to enforce that the final path stays within the static directory."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Missing directory traversal protection when following symlinks in static file handling",
+   "usage": {
+    "input_tokens": 899,
+    "output_tokens": 1034,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r2/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 124,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal allowed when follow_symlinks=True",
+     "explanation": "The refactor removed the `relative_to(self._directory)` check for the case where `_follow_symlinks` is True. After `resolve()` the code no longer verifies that the resulting absolute path is still inside the static directory, allowing a symlink inside the directory to point outside and expose arbitrary files. Re\u2011introduce the directory containment check for both branches, e.g. always call `filepath.relative_to(self._directory)` after resolution (or perform an explicit check) before serving the file."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L0/r2/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 197,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal allowed in request handling when follow_symlinks=True",
+     "explanation": "The same issue appears in the request\u2011time block: when `_follow_symlinks` is True the code resolves the path but skips the `relative_to` containment check, permitting symlink\u2011based directory traversal. Add the containment verification regardless of `_follow_symlinks` (or explicitly check after resolution) to prevent serving files outside the configured static directory."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Security regression: symlink traversal allowed when follow_symlinks=True due to missing post\u2011resolve directory check.",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 2128,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L1/r0/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 140,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing directory containment check after resolving symlinks",
+     "explanation": "The code now resolves the requested path with `Path.resolve()` before verifying that the resulting path is inside the static directory. When `follow_symlinks` is True this allows a symlink inside the static directory that points outside to be served, bypassing the intended directory restriction. Add a `filepath.relative_to(self._directory)` check (or equivalent) after `resolve()` regardless of the `follow_symlinks` flag, and when `follow_symlinks` is False also ensure the original path is not a symlink before resolving."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "No new issues detected in the modified code.",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 1536,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "follow_symlinks flag is ignored when resolving file paths, allowing symlink traversal even when disabled",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 1683,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L1/r2/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 124,
+     "category": "security",
+     "severity": "high",
+     "title": "Symlink handling bypassed in url_for",
+     "explanation": "The code resolves the target path before checking `self._follow_symlinks`. `Path.resolve()` follows symlinks, so when `follow_symlinks=False` the resolver still follows them, potentially exposing files outside the static directory and allowing version hash generation for them. Move the `resolve()` call after the `relative_to` check or use `os.path.normpath` without resolving when symlinks are disallowed.\nFix: \n```python\nfilepath = self._directory.joinpath(filename)\nif not self._follow_symlinks:\n    filepath = filepath.resolve(strict=False)  # or keep as is without resolve\nelse:\n    filepath = filepath.resolve()\nfilepath.relative_to(self._directory)\n```"
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L1/r2/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 188,
+     "category": "security",
+     "severity": "high",
+     "title": "Symlink handling bypassed in request handler",
+     "explanation": "In `_handle`, the path is resolved before the `follow_symlinks` check, so symlinks are followed even when `follow_symlinks=False`. This defeats the intended security restriction and may allow access to files outside the static directory. Resolve the path only after confirming the path is within the directory when symlinks are not allowed.\nFix: \n```python\nfilepath = self._directory.joinpath(filename)\nif not self._follow_symlinks:\n    # Do not follow symlinks; just ensure the path stays inside the directory\n    filepath = filepath.resolve(strict=False)\nelse:\n    filepath = filepath.resolve()\nfilepath.relative_to(self._directory)\n```"
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Missing directory traversal protection when follow_symlinks=True in StaticResource",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 2042,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r0/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 138,
+     "category": "security",
+     "severity": "high",
+     "title": "Directory traversal allowed when follow_symlinks=True",
+     "explanation": "The refactor removed the `relative_to` check for the case where `self._follow_symlinks` is True. As a result, a request like `/static/../../etc/passwd` (or a symlink pointing outside the static directory) will be resolved to an absolute path outside the configured static directory and served, bypassing the intended sandbox. Add a `filepath.relative_to(self._directory)` check (or perform a normpath + relative_to before any `resolve()`) for both `follow_symlinks` settings to ensure the final path stays within the static directory."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Path traversal allowed when follow_symlinks=True due to missing directory containment check",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 1552,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r1/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 138,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing directory containment check for symlink traversal",
+     "explanation": "When `self._follow_symlinks` is True, the code resolves the requested path before verifying it stays within the static directory. This allows an attacker to use \"..\" segments or symlinks to access files outside the configured directory, bypassing the intended security boundary. Fix by performing a `relative_to(self._directory)` check on the joined path *before* calling `.resolve()`, or by normalizing the path with `os.path.normpath` and validating containment regardless of the `follow_symlinks` flag."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r1/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 210,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing directory containment check in request handling",
+     "explanation": "In `_handle`, the same logic is used: the path is resolved first and only checked with `relative_to` when `follow_symlinks` is False. With `follow_symlinks=True` an attacker can traverse outside the static directory via \"..\" or symlinks, leading to unauthorized file reads. Apply the same pre\u2011resolve containment validation as in the original implementation."
+    }
+   ]
+  },
+  {
+   "case": "py-0026-aiohttp-static-symlink-traversal",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Missing directory traversal protection when follow_symlinks is enabled",
+   "usage": {
+    "input_tokens": 2405,
+    "output_tokens": 1895,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r2/f0",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 124,
+     "category": "security",
+     "severity": "high",
+     "title": "Directory traversal allowed in url_for when follow_symlinks=True",
+     "explanation": "The code resolves the requested filename before checking that it stays within the static directory. When `self._follow_symlinks` is True the relative path check is skipped, allowing paths like \"../secret.txt\" or symlinks that point outside the directory to be served. Add a `filepath.relative_to(self._directory)` check regardless of `follow_symlinks` (or perform the check before `resolve()`) to prevent escaping the static root."
+    },
+    {
+     "id": "py-0026-aiohttp-static-symlink-traversal/L2/r2/f1",
+     "path": "aiohttp/web_urldispatcher.py",
+     "line": 197,
+     "category": "security",
+     "severity": "high",
+     "title": "Directory traversal allowed in _handle when follow_symlinks=True",
+     "explanation": "Similar to `url_for`, the request handler resolves the path before verifying it is under the configured static directory. With `follow_symlinks` enabled the check is omitted, so a crafted filename can access files outside the static root. Insert a `filepath.relative_to(self._directory)` validation (or perform the check on the unresolved path) before serving the file."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The changes remove safety checks for unsafe Git protocols and drop the unsafe_protocols parameter, reintroducing a security risk and breaking backward compatibility.",
+   "usage": {
+    "input_tokens": 1595,
+    "output_tokens": 642,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r0/f0",
+     "path": "git/repo/base.py",
+     "line": 184,
+     "category": "security",
+     "severity": "high",
+     "title": "Removal of unsafe protocol validation",
+     "explanation": "The previous implementation prevented cloning URLs with unsafe protocols (e.g., \"ext::\") unless the caller explicitly set unsafe_protocols=True, raising UnsafeOptionsUsedError otherwise. Deleting the unsafe_options check allows arbitrary unsafe protocols to be used silently, exposing the application to command injection or remote code execution. Re\u2011introduce the validation (or at least a warning) and keep the UnsafeOptionsUsedError exception."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r0/f1",
+     "path": "git/repo/base.py",
+     "line": 215,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "API break: removed unsafe_protocols argument",
+     "explanation": "The clone() and clone_from() methods no longer accept the unsafe_protocols keyword. Existing callers that pass this argument will now raise a TypeError, breaking backward compatibility. Restore the unsafe_protocols parameter (defaulting to False) and forward it to the internal validation logic, or document the breaking change and provide a migration path."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks and related exception introduces security regression and potential API breakage.",
+   "usage": {
+    "input_tokens": 1595,
+    "output_tokens": 1129,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r1/f0",
+     "path": "git/repo/base.py",
+     "line": 215,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe protocol validation removed",
+     "explanation": "The previous implementation rejected URLs containing unsafe protocols (e.g., `ext::`) unless the caller set `unsafe_protocols=True`. The recent change deletes the `unsafe_options` check, allowing such URLs to be used silently. This re\u2011enables a known security issue where malicious repositories can execute arbitrary commands on the client. Re\u2011introduce the validation (or at least a warning) and keep the `unsafe_protocols` flag to require explicit opt\u2011in."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r1/f1",
+     "path": "git/repo/base.py",
+     "line": 242,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe protocol validation removed from clone_from",
+     "explanation": "The same validation was removed from the classmethod that clones from a URL, exposing the same risk for `Repo.clone_from`. Restore the check or keep the `unsafe_protocols` parameter to force callers to acknowledge the risk."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r1/f2",
+     "path": "git/exc.py",
+     "line": 37,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Removed `UnsafeOptionsUsedError` exception class",
+     "explanation": "The exception class `UnsafeOptionsUsedError` was deleted, but it may still be imported by external code or other modules in the package. This will raise `ImportError` at runtime, breaking backward compatibility. Either keep the class (perhaps as a subclass of `GitError`) or provide a compatibility shim that raises a clear deprecation warning."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Removal of unsafe protocol validation introduces a security risk.",
+   "usage": {
+    "input_tokens": 1595,
+    "output_tokens": 576,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L0/r2/f0",
+     "path": "git/repo/base.py",
+     "line": 210,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe protocol options no longer validated",
+     "explanation": "The recent changes removed the `unsafe_options` check and the `unsafe_protocols` flag from `Repo.clone` and `Repo.clone_from`. This allows callers to pass URLs or clone options that use unsafe protocols (e.g., `ext::`) or dangerous `--config protocol.*` settings without explicit approval, re\u2011introducing the security vulnerability the original code prevented. Re\u2011introduce the validation logic (or a safer alternative) and keep the `unsafe_protocols` parameter to require explicit opt\u2011in for such operations."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 0,
+   "error": "rate_limited: retry-after 2705s (quota)",
    "summary": "",
    "usage": {},
    "findings": []

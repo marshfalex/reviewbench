@@ -6,15 +6,15 @@ Created 2026-11-27T00:42:15+00:00, k=3 runs per case and level, status `partial`
 
 | level | difficulty | any-of-k recall | all-of-k recall | per-run recall | precision (adjudicated) | control runs w/ FP | unadjudicated | errors |
 |---|---|---|---|---|---|---|---|---|
-| L0 | all | 20/22 (91%, 72–98) | 20/22 (91%, 72–98) | 60/66 runs; per-bug mean 91% (95% CI 72–97, 22 bugs) | not measured (13 of 16 unjudged) | 3/12 (25%, 9–53) | 13 | 0 |
-| L0 | easy | 14/14 (100%, 78–100) | 14/14 (100%, 78–100) | 42/42 runs; per-bug mean 100% (95% CI 78–100, 14 bugs) | not measured (13 of 16 unjudged) | 3/12 (25%, 9–53) | 7 | 0 |
-| L0 | hard | 6/8 (75%, 41–93) | 6/8 (75%, 41–93) | 18/24 runs; per-bug mean 75% (95% CI 41–93, 8 bugs) | not measured (13 of 16 unjudged) | n/a | 6 | 0 |
-| L1 | all | 19/21 (90%, 71–97) | 19/21 (90%, 71–97) | 57/63 runs; per-bug mean 90% (95% CI 71–97, 21 bugs) | not measured (14 of 16 unjudged) | 2/11 (18%, 5–48) | 14 | 2 |
-| L1 | easy | 14/14 (100%, 78–100) | 14/14 (100%, 78–100) | 42/42 runs; per-bug mean 100% (95% CI 78–100, 14 bugs) | not measured (14 of 16 unjudged) | 2/11 (18%, 5–48) | 4 | 1 |
-| L1 | hard | 5/7 (71%, 36–92) | 5/7 (71%, 36–92) | 15/21 runs; per-bug mean 71% (95% CI 36–92, 7 bugs) | not measured (14 of 16 unjudged) | n/a | 10 | 1 |
-| L2 | all | 20/21 (95%, 77–99) | 20/21 (95%, 77–99) | 60/63 runs; per-bug mean 95% (95% CI 77–99, 21 bugs) | not measured (13 of 13 unjudged) | 0/12 (0%, 0–24) | 13 | 0 |
-| L2 | easy | 14/14 (100%, 78–100) | 14/14 (100%, 78–100) | 42/42 runs; per-bug mean 100% (95% CI 78–100, 14 bugs) | not measured (13 of 13 unjudged) | 0/12 (0%, 0–24) | 6 | 0 |
-| L2 | hard | 6/7 (86%, 49–97) | 6/7 (86%, 49–97) | 18/21 runs; per-bug mean 86% (95% CI 49–97, 7 bugs) | not measured (13 of 13 unjudged) | n/a | 7 | 0 |
+| L0 | all | 21/23 (91%, 73–98) | 21/23 (91%, 73–98) | 63/69 runs; per-bug mean 91% (95% CI 73–98, 23 bugs) | not measured (16 of 19 unjudged) | 3/12 (25%, 9–53) | 16 | 0 |
+| L0 | easy | 15/15 (100%, 80–100) | 15/15 (100%, 80–100) | 45/45 runs; per-bug mean 100% (95% CI 80–100, 15 bugs) | not measured (16 of 19 unjudged) | 3/12 (25%, 9–53) | 10 | 0 |
+| L0 | hard | 6/8 (75%, 41–93) | 6/8 (75%, 41–93) | 18/24 runs; per-bug mean 75% (95% CI 41–93, 8 bugs) | not measured (16 of 19 unjudged) | n/a | 6 | 0 |
+| L1 | all | 20/22 (91%, 72–98) | 20/22 (91%, 72–98) | 58/64 runs; per-bug mean 91% (95% CI 72–97, 22 bugs) | not measured (14 of 16 unjudged) | 2/11 (18%, 5–48) | 14 | 4 |
+| L1 | easy | 14/14 (100%, 78–100) | 14/14 (100%, 78–100) | 42/42 runs; per-bug mean 100% (95% CI 78–100, 14 bugs) | not measured (14 of 16 unjudged) | 2/11 (18%, 5–48) | 4 | 2 |
+| L1 | hard | 6/8 (75%, 41–93) | 6/8 (75%, 41–93) | 16/22 runs; per-bug mean 75% (95% CI 41–93, 8 bugs) | not measured (14 of 16 unjudged) | n/a | 10 | 2 |
+| L2 | all | 21/22 (95%, 78–99) | 21/22 (95%, 78–99) | 62/65 runs; per-bug mean 95% (95% CI 78–99, 22 bugs) | not measured (14 of 14 unjudged) | 0/12 (0%, 0–24) | 14 | 1 |
+| L2 | easy | 14/14 (100%, 78–100) | 14/14 (100%, 78–100) | 42/42 runs; per-bug mean 100% (95% CI 78–100, 14 bugs) | not measured (14 of 14 unjudged) | 0/12 (0%, 0–24) | 6 | 0 |
+| L2 | hard | 7/8 (88%, 53–98) | 7/8 (88%, 53–98) | 20/23 runs; per-bug mean 88% (95% CI 53–98, 8 bugs) | not measured (14 of 14 unjudged) | n/a | 8 | 1 |
 
 ## Per case
 
@@ -96,4 +96,7 @@ Created 2026-11-27T00:42:15+00:00, k=3 runs per case and level, status `partial`
 | py-0025-jinja2-xmlattr-key-injection | L1 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
 | py-0025-jinja2-xmlattr-key-injection | L2 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
 | py-0026-aiohttp-static-symlink-traversal | L0 | 3/3 | 6 | 0 | 0 | 0 | 0 | 0 |
-| py-0026-aiohttp-static-symlink-traversal | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 1 |
+| py-0026-aiohttp-static-symlink-traversal | L1 | 1/1 | 2 | 0 | 0 | 0 | 0 | 2 |
+| py-0026-aiohttp-static-symlink-traversal | L2 | 2/2 | 4 | 0 | 0 | 0 | 1 | 1 |
+| py-0027-gitpython-clone-ext-protocol-rce | L0 | 3/3 | 3 | 0 | 0 | 0 | 3 | 0 |
+| py-0027-gitpython-clone-ext-protocol-rce | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 1 |

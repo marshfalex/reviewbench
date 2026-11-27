@@ -6,15 +6,15 @@ Created 2026-11-27T00:42:15+00:00, k=3 runs per case and level, status `partial`
 
 | level | difficulty | any-of-k recall | all-of-k recall | per-run recall | precision (adjudicated) | control runs w/ FP | unadjudicated | errors |
 |---|---|---|---|---|---|---|---|---|
-| L0 | all | 21/23 (91%, 73–98) | 21/23 (91%, 73–98) | 63/69 runs; per-bug mean 91% (95% CI 73–98, 23 bugs) | not measured (16 of 19 unjudged) | 3/12 (25%, 9–53) | 16 | 0 |
-| L0 | easy | 15/15 (100%, 80–100) | 15/15 (100%, 80–100) | 45/45 runs; per-bug mean 100% (95% CI 80–100, 15 bugs) | not measured (16 of 19 unjudged) | 3/12 (25%, 9–53) | 10 | 0 |
-| L0 | hard | 6/8 (75%, 41–93) | 6/8 (75%, 41–93) | 18/24 runs; per-bug mean 75% (95% CI 41–93, 8 bugs) | not measured (16 of 19 unjudged) | n/a | 6 | 0 |
-| L1 | all | 20/22 (91%, 72–98) | 20/22 (91%, 72–98) | 58/64 runs; per-bug mean 91% (95% CI 72–97, 22 bugs) | not measured (14 of 16 unjudged) | 2/11 (18%, 5–48) | 14 | 4 |
-| L1 | easy | 14/14 (100%, 78–100) | 14/14 (100%, 78–100) | 42/42 runs; per-bug mean 100% (95% CI 78–100, 14 bugs) | not measured (14 of 16 unjudged) | 2/11 (18%, 5–48) | 4 | 2 |
-| L1 | hard | 6/8 (75%, 41–93) | 6/8 (75%, 41–93) | 16/22 runs; per-bug mean 75% (95% CI 41–93, 8 bugs) | not measured (14 of 16 unjudged) | n/a | 10 | 2 |
-| L2 | all | 21/22 (95%, 78–99) | 21/22 (95%, 78–99) | 62/65 runs; per-bug mean 95% (95% CI 78–99, 22 bugs) | not measured (14 of 14 unjudged) | 0/12 (0%, 0–24) | 14 | 1 |
-| L2 | easy | 14/14 (100%, 78–100) | 14/14 (100%, 78–100) | 42/42 runs; per-bug mean 100% (95% CI 78–100, 14 bugs) | not measured (14 of 14 unjudged) | 0/12 (0%, 0–24) | 6 | 0 |
-| L2 | hard | 7/8 (88%, 53–98) | 7/8 (88%, 53–98) | 20/23 runs; per-bug mean 88% (95% CI 53–98, 8 bugs) | not measured (14 of 14 unjudged) | n/a | 8 | 1 |
+| L0 | all | 22/27 (81%, 63–92) | 22/27 (81%, 63–92) | 66/81 runs; per-bug mean 81% (95% CI 63–92, 27 bugs) | not measured (26 of 29 unjudged) | 3/15 (20%, 7–45) | 26 | 0 |
+| L0 | easy | 15/15 (100%, 80–100) | 15/15 (100%, 80–100) | 45/45 runs; per-bug mean 100% (95% CI 80–100, 15 bugs) | not measured (26 of 29 unjudged) | 3/12 (25%, 9–53) | 10 | 0 |
+| L0 | hard | 7/12 (58%, 32–81) | 7/12 (58%, 32–81) | 21/36 runs; per-bug mean 58% (95% CI 32–81, 12 bugs) | not measured (26 of 29 unjudged) | 0/3 (0%, 0–56) | 16 | 0 |
+| L1 | all | 21/27 (78%, 59–89) | 21/27 (78%, 59–89) | 60/78 runs; per-bug mean 78% (95% CI 59–89, 27 bugs) | not measured (32 of 34 unjudged) | 2/14 (14%, 4–40) | 32 | 4 |
+| L1 | easy | 14/15 (93%, 70–99) | 14/15 (93%, 70–99) | 42/45 runs; per-bug mean 93% (95% CI 70–99, 15 bugs) | not measured (32 of 34 unjudged) | 2/11 (18%, 5–48) | 4 | 1 |
+| L1 | hard | 7/12 (58%, 32–81) | 7/12 (58%, 32–81) | 18/33 runs; per-bug mean 58% (95% CI 32–81, 12 bugs) | not measured (32 of 34 unjudged) | 0/3 (0%, 0–56) | 28 | 3 |
+| L2 | all | 24/26 (92%, 76–98) | 23/26 (88%, 71–96) | 69/77 runs; per-bug mean 90% (95% CI 73–97, 26 bugs) | not measured (20 of 20 unjudged) | 0/15 (0%, 0–20) | 20 | 1 |
+| L2 | easy | 15/15 (100%, 80–100) | 14/15 (93%, 70–99) | 43/45 runs; per-bug mean 96% (95% CI 73–99, 15 bugs) | not measured (20 of 20 unjudged) | 0/12 (0%, 0–24) | 6 | 0 |
+| L2 | hard | 9/11 (82%, 52–95) | 9/11 (82%, 52–95) | 26/32 runs; per-bug mean 82% (95% CI 52–95, 11 bugs) | not measured (20 of 20 unjudged) | 0/3 (0%, 0–56) | 14 | 1 |
 
 ## Per case
 
@@ -99,4 +99,19 @@ Created 2026-11-27T00:42:15+00:00, k=3 runs per case and level, status `partial`
 | py-0026-aiohttp-static-symlink-traversal | L1 | 1/1 | 2 | 0 | 0 | 0 | 0 | 2 |
 | py-0026-aiohttp-static-symlink-traversal | L2 | 2/2 | 4 | 0 | 0 | 0 | 1 | 1 |
 | py-0027-gitpython-clone-ext-protocol-rce | L0 | 3/3 | 3 | 0 | 0 | 0 | 3 | 0 |
-| py-0027-gitpython-clone-ext-protocol-rce | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 1 |
+| py-0027-gitpython-clone-ext-protocol-rce | L1 | 0/3 | 0 | 3 | 0 | 0 | 0 | 0 |
+| py-0027-gitpython-clone-ext-protocol-rce | L2 | 1/3 | 1 | 2 | 0 | 0 | 0 | 0 |
+| py-0028-truthy-permission-decision | L0 | 0/3 | 0 | 0 | 0 | 0 | 0 | 0 |
+| py-0028-truthy-permission-decision | L1 | 0/3 | 0 | 0 | 0 | 0 | 0 | 0 |
+| py-0028-truthy-permission-decision | L2 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
+| py-0029-ttl-seconds-vs-ms-clock | L0 | 0/3 | 0 | 0 | 0 | 0 | 0 | 0 |
+| py-0029-ttl-seconds-vs-ms-clock | L1 | 0/3 | 0 | 0 | 0 | 0 | 3 | 0 |
+| py-0029-ttl-seconds-vs-ms-clock | L2 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
+| py-0030-clean-sort-column-whitelist | L0 | control | 0 | 0 | 0 | 0 | 3 | 0 |
+| py-0030-clean-sort-column-whitelist | L1 | control | 0 | 0 | 0 | 0 | 6 | 0 |
+| py-0030-clean-sort-column-whitelist | L2 | control | 0 | 0 | 0 | 0 | 0 | 0 |
+| py-0031-refactor-drops-login-required | L0 | 0/3 | 0 | 0 | 0 | 0 | 6 | 0 |
+| py-0031-refactor-drops-login-required | L1 | 0/3 | 0 | 0 | 0 | 0 | 6 | 0 |
+| py-0031-refactor-drops-login-required | L2 | 0/3 | 0 | 0 | 0 | 0 | 6 | 0 |
+| py-0032-refactor-pagination-off-by-one | L0 | 3/3 | 3 | 0 | 0 | 0 | 1 | 0 |
+| py-0032-refactor-pagination-off-by-one | L1 | 2/2 | 2 | 0 | 0 | 0 | 3 | 1 |

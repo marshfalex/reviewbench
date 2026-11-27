@@ -7444,7 +7444,1112 @@
    "case": "py-0027-gitpython-clone-ext-protocol-rce",
    "level": "L1",
    "run": 0,
-   "error": "rate_limited: retry-after 2399s (quota)",
+   "error": null,
+   "summary": "The PR removes the `unsafe_protocols` parameter and the `UnsafeOptionsUsedError` exception, which disables the security check preventing the use of unsafe git protocols (like `ext::`) and options (like `--upload-pack` or `protocol.` config) during cloning. This exposes the application to arbitrary command execution and other security risks.",
+   "usage": {
+    "input_tokens": 5440,
+    "output_tokens": 231,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r0/f0",
+     "path": "git/repo/base.py",
+     "line": 217,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of unsafe protocol protection",
+     "explanation": "The `unsafe_protocols` parameter and the `unsafe_options` check have been removed from `clone` and `clone_from`. This allows users to pass unsafe URLs (e.g., `ext::sh -c 'malicious_command'`) or options (e.g., `--upload-pack`) without any warning or exception, leading to potential arbitrary command execution or data exfiltration."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes the `unsafe_protocols` parameter and the `UnsafeOptionsUsedError` exception, which disables the security check that prevents cloning from `ext::` URLs or using `--upload-pack` and `protocol.` configuration options. This reintroduces a known vulnerability (CVE-2024-32021) allowing arbitrary command execution via malicious git URLs.",
+   "usage": {
+    "input_tokens": 5440,
+    "output_tokens": 249,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r1/f0",
+     "path": "git/repo/base.py",
+     "line": 217,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of unsafe protocol validation allows arbitrary command execution",
+     "explanation": "The `unsafe_protocols` parameter and the `unsafe_options` check have been removed from `clone` and `clone_from`. This allows users to pass `ext::` URLs or `--upload-pack` options, which can lead to arbitrary command execution (CVE-2024-32021). The check should be restored or replaced with a more robust mechanism to prevent these unsafe operations."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes the `unsafe_protocols` parameter and the `UnsafeOptionsUsedError` exception, which disables the security check that prevents cloning from `ext::` URLs or using `--upload-pack` and `protocol.` configuration options. This reintroduces a known vulnerability (CVE-2024-32021) allowing arbitrary command execution via malicious git URLs.",
+   "usage": {
+    "input_tokens": 5440,
+    "output_tokens": 249,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r2/f0",
+     "path": "git/repo/base.py",
+     "line": 217,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of unsafe protocol validation allows arbitrary command execution",
+     "explanation": "The `unsafe_protocols` parameter and the `unsafe_options` check have been removed from `clone` and `clone_from`. This allows users to pass `ext::` URLs or `--upload-pack` options, which can lead to arbitrary command execution (CVE-2024-32021). The check should be restored or replaced with a more robust mechanism to prevent these unsafe operations."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes the `unsafe_protocols` parameter and the `UnsafeOptionsUsedError` exception, which disables the security check that prevents cloning from `ext::` URLs or using `--upload-pack` and `protocol.` configuration options. This reintroduces a known vulnerability (CVE-2024-32021) allowing arbitrary command execution via malicious git URLs.",
+   "usage": {
+    "input_tokens": 5440,
+    "output_tokens": 249,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r0/f0",
+     "path": "git/repo/base.py",
+     "line": 217,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of unsafe protocol validation allows arbitrary command execution",
+     "explanation": "The `unsafe_protocols` parameter and the `unsafe_options` check have been removed from `clone` and `clone_from`. This allows users to pass `ext::` URLs or `--upload-pack` options, which can lead to arbitrary command execution (CVE-2024-32021). The check should be restored or replaced with a more robust mechanism to prevent these unsafe operations."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes the `unsafe_protocols` parameter and the `UnsafeOptionsUsedError` exception, which disables the security check preventing the use of unsafe git protocols (like `ext::`) and options (like `--upload-pack` or `protocol.` config) during cloning. This exposes the application to arbitrary code execution and data exfiltration.",
+   "usage": {
+    "input_tokens": 5440,
+    "output_tokens": 225,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r1/f0",
+     "path": "git/repo/base.py",
+     "line": 217,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of unsafe protocol protection",
+     "explanation": "The `unsafe_protocols` parameter and the `unsafe_options` check have been removed from `clone` and `clone_from`. This allows users to pass `ext::` URLs or `--upload-pack` options, which can lead to arbitrary code execution or data exfiltration. The security check should be restored or replaced with a more robust mechanism."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes the `unsafe_protocols` check and the `UnsafeOptionsUsedError` exception, allowing `git clone` to be invoked with unsafe protocols (e.g., `ext::`) or options (e.g., `--upload-pack`, `protocol.` config) without explicit opt-in. This re-introduces a security vulnerability where arbitrary command execution or protocol manipulation can occur via crafted URLs or options.",
+   "usage": {
+    "input_tokens": 5440,
+    "output_tokens": 244,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r2/f0",
+     "path": "git/repo/base.py",
+     "line": 200,
+     "category": "security",
+     "severity": "critical",
+     "title": "Removal of unsafe protocol protection allows arbitrary command execution",
+     "explanation": "The `clone` and `clone_from` methods no longer check for unsafe protocols (like `ext::`) or dangerous options (like `--upload-pack` or `protocol.` config) before invoking `git clone`. This allows an attacker to provide a malicious URL or options that can lead to arbitrary command execution or bypass security controls. The fix is to restore the `unsafe_protocols` parameter and the validation logic that raises `UnsafeOptionsUsedError` when unsafe inputs are detected without explicit permission."
+    }
+   ]
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR adds an `update_doc` function that modifies a document's body. The implementation correctly checks permissions before modifying the document and saves it to the store. No significant bugs or security vulnerabilities were identified in the changed lines.",
+   "usage": {
+    "input_tokens": 658,
+    "output_tokens": 62,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR adds an `update_doc` function that modifies a document's body. The implementation correctly checks permissions before modifying the document and saves it to the store. No significant bugs or security vulnerabilities were identified in the changed lines.",
+   "usage": {
+    "input_tokens": 658,
+    "output_tokens": 62,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR adds an `update_doc` function that modifies a document's body. The implementation correctly checks permissions before modifying the document and saves it to the store. No significant bugs or security vulnerabilities were identified in the changed lines.",
+   "usage": {
+    "input_tokens": 658,
+    "output_tokens": 62,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR adds an `update_doc` function with permission checks. The implementation appears correct and secure, with no obvious bugs or vulnerabilities introduced.",
+   "usage": {
+    "input_tokens": 812,
+    "output_tokens": 39,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR adds an `update_doc` function with permission checks. The implementation appears correct and secure, with no obvious bugs or vulnerabilities introduced.",
+   "usage": {
+    "input_tokens": 812,
+    "output_tokens": 39,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR adds an `update_doc` function with permission checks. The implementation appears correct and secure, with proper authorization and error handling. No significant issues found.",
+   "usage": {
+    "input_tokens": 812,
+    "output_tokens": 43,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a document update function but incorrectly treats a `Decision` object as a boolean, which will always evaluate to `True` and bypass all permission checks.",
+   "usage": {
+    "input_tokens": 961,
+    "output_tokens": 168,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0028-truthy-permission-decision/L2/r0/f0",
+     "path": "app/docs.py",
+     "line": 13,
+     "category": "security",
+     "severity": "critical",
+     "title": "Permission check bypassed due to incorrect boolean evaluation",
+     "explanation": "The `permissions.can_edit` function returns a `Decision` dataclass instance, not a boolean. In Python, a non-empty object is always truthy, so `if not permissions.can_edit(user, doc):` will never raise `Forbidden`. This allows any user to edit any document. Fix: change the condition to `if not permissions.can_edit(user, doc).allowed:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces a document update function but incorrectly treats a `Decision` object as a boolean, which will always evaluate to `True` and bypass all permission checks.",
+   "usage": {
+    "input_tokens": 961,
+    "output_tokens": 167,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0028-truthy-permission-decision/L2/r1/f0",
+     "path": "app/docs.py",
+     "line": 13,
+     "category": "security",
+     "severity": "critical",
+     "title": "Permission check bypassed due to incorrect boolean evaluation",
+     "explanation": "The `permissions.can_edit` function returns a `Decision` dataclass instance, not a boolean. In Python, a non-empty object is always truthy, so `if not permissions.can_edit(user, doc):` will never raise `Forbidden`, allowing any user to edit any document. Fix: change the condition to `if not permissions.can_edit(user, doc).allowed:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR introduces a document update function but incorrectly treats a `Decision` object as a boolean, which will always evaluate to `True` and bypass all permission checks.",
+   "usage": {
+    "input_tokens": 961,
+    "output_tokens": 168,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0028-truthy-permission-decision/L2/r2/f0",
+     "path": "app/docs.py",
+     "line": 13,
+     "category": "security",
+     "severity": "critical",
+     "title": "Permission check bypassed due to incorrect boolean evaluation",
+     "explanation": "The `permissions.can_edit` function returns a `Decision` dataclass instance, not a boolean. In Python, a non-empty object is always truthy, so `if not permissions.can_edit(user, doc):` will never raise `Forbidden`. This allows any user to edit any document. Fix: change the condition to `if not permissions.can_edit(user, doc).allowed:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Adds session expiration logic to the session store. The implementation is generally sound, but it introduces a potential race condition where a session could be deleted while still being used, and it relies on the store's delete operation being atomic with the get.",
+   "usage": {
+    "input_tokens": 691,
+    "output_tokens": 65,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Adds session expiration logic to the session store. The implementation is generally sound, but it introduces a potential race condition where a session could be deleted while still being used, and it relies on the store's delete operation being atomic with the get.",
+   "usage": {
+    "input_tokens": 691,
+    "output_tokens": 65,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Adds session expiration logic to the session store. The implementation is generally sound, but it introduces a potential race condition where a session could be deleted while still being used, and it relies on the store's delete operation being atomic with the get.",
+   "usage": {
+    "input_tokens": 691,
+    "output_tokens": 65,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces session expiration logic. The implementation is generally sound, but it relies on the `store` object having a `delete` method, which is not guaranteed by the interface used in `create_session` (which only uses `put`). If the store does not support deletion, this will raise an AttributeError.",
+   "usage": {
+    "input_tokens": 861,
+    "output_tokens": 231,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0029-ttl-seconds-vs-ms-clock/L1/r0/f0",
+     "path": "app/sessions.py",
+     "line": 18,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Potential AttributeError if store does not support delete",
+     "explanation": "The `get_session` function calls `store.delete(token)`. However, the `create_session` function only uses `store.put`. If the `store` implementation does not provide a `delete` method (e.g., if it's a simple dictionary wrapper that only supports get/put), this will crash. Ensure the store interface supports deletion or handle the case where it doesn't."
+    }
+   ]
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces session expiration logic. The implementation is generally sound, but it relies on the `store` object having a `delete` method, which is not guaranteed by the interface used in `create_session` (which only uses `put`). If the store does not support deletion, this will raise an AttributeError.",
+   "usage": {
+    "input_tokens": 861,
+    "output_tokens": 231,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0029-ttl-seconds-vs-ms-clock/L1/r1/f0",
+     "path": "app/sessions.py",
+     "line": 18,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Potential AttributeError if store does not support delete",
+     "explanation": "The `get_session` function calls `store.delete(token)`. However, the `create_session` function only uses `store.put`. If the `store` implementation does not provide a `delete` method (e.g., if it's a simple dictionary wrapper that only supports get/put), this will crash. Ensure the store interface supports deletion or handle the case where it doesn't."
+    }
+   ]
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR introduces session expiration logic. The implementation is generally sound, but it relies on the `store` object having a `delete` method, which is not guaranteed by the interface used in `create_session` (which only uses `put`). If the store does not support deletion, this will raise an AttributeError.",
+   "usage": {
+    "input_tokens": 861,
+    "output_tokens": 240,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0029-ttl-seconds-vs-ms-clock/L1/r2/f0",
+     "path": "app/sessions.py",
+     "line": 18,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Potential AttributeError if store does not support delete",
+     "explanation": "The `get_session` function calls `store.delete(token)`. However, the `create_session` function only uses `store.put`. If the `store` implementation does not provide a `delete` method (e.g., if it's a simple dictionary wrapper that only supports get/put), this will raise an `AttributeError` when a session expires. Ensure the store interface supports deletion or handle the case where it doesn't."
+    }
+   ]
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces session expiration but contains a critical unit mismatch between the clock (milliseconds) and the TTL configuration (seconds), which will cause sessions to expire almost immediately.",
+   "usage": {
+    "input_tokens": 973,
+    "output_tokens": 221,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0029-ttl-seconds-vs-ms-clock/L2/r0/f0",
+     "path": "app/sessions.py",
+     "line": 10,
+     "category": "correctness",
+     "severity": "critical",
+     "title": "Unit mismatch between clock and TTL",
+     "explanation": "The `clock.now()` function returns time in milliseconds, but `SESSION_TTL_SECONDS` is in seconds. Adding them directly (`now + SESSION_TTL_SECONDS`) results in an expiration time that is only 28800 milliseconds (28.8 seconds) in the future, rather than 8 hours. This will cause all sessions to expire almost immediately. The fix is to convert the TTL to milliseconds: `now + SESSION_TTL_SECONDS * 1000`."
+    }
+   ]
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces session expiration but contains a critical unit mismatch between the clock (milliseconds) and the TTL configuration (seconds), which will cause sessions to expire almost immediately.",
+   "usage": {
+    "input_tokens": 973,
+    "output_tokens": 221,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0029-ttl-seconds-vs-ms-clock/L2/r1/f0",
+     "path": "app/sessions.py",
+     "line": 10,
+     "category": "correctness",
+     "severity": "critical",
+     "title": "Unit mismatch between clock and TTL",
+     "explanation": "The `clock.now()` function returns time in milliseconds, but `SESSION_TTL_SECONDS` is in seconds. Adding them directly (`now + SESSION_TTL_SECONDS`) results in an expiration time that is only 28800 milliseconds (28.8 seconds) in the future, rather than 8 hours. This will cause all sessions to expire almost immediately. The fix is to convert the TTL to milliseconds: `now + SESSION_TTL_SECONDS * 1000`."
+    }
+   ]
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR introduces session expiration but contains a critical unit mismatch between the clock (milliseconds) and the TTL configuration (seconds), which will cause sessions to expire almost immediately.",
+   "usage": {
+    "input_tokens": 973,
+    "output_tokens": 221,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0029-ttl-seconds-vs-ms-clock/L2/r2/f0",
+     "path": "app/sessions.py",
+     "line": 10,
+     "category": "correctness",
+     "severity": "critical",
+     "title": "Unit mismatch between clock and TTL",
+     "explanation": "The `clock.now()` function returns time in milliseconds, but `SESSION_TTL_SECONDS` is in seconds. Adding them directly (`now + SESSION_TTL_SECONDS`) results in an expiration time that is only 28800 milliseconds (28.8 seconds) in the future, rather than 8 hours. This will cause all sessions to expire almost immediately. The fix is to convert the TTL to milliseconds: `now + SESSION_TTL_SECONDS * 1000`."
+    }
+   ]
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a dynamic SQL ORDER BY clause using an f-string. While the comment claims the input is safe, the `SortColumn` enum is not shown to restrict values to safe identifiers, and the pattern is fragile. More critically, the `limit` parameter is bound correctly, but the `sort` value is interpolated directly. If `SortColumn` is ever extended or if a subclass is used, this becomes a SQL injection vector. Additionally, the `id` tie-breaker is added, which is good, but the primary risk is the f-string interpolation of a non-literal value.",
+   "usage": {
+    "input_tokens": 625,
+    "output_tokens": 277,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L0/r0/f0",
+     "path": "app/products.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "SQL Injection via f-string interpolation of sort column",
+     "explanation": "The `sort.value` is interpolated directly into the SQL string. Although the comment states it is a `SortColumn` enum, if the enum values are not strictly validated against a whitelist of safe identifiers (e.g., 'name', 'price_cents'), or if the enum is subclassed/modified, this becomes a SQL injection vulnerability. A safer approach is to use a dictionary mapping `SortColumn` to safe SQL fragments, or to validate the value against a strict allow-list before interpolation."
+    }
+   ]
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces a dynamic ORDER BY clause using an f-string. While the comment claims the input is safe, the `SortColumn` enum is not shown to restrict values to safe identifiers, and the pattern is fragile. More critically, the `limit` parameter is bound correctly, but the `sort` value is interpolated directly. If `SortColumn` is ever extended or if a subclass is passed, this becomes a SQL injection vector. Additionally, the `id` tie-breaker is added, which is good, but the primary risk is the f-string interpolation of a non-literal value.",
+   "usage": {
+    "input_tokens": 625,
+    "output_tokens": 302,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L0/r1/f0",
+     "path": "app/products.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Potential SQL Injection via f-string interpolation",
+     "explanation": "The `sort.value` is interpolated directly into the SQL query string. Although the comment states it is a `SortColumn` enum, if the enum values are not strictly validated against a whitelist of safe column names (e.g., 'name', 'price_cents'), or if a malicious/buggy enum value is introduced, this becomes a SQL injection vulnerability. The safe pattern is to map the enum to a hardcoded string in the query or use a whitelist check before interpolation. For example: `allowed = {'name': 'name', 'price_cents': 'price_cents'}; col = allowed[sort.value]`."
+    }
+   ]
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR introduces a dynamic ORDER BY clause using an f-string. While the comment claims the input is safe, the `SortColumn` enum is not shown to restrict values to safe identifiers, and the pattern is fragile. More critically, the `limit` parameter is bound correctly, but the `sort` value is interpolated directly. If `SortColumn` is ever extended or if a subclass is used, this becomes a SQL injection vector. Additionally, the `id` tie-breaker is added, which is good, but the primary risk is the f-string interpolation of a non-literal value.",
+   "usage": {
+    "input_tokens": 625,
+    "output_tokens": 304,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L0/r2/f0",
+     "path": "app/products.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Potential SQL Injection via f-string interpolation",
+     "explanation": "The `sort.value` is interpolated directly into the SQL query string. Although the comment states it is a `SortColumn` enum, if the enum values are not strictly validated against a whitelist of safe column names (e.g., 'name', 'price_cents'), or if the enum is subclassed/modified, this becomes a SQL injection vulnerability. A safer approach is to use a dictionary mapping `SortColumn` to validated column names, or ensure the enum values are hardcoded strings that are known to be safe. Currently, the code relies on the assumption that `sort.value` is always safe, which is a maintainability and security risk."
+    }
+   ]
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a new `sort` parameter to `list_products` and interpolates `sort.value` directly into the SQL query string. While the comment claims `sort` is a `SortColumn` enum and never raw user input, the function signature does not enforce this type at runtime, and the `limit` parameter is also not validated. This creates a potential SQL injection vulnerability if the function is called with a non-enum string, and a potential DoS vulnerability if `limit` is negative or excessively large.",
+   "usage": {
+    "input_tokens": 734,
+    "output_tokens": 371,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L1/r0/f0",
+     "path": "app/products.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Potential SQL Injection via unvalidated sort parameter",
+     "explanation": "The `sort` parameter is interpolated directly into the SQL query string using an f-string. Although the type hint is `SortColumn`, Python does not enforce type hints at runtime. If this function is called with a raw string (e.g., from a web framework that passes query parameters directly), it is vulnerable to SQL injection. The comment claims it is 'never raw user input', but the function itself does not guarantee this. Fix: Validate that `sort` is an instance of `SortColumn` at the start of the function, or use a whitelist of allowed column names."
+    },
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L1/r0/f1",
+     "path": "app/products.py",
+     "line": 7,
+     "category": "security",
+     "severity": "medium",
+     "title": "Unvalidated limit parameter allows DoS",
+     "explanation": "The `limit` parameter is passed directly to the SQL query without validation. A negative value or an extremely large value could cause performance issues or unexpected behavior. Fix: Validate that `limit` is a positive integer and cap it at a reasonable maximum."
+    }
+   ]
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces a new `sort` parameter to `list_products` and interpolates `sort.value` directly into the SQL query string. While the comment claims `sort` is a `SortColumn` enum and never raw user input, the function signature does not enforce this type at runtime, and the `limit` parameter is also not validated. If a caller passes a raw string or an unvalidated integer, this leads to SQL injection or DoS.",
+   "usage": {
+    "input_tokens": 734,
+    "output_tokens": 366,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L1/r1/f0",
+     "path": "app/products.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "SQL injection risk due to unvalidated `sort` parameter",
+     "explanation": "The `sort` parameter is interpolated directly into the SQL query via an f-string. Although the type hint is `SortColumn`, Python does not enforce type hints at runtime. If a caller passes a raw string (e.g., from user input) instead of a `SortColumn` enum, it results in SQL injection. Fix: Validate that `sort` is an instance of `SortColumn` at the start of the function, or use a whitelist of allowed column names."
+    },
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L1/r1/f1",
+     "path": "app/products.py",
+     "line": 7,
+     "category": "security",
+     "severity": "medium",
+     "title": "Unvalidated `limit` parameter allows DoS",
+     "explanation": "The `limit` parameter is passed directly to the SQL query without validation. A caller could pass a very large integer (e.g., `10**9`) or a negative number, potentially causing excessive memory usage or unexpected behavior. Fix: Validate that `limit` is a positive integer within a reasonable range (e.g., 1-1000)."
+    }
+   ]
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR introduces a new `sort` parameter to `list_products` and interpolates `sort.value` directly into the SQL query string. While the comment claims `sort` is a `SortColumn` enum and never raw user input, the function signature does not enforce this type at runtime, and the `limit` parameter is also not validated. This creates a potential SQL injection vulnerability if the function is called with a non-enum string, and a potential DoS vulnerability if `limit` is negative or excessively large.",
+   "usage": {
+    "input_tokens": 734,
+    "output_tokens": 371,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L1/r2/f0",
+     "path": "app/products.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Potential SQL Injection via unvalidated sort parameter",
+     "explanation": "The `sort` parameter is interpolated directly into the SQL query string using an f-string. Although the type hint is `SortColumn`, Python does not enforce type hints at runtime. If this function is called with a raw string (e.g., from a web framework that passes query parameters directly), it is vulnerable to SQL injection. The comment claims it is 'never raw user input', but the function itself does not guarantee this. Fix: Validate that `sort` is an instance of `SortColumn` at the start of the function, or use a whitelist of allowed column names."
+    },
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L1/r2/f1",
+     "path": "app/products.py",
+     "line": 7,
+     "category": "security",
+     "severity": "medium",
+     "title": "Unvalidated limit parameter allows DoS",
+     "explanation": "The `limit` parameter is passed directly to the SQL query without validation. A negative value or an extremely large value could cause performance issues or unexpected behavior. Fix: Validate that `limit` is a positive integer and cap it at a reasonable maximum."
+    }
+   ]
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a dynamic sort parameter using an Enum to prevent SQL injection. The implementation is safe and correct.",
+   "usage": {
+    "input_tokens": 865,
+    "output_tokens": 33,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces a dynamic sort parameter using an Enum to prevent SQL injection. The implementation is safe and correct, with no issues found.",
+   "usage": {
+    "input_tokens": 865,
+    "output_tokens": 38,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR introduces a dynamic sort parameter using an Enum to prevent SQL injection. The implementation is safe and correct, with no issues found.",
+   "usage": {
+    "input_tokens": 865,
+    "output_tokens": 38,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a critical security vulnerability by removing the `@login_required` decorator from the `delete_project` view, allowing unauthenticated users to delete projects. Additionally, the `Request` class uses mutable class-level attributes, which can lead to shared state bugs across requests.",
+   "usage": {
+    "input_tokens": 1656,
+    "output_tokens": 307,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L0/r0/f0",
+     "path": "app/views.py",
+     "line": 72,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication on delete_project",
+     "explanation": "The `@login_required` decorator was removed from `delete_project`. This allows any unauthenticated user to call the endpoint and delete projects, as the function no longer verifies the user's identity before calling `store.delete_project`."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L0/r0/f1",
+     "path": "app/http.py",
+     "line": 2,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Shared mutable state in Request class",
+     "explanation": "`user` and `json` are defined as class attributes. If the framework or code modifies `request.user` or `request.json` on one instance, it will mutate the class attribute, affecting all other `Request` instances (e.g., concurrent requests). These should be instance attributes initialized in `__init__`."
+    }
+   ]
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces a critical security vulnerability by removing the `@login_required` decorator from the `delete_project` view, allowing unauthenticated users to delete projects. Additionally, the `Request` class uses mutable class-level attributes, which can lead to shared state bugs across requests.",
+   "usage": {
+    "input_tokens": 1656,
+    "output_tokens": 314,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L0/r1/f0",
+     "path": "app/views.py",
+     "line": 72,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication on delete_project",
+     "explanation": "The `@login_required` decorator was removed from `delete_project`. This allows any unauthenticated user to call the endpoint and delete projects, as the function no longer verifies the user's identity or authorization. Re-add the `@login_required` decorator."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L0/r1/f1",
+     "path": "app/http.py",
+     "line": 2,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Mutable class-level attributes in Request",
+     "explanation": "Attributes `user` and `json` are defined at the class level. If any code modifies `request.user` or `request.json` (e.g., `request.user = ...`), it will mutate the class attribute, affecting all other `Request` instances. These should be instance attributes initialized in `__init__`."
+    }
+   ]
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR introduces a critical security vulnerability by removing the `@login_required` decorator from the `delete_project` view, allowing unauthenticated users to delete projects. Additionally, the `Request` class uses mutable class-level attributes, which can lead to shared state bugs across requests.",
+   "usage": {
+    "input_tokens": 1656,
+    "output_tokens": 324,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L0/r2/f0",
+     "path": "app/views.py",
+     "line": 72,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication on delete_project",
+     "explanation": "The `@login_required` decorator was removed from `delete_project`. This allows any unauthenticated user to call the endpoint and delete projects, as the function relies on `request.user` which will be `None` for anonymous users, potentially leading to data loss or errors. Re-add the `@login_required` decorator."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L0/r2/f1",
+     "path": "app/http.py",
+     "line": 2,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Mutable class attributes in Request",
+     "explanation": "`user` and `json` are defined as class attributes. If any code modifies `request.user` or `request.json` (e.g., `request.user = ...`), it will mutate the class attribute, affecting all other `Request` instances. These should be instance attributes initialized in `__init__`."
+    }
+   ]
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a critical security vulnerability by removing the `@login_required` decorator from the `delete_project` view, allowing unauthenticated users to delete projects. Additionally, the `Request` class uses mutable class-level attributes, which can lead to shared state bugs if instances are not properly initialized.",
+   "usage": {
+    "input_tokens": 2467,
+    "output_tokens": 331,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L1/r0/f0",
+     "path": "app/views.py",
+     "line": 78,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication on delete_project",
+     "explanation": "The `@login_required` decorator was removed from `delete_project`, allowing any unauthenticated user to delete projects. This is a severe authorization bypass. Re-add the `@login_required` decorator to enforce authentication."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L1/r0/f1",
+     "path": "app/http.py",
+     "line": 2,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Shared mutable state in Request class",
+     "explanation": "The `Request` class defines `user` and `json` as class-level attributes. If instances are created without overriding these in `__init__`, they will share the same `None` reference. While `None` is immutable, this pattern is fragile and can lead to unexpected behavior if attributes are mutated or if the class is extended. It is safer to define these in `__init__` or use `dataclass`."
+    }
+   ]
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces a critical security vulnerability by removing the `@login_required` decorator from the `delete_project` view, allowing unauthenticated users to delete projects. Additionally, the `Request` class uses mutable class-level attributes, which can lead to shared state bugs if instances are not properly initialized.",
+   "usage": {
+    "input_tokens": 2467,
+    "output_tokens": 304,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L1/r1/f0",
+     "path": "app/views.py",
+     "line": 78,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication on delete_project",
+     "explanation": "The `@login_required` decorator was removed from `delete_project`, allowing any unauthenticated user to delete projects. This is a severe authorization bypass. Fix: Re-add the `@login_required` decorator to the `delete_project` function."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L1/r1/f1",
+     "path": "app/http.py",
+     "line": 2,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Mutable class-level attributes in Request",
+     "explanation": "The `Request` class defines `user` and `json` as class-level attributes. If instances are created without overriding these in `__init__`, they will share the same `None` object. More critically, if any code modifies `request.user` or `request.json` on one instance, it could affect other instances if they are not properly isolated. Fix: Define these as instance attributes in an `__init__` method or use `__slots__` with proper initialization."
+    }
+   ]
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR introduces a critical security vulnerability by removing the `@login_required` decorator from the `delete_project` view, allowing unauthenticated users to delete projects. Additionally, the `Request` class uses mutable class-level attributes, which can lead to state leakage between requests if not properly initialized per instance.",
+   "usage": {
+    "input_tokens": 2467,
+    "output_tokens": 288,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L1/r2/f0",
+     "path": "app/views.py",
+     "line": 76,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication on delete_project",
+     "explanation": "The `@login_required` decorator was removed from `delete_project`, allowing any unauthenticated user to delete projects. This is a severe authorization bypass. Fix: Re-add the `@login_required` decorator to the `delete_project` function."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L1/r2/f1",
+     "path": "app/http.py",
+     "line": 2,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Mutable class attributes in Request",
+     "explanation": "The `Request` class defines `user` and `json` as class-level attributes. If instances are not explicitly initialized with `__init__`, these attributes are shared across all instances, potentially causing state leakage between requests. Fix: Define an `__init__` method to initialize these attributes per instance, e.g., `def __init__(self): self.user = None; self.json = None`."
+    }
+   ]
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes the `@login_required` decorator from the `delete_project` view, allowing unauthenticated users to delete projects. Additionally, the `Request` class uses mutable class-level attributes, which can lead to shared state bugs if instances are not properly initialized.",
+   "usage": {
+    "input_tokens": 2654,
+    "output_tokens": 337,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L2/r0/f0",
+     "path": "app/views.py",
+     "line": 78,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication on delete_project",
+     "explanation": "The `@login_required` decorator was removed from `delete_project`. This allows any unauthenticated user to call the endpoint and delete projects, as the function body does not perform any other access control checks. Re-add the `@login_required` decorator."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L2/r0/f1",
+     "path": "app/http.py",
+     "line": 2,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Shared mutable state in Request class",
+     "explanation": "The `Request` class defines `user` and `json` as class-level attributes. If instances are created without explicitly setting these attributes in `__init__`, they will share the same `None` object. While `None` is immutable, this pattern is fragile and can lead to unexpected behavior if the attributes are ever changed to mutable types or if instance-specific state is expected. It is safer to define these in an `__init__` method."
+    }
+   ]
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces a critical security vulnerability by removing the `@login_required` decorator from the `delete_project` view, allowing unauthenticated users to delete projects. Additionally, the `Request` class uses mutable class-level attributes, which can lead to shared state bugs if instances are not properly initialized.",
+   "usage": {
+    "input_tokens": 2654,
+    "output_tokens": 419,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L2/r1/f0",
+     "path": "app/views.py",
+     "line": 78,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication on delete_project",
+     "explanation": "The `@login_required` decorator was removed from `delete_project`. This allows any unauthenticated user to call the endpoint and delete projects, as the view directly accesses `request.user` (which would be `None` for anonymous users, likely causing a crash or, if handled, allowing unauthorized deletion). The `store.delete_project` call also does not pass the user ID, relying on the missing auth check to prevent abuse. Fix: Re-add the `@login_required` decorator."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L2/r1/f1",
+     "path": "app/http.py",
+     "line": 2,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Shared mutable state in Request class",
+     "explanation": "The `Request` class defines `user` and `json` as class-level attributes. If instances are created without explicitly setting these attributes in `__init__`, they will share the same `None` value. More critically, if any code were to mutate these attributes on an instance (e.g., `request.user = some_user`), it would only affect that instance, but if the class is used in a way that expects instance isolation without proper initialization, it can lead to subtle bugs. Best practice is to define these in `__init__` to ensure each instance has its own state."
+    }
+   ]
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes the `@login_required` decorator from the `delete_project` view, allowing unauthenticated users to delete projects. Additionally, the `Request` class uses mutable class-level attributes, which can lead to shared state bugs if instances are not properly initialized.",
+   "usage": {
+    "input_tokens": 2654,
+    "output_tokens": 337,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L2/r2/f0",
+     "path": "app/views.py",
+     "line": 78,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication on delete_project",
+     "explanation": "The `@login_required` decorator was removed from `delete_project`. This allows any unauthenticated user to call the endpoint and delete projects, as the function body does not perform any other access control checks. Re-add the `@login_required` decorator."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L2/r2/f1",
+     "path": "app/http.py",
+     "line": 2,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Shared mutable state in Request class",
+     "explanation": "The `Request` class defines `user` and `json` as class-level attributes. If instances are created without explicitly setting these attributes in `__init__`, they will share the same `None` object. While `None` is immutable, this pattern is fragile and can lead to unexpected behavior if the attributes are ever changed to mutable types or if instance-specific state is expected. It is safer to define these in an `__init__` method."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a critical off-by-one error in the `paginate` function, causing the first page of results to be skipped. It also removes a guard against negative page numbers, which can lead to incorrect slicing behavior.",
+   "usage": {
+    "input_tokens": 1646,
+    "output_tokens": 308,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L0/r0/f0",
+     "path": "app/listing.py",
+     "line": 27,
+     "category": "correctness",
+     "severity": "critical",
+     "title": "Off-by-one error in pagination offset",
+     "explanation": "The offset calculation `offset = page * size` is incorrect for 1-based pagination. For page 1, it calculates an offset of `size`, skipping the first page of items entirely. It should be `(page - 1) * size`."
+    },
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L0/r0/f1",
+     "path": "app/listing.py",
+     "line": 51,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing guard against negative page numbers",
+     "explanation": "The `parse_page` function uses `max(page, 1)` which allows negative integers (e.g., -1) to pass through if they are valid integers. While `paginate` might handle it via slicing, it is safer to explicitly clamp to 1 to prevent unexpected behavior or negative offsets if the logic changes."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces a critical off-by-one error in the `paginate` function, changing the offset calculation from `(page - 1) * size` to `page * size`. This causes the first page to skip the first `per_page` items and the last page to be empty, breaking pagination for all consumers.",
+   "usage": {
+    "input_tokens": 1646,
+    "output_tokens": 239,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L0/r1/f0",
+     "path": "app/listing.py",
+     "line": 27,
+     "category": "correctness",
+     "severity": "critical",
+     "title": "Off-by-one error in pagination offset",
+     "explanation": "The offset calculation `offset = page * size` is incorrect for 1-based page numbers. For page 1, it skips the first `size` items instead of starting at 0. The original code correctly used `(page - 1) * per_page`. This will cause the first page to be missing its first items and the last page to be empty. Fix: change to `offset = (page - 1) * size`."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR introduces a critical off-by-one error in the `paginate` function, changing the offset calculation from `(page - 1) * size` to `page * size`. This causes the first page to skip the first `per_page` items and the last page to be empty, breaking pagination for all consumers.",
+   "usage": {
+    "input_tokens": 1646,
+    "output_tokens": 204,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L0/r2/f0",
+     "path": "app/listing.py",
+     "line": 27,
+     "category": "correctness",
+     "severity": "critical",
+     "title": "Off-by-one error in pagination offset",
+     "explanation": "The offset calculation `offset = page * size` is incorrect for 1-based page numbers. For page 1, it skips the first `size` items instead of starting at 0. The correct calculation is `offset = (page - 1) * size`."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a critical off-by-one error in the `paginate` function, causing the first page of results to be skipped. Additionally, the `clamp_per_page` function lacks error handling for non-numeric inputs, which will cause a 500 error if the `per_page` query parameter is invalid.",
+   "usage": {
+    "input_tokens": 2438,
+    "output_tokens": 308,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L1/r0/f0",
+     "path": "app/listing.py",
+     "line": 31,
+     "category": "correctness",
+     "severity": "critical",
+     "title": "Off-by-one error in pagination offset",
+     "explanation": "The offset calculation `offset = page * size` is incorrect for 1-based pagination. For page 1, it calculates an offset of `size`, skipping the first `size` items. The correct calculation for 1-based pages is `(page - 1) * size`."
+    },
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L1/r0/f1",
+     "path": "app/listing.py",
+     "line": 20,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Missing error handling in clamp_per_page",
+     "explanation": "The function calls `int(per_page)` without handling `ValueError`. If a user provides a non-numeric string for the `per_page` query parameter (e.g., `?per_page=abc`), this will raise an unhandled exception, resulting in a 500 Internal Server Error. It should catch `ValueError` and return a default or raise a 400 error."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces a critical off-by-one error in the `paginate` function, causing the first page of results to be skipped. It also introduces a potential `KeyError` in `sort_items` if the sort key is missing from an item, and a potential `ValueError` in `clamp_per_page` if the input is a non-numeric string.",
+   "usage": {
+    "input_tokens": 2438,
+    "output_tokens": 377,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L1/r1/f0",
+     "path": "app/listing.py",
+     "line": 31,
+     "category": "correctness",
+     "severity": "critical",
+     "title": "Off-by-one error in pagination offset",
+     "explanation": "The offset calculation `offset = page * size` is incorrect for 1-based pagination. For page 1, it skips the first `size` items. It should be `offset = (page - 1) * size`."
+    },
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L1/r1/f1",
+     "path": "app/listing.py",
+     "line": 55,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Potential KeyError in sort_items",
+     "explanation": "The lambda `lambda item: item[key]` will raise a `KeyError` if any item in the iterable does not contain the specified `key`. Using `item.get(key)` would be safer, though it requires handling `None` values appropriately for sorting."
+    },
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L1/r1/f2",
+     "path": "app/listing.py",
+     "line": 20,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Potential ValueError in clamp_per_page",
+     "explanation": "The function calls `int(per_page)` without handling `ValueError`. If `per_page` is a non-numeric string (e.g., \"abc\"), it will crash. It should catch `ValueError` and return a default or raise a more specific error."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L1",
+   "run": 2,
+   "error": "rate_limited: retry-after 1214s (quota)",
    "summary": "",
    "usage": {},
    "findings": []

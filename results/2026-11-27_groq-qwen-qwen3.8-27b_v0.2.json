@@ -8549,7 +8549,217 @@
    "case": "py-0032-refactor-pagination-off-by-one",
    "level": "L1",
    "run": 2,
-   "error": "rate_limited: retry-after 1214s (quota)",
+   "error": null,
+   "summary": "The PR introduces a critical off-by-one error in the `paginate` function, causing the first page of results to be skipped. It also introduces a potential `KeyError` in `sort_items` if the sort key is missing from an item, and a potential `ValueError` in `clamp_per_page` if the input is a non-numeric string.",
+   "usage": {
+    "input_tokens": 2438,
+    "output_tokens": 377,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L1/r2/f0",
+     "path": "app/listing.py",
+     "line": 31,
+     "category": "correctness",
+     "severity": "critical",
+     "title": "Off-by-one error in pagination offset",
+     "explanation": "The offset calculation `offset = page * size` is incorrect for 1-based pagination. For page 1, it skips the first `size` items. It should be `offset = (page - 1) * size`."
+    },
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L1/r2/f1",
+     "path": "app/listing.py",
+     "line": 55,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Potential KeyError in sort_items",
+     "explanation": "The lambda `lambda item: item[key]` will raise a `KeyError` if any item in the iterable does not contain the specified `key`. Using `item.get(key)` would be safer, though it requires handling `None` values appropriately for sorting."
+    },
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L1/r2/f2",
+     "path": "app/listing.py",
+     "line": 19,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Potential ValueError in clamp_per_page",
+     "explanation": "The function calls `int(per_page)` without handling `ValueError`. If `per_page` is a non-numeric string (e.g., \"abc\"), it will crash. It should catch `ValueError` and return a default or raise a more specific error."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a critical off-by-one error in the `paginate` function, causing the first page of results to be skipped. It also introduces a potential `KeyError` in `sort_items` if the sort key is missing from an item, and a potential `ValueError` in `clamp_per_page` if the input is a non-numeric string.",
+   "usage": {
+    "input_tokens": 2438,
+    "output_tokens": 377,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L2/r0/f0",
+     "path": "app/listing.py",
+     "line": 31,
+     "category": "correctness",
+     "severity": "critical",
+     "title": "Off-by-one error in pagination offset",
+     "explanation": "The offset calculation `offset = page * size` is incorrect for 1-based pagination. For page 1, it skips the first `size` items. It should be `offset = (page - 1) * size`."
+    },
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L2/r0/f1",
+     "path": "app/listing.py",
+     "line": 55,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Potential KeyError in sort_items",
+     "explanation": "The lambda `lambda item: item[key]` will raise a `KeyError` if any item in the iterable does not contain the specified `key`. Using `item.get(key)` would be safer, though it requires handling `None` values appropriately for sorting."
+    },
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L2/r0/f2",
+     "path": "app/listing.py",
+     "line": 19,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Potential ValueError in clamp_per_page",
+     "explanation": "The function calls `int(per_page)` without handling `ValueError`. If `per_page` is a non-numeric string (e.g., \"abc\"), it will crash. It should catch `ValueError` and return a default or raise a more specific error."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces a critical off-by-one error in the `paginate` function, causing the first page of results to be skipped. It also introduces a potential `KeyError` in `sort_items` if the sort key is missing from an item, and a potential `ValueError` in `clamp_per_page` if the input is a non-numeric string.",
+   "usage": {
+    "input_tokens": 2438,
+    "output_tokens": 377,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L2/r1/f0",
+     "path": "app/listing.py",
+     "line": 31,
+     "category": "correctness",
+     "severity": "critical",
+     "title": "Off-by-one error in pagination offset",
+     "explanation": "The offset calculation `offset = page * size` is incorrect for 1-based pagination. For page 1, it skips the first `size` items. It should be `offset = (page - 1) * size`."
+    },
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L2/r1/f1",
+     "path": "app/listing.py",
+     "line": 55,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Potential KeyError in sort_items",
+     "explanation": "The lambda `lambda item: item[key]` will raise a `KeyError` if any item in the iterable does not contain the specified `key`. Using `item.get(key)` would be safer, though it requires handling `None` values appropriately for sorting."
+    },
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L2/r1/f2",
+     "path": "app/listing.py",
+     "line": 19,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Potential ValueError in clamp_per_page",
+     "explanation": "The function calls `int(per_page)` without handling `ValueError`. If `per_page` is a non-numeric string (e.g., \"abc\"), it will crash. It should catch `ValueError` and return a default or raise a more specific error."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR introduces a critical off-by-one error in the `paginate` function, causing the first page of results to be skipped. It also introduces a potential `KeyError` in `sort_items` if the sort key is missing from an item, and a potential `ValueError` in `clamp_per_page` if the input is a non-numeric string.",
+   "usage": {
+    "input_tokens": 2438,
+    "output_tokens": 377,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L2/r2/f0",
+     "path": "app/listing.py",
+     "line": 31,
+     "category": "correctness",
+     "severity": "critical",
+     "title": "Off-by-one error in pagination offset",
+     "explanation": "The offset calculation `offset = page * size` is incorrect for 1-based pagination. For page 1, it skips the first `size` items. It should be `offset = (page - 1) * size`."
+    },
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L2/r2/f1",
+     "path": "app/listing.py",
+     "line": 55,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Potential KeyError in sort_items",
+     "explanation": "The lambda `lambda item: item[key]` will raise a `KeyError` if any item in the iterable does not contain the specified `key`. Using `item.get(key)` would be safer, though it requires handling `None` values appropriately for sorting."
+    },
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L2/r2/f2",
+     "path": "app/listing.py",
+     "line": 19,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Potential ValueError in clamp_per_page",
+     "explanation": "The function calls `int(per_page)` without handling `ValueError`. If `per_page` is a non-numeric string (e.g., \"abc\"), it will crash. It should catch `ValueError` and return a default or raise a more specific error."
+    }
+   ]
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR refactors the help text processing in `Command.format_help_text` to apply `inspect.cleandoc` and form-feed partitioning before the deprecation prefix is added. This is a behavioral change that can alter the output for deprecated commands with multi-line help text, and it changes the order of operations in a way that may be unintended.",
+   "usage": {
+    "input_tokens": 671,
+    "output_tokens": 337,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0033-clean-click-help-formfeed/L0/r0/f0",
+     "path": "src/click/core.py",
+     "line": 15,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Behavioral change: cleandoc and form-feed partitioning now applied before deprecation prefix",
+     "explanation": "Previously, `inspect.cleandoc` and `.partition(\"\\f\")[0]` were applied to the final text (after the deprecation prefix was added). Now they are applied to `self.help` before the deprecation prefix is prepended. For a deprecated command with multi-line help, `inspect.cleandoc` will strip leading whitespace from all lines, which may change the intended formatting of the help text. Additionally, if the help text contains a form feed character, the truncation now happens before the deprecation prefix is added, which is likely the intended behavior, but the change in `cleandoc` application order is a subtle behavioral shift that could affect existing CLI output. Consider whether `cleandoc` should be applied to the final composed string or just the raw help text."
+    }
+   ]
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR refactors the help text processing in `Command.format_help_text` to apply `inspect.cleandoc` and form-feed partitioning before the deprecation prefix is added. This is a behavioral change that can alter the output for deprecated commands with multi-line help text, and it changes the order of operations in a way that may be unintended.",
+   "usage": {
+    "input_tokens": 671,
+    "output_tokens": 337,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0033-clean-click-help-formfeed/L0/r1/f0",
+     "path": "src/click/core.py",
+     "line": 15,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Behavioral change: cleandoc and form-feed partitioning now applied before deprecation prefix",
+     "explanation": "Previously, `inspect.cleandoc` and `.partition(\"\\f\")[0]` were applied to the final text (after the deprecation prefix was added). Now they are applied to `self.help` before the deprecation prefix is prepended. For a deprecated command with multi-line help, `inspect.cleandoc` will strip leading whitespace from all lines, which may change the intended formatting of the help text. Additionally, if the help text contains a form feed character, the truncation now happens before the deprecation prefix is added, which is likely the intended behavior, but the change in `cleandoc` application order is a subtle behavioral shift that could affect existing CLI output. Consider whether `cleandoc` should be applied to the final composed string or just the raw help text."
+    }
+   ]
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L0",
+   "run": 2,
+   "error": "rate_limited: retries exhausted",
    "summary": "",
    "usage": {},
    "findings": []

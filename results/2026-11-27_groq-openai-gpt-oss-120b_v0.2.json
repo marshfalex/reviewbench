@@ -6898,7 +6898,214 @@
    "case": "py-0024-urllib3-cookie-redirect",
    "level": "L1",
    "run": 0,
-   "error": "rate_limited: retry-after 2091s (quota)",
+   "error": null,
+   "summary": "Security regression: Cookie header is no longer removed on redirects, potentially leaking credentials to third\u2011party hosts.",
+   "usage": {
+    "input_tokens": 4664,
+    "output_tokens": 471,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L1/r0/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 187,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer stripped on redirects",
+     "explanation": "The DEFAULT_REMOVE_HEADERS_ON_REDIRECT constant was changed to only include \"Authorization\". Previously it also removed \"Cookie\" headers when following redirects. Without stripping cookies, a request may forward user cookies to a different domain during a redirect, exposing session credentials and creating a security vulnerability. Restore the original behavior by including \"Cookie\" in the default set, e.g., DEFAULT_REMOVE_HEADERS_ON_REDIRECT = frozenset([\"Cookie\", \"Authorization\"])."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Removing Cookie from default headers on redirect reduces security",
+   "usage": {
+    "input_tokens": 4664,
+    "output_tokens": 2166,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L1/r1/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 124,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer stripped on redirects",
+     "explanation": "The default set of headers removed on redirects was changed from ['Cookie', 'Authorization'] to only ['Authorization']. This allows cookies to be forwarded to redirected domains, potentially leaking session credentials and enabling CSRF attacks. Restore the original behavior by including \"Cookie\" in DEFAULT_REMOVE_HEADERS_ON_REDIRECT, e.g., `frozenset([\"Cookie\", \"Authorization\"])`."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Removing Cookie from default headers on redirect reduces security",
+   "usage": {
+    "input_tokens": 4664,
+    "output_tokens": 2166,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L1/r2/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 124,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer stripped on redirects",
+     "explanation": "The default set of headers removed on redirects was changed from ['Cookie', 'Authorization'] to only ['Authorization']. This allows cookies to be forwarded to redirected domains, potentially leaking session credentials and enabling CSRF attacks. Restore the original behavior by including \"Cookie\" in DEFAULT_REMOVE_HEADERS_ON_REDIRECT, e.g., `frozenset([\"Cookie\", \"Authorization\"])`."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Changing default headers removed from redirects drops Cookie header, risking credential leakage across hosts.",
+   "usage": {
+    "input_tokens": 5367,
+    "output_tokens": 588,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L2/r0/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 187,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer stripped on cross-host redirects",
+     "explanation": "The default `DEFAULT_REMOVE_HEADERS_ON_REDIRECT` was changed from `['Cookie', 'Authorization']` to only `['Authorization']`. In `PoolManager.urlopen`, headers listed in this set are removed when a redirect leads to a different host. Without stripping `Cookie`, cookies may be forwarded to third\u2011party domains, exposing session credentials. Re\u2011add \"Cookie\" to the default set (e.g., `frozenset([\"Cookie\", \"Authorization\"])`) or document the change so callers can explicitly include it."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Changing default headers removed from redirects drops Cookie header, risking credential leakage across hosts.",
+   "usage": {
+    "input_tokens": 5367,
+    "output_tokens": 588,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L2/r1/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 187,
+     "category": "security",
+     "severity": "high",
+     "title": "Cookie header no longer stripped on cross-host redirects",
+     "explanation": "The default `DEFAULT_REMOVE_HEADERS_ON_REDIRECT` was changed from `['Cookie', 'Authorization']` to only `['Authorization']`. In `PoolManager.urlopen`, headers listed in this set are removed when a redirect leads to a different host. Without stripping `Cookie`, cookies may be forwarded to third\u2011party domains, exposing session credentials. Re\u2011add \"Cookie\" to the default set (e.g., `frozenset([\"Cookie\", \"Authorization\"])`) or document the change so callers can explicitly include it."
+    }
+   ]
+  },
+  {
+   "case": "py-0024-urllib3-cookie-redirect",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Removing Cookie from default headers stripped on redirects can leak credentials across hosts.",
+   "usage": {
+    "input_tokens": 5367,
+    "output_tokens": 472,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0024-urllib3-cookie-redirect/L2/r2/f0",
+     "path": "src/urllib3/util/retry.py",
+     "line": 187,
+     "category": "security",
+     "severity": "high",
+     "title": "Cross-host redirect may forward Cookie header",
+     "explanation": "The default `DEFAULT_REMOVE_HEADERS_ON_REDIRECT` no longer includes \"Cookie\", so when a redirect leads to a different host the Cookie header will be forwarded. This can expose session cookies to third\u2011party domains, leading to credential leakage. Restore the original default (include both \"Cookie\" and \"Authorization\") or make the default configurable to ensure sensitive cookies are not sent to other hosts."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The removal of validation for spaces in XML attribute keys introduces malformed attribute strings.",
+   "usage": {
+    "input_tokens": 965,
+    "output_tokens": 450,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L0/r0/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 84,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Allowing spaces in attribute names breaks XML/HTML syntax",
+     "explanation": "The original implementation raised a ValueError when a key contained spaces, preventing generation of invalid attribute strings. The new implementation omits this check, so keys like \"data foo\" will produce `data foo=\"value\"`, which is not a valid attribute name and can break rendering or cause unexpected behavior. Re\u2011introduce validation (e.g., using the original `_space_re` check) and raise an appropriate error for keys containing spaces."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Removed validation for spaces in XML attribute keys, allowing malformed attribute names.",
+   "usage": {
+    "input_tokens": 965,
+    "output_tokens": 613,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L0/r1/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 84,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Missing validation for spaces in attribute keys",
+     "explanation": "The previous implementation raised a ValueError when a dictionary key contained spaces, preventing invalid SGML/XML attribute names. The new implementation removes this check, allowing keys with spaces to be emitted, which produces malformed HTML/XML and can break rendering. Re\u2011introduce validation (e.g., using the original `_space_re` check) or sanitize keys before inclusion."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Removed validation for spaces in XML/HTML attribute names, introducing malformed output and injection risk.",
+   "usage": {
+    "input_tokens": 965,
+    "output_tokens": 780,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0025-jinja2-xmlattr-key-injection/L0/r2/f0",
+     "path": "src/jinja2/filters.py",
+     "line": 84,
+     "category": "security",
+     "severity": "high",
+     "title": "Spaces in attribute keys no longer rejected, causing malformed markup and injection risk",
+     "explanation": "The previous implementation raised a ValueError when a dict key contained whitespace, guaranteeing that generated attribute strings are syntactically valid. The new code removes this check, allowing keys like \"data foo\" to be escaped and emitted as `data foo=\"value\"`. This produces invalid XML/HTML and can be exploited for attribute injection (e.g., breaking out of an attribute value and injecting malicious markup). Re\u2011introduce validation (e.g., `if re.search(r\"\\s\", key): raise ValueError(...)`) or sanitize keys before inclusion."
+    }
+   ]
+  },
+  {
+   "case": "py-0025-jinja2-xmlattr-key-injection",
+   "level": "L1",
+   "run": 0,
+   "error": "rate_limited: retry-after 1464s (quota)",
    "summary": "",
    "usage": {},
    "findings": []

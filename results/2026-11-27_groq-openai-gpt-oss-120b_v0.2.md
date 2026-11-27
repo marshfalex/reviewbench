@@ -6,14 +6,14 @@ Created 2026-11-27T00:42:12+00:00, k=3 runs per case and level, status `partial`
 
 | level | difficulty | any-of-k recall | all-of-k recall | per-run recall | precision (adjudicated) | control runs w/ FP | unadjudicated | errors |
 |---|---|---|---|---|---|---|---|---|
-| L0 | all | 18/20 (90%, 70–97) | 18/20 (90%, 70–97) | 54/60 runs; per-bug mean 90% (95% CI 70–97, 20 bugs) | not measured (16 of 19 unjudged) | 3/12 (25%, 9–53) | 16 | 0 |
+| L0 | all | 19/21 (90%, 71–97) | 19/21 (90%, 71–97) | 57/63 runs; per-bug mean 90% (95% CI 71–97, 21 bugs) | not measured (16 of 19 unjudged) | 3/12 (25%, 9–53) | 16 | 0 |
 | L0 | easy | 14/14 (100%, 78–100) | 14/14 (100%, 78–100) | 42/42 runs; per-bug mean 100% (95% CI 78–100, 14 bugs) | not measured (16 of 19 unjudged) | 3/12 (25%, 9–53) | 7 | 0 |
-| L0 | hard | 4/6 (67%, 30–90) | 4/6 (67%, 30–90) | 12/18 runs; per-bug mean 67% (95% CI 30–90, 6 bugs) | not measured (16 of 19 unjudged) | n/a | 9 | 0 |
-| L1 | all | 17/19 (89%, 69–97) | 15/19 (79%, 57–92) | 47/57 runs; per-bug mean 82% (95% CI 60–94, 19 bugs) | not measured (12 of 15 unjudged) | 3/12 (25%, 9–53) | 12 | 1 |
-| L1 | easy | 13/13 (100%, 77–100) | 12/13 (92%, 67–99) | 37/39 runs; per-bug mean 95% (95% CI 70–99, 13 bugs) | not measured (12 of 15 unjudged) | 3/12 (25%, 9–53) | 3 | 1 |
-| L1 | hard | 4/6 (67%, 30–90) | 3/6 (50%, 19–81) | 10/18 runs; per-bug mean 56% (95% CI 22–85, 6 bugs) | not measured (12 of 15 unjudged) | n/a | 9 | 0 |
-| L2 | all | 17/19 (89%, 69–97) | 15/19 (79%, 57–92) | 47/57 runs; per-bug mean 82% (95% CI 60–94, 19 bugs) | not measured (14 of 14 unjudged) | 0/12 (0%, 0–24) | 14 | 0 |
-| L2 | easy | 13/13 (100%, 77–100) | 12/13 (92%, 67–99) | 37/39 runs; per-bug mean 95% (95% CI 70–99, 13 bugs) | not measured (14 of 14 unjudged) | 0/12 (0%, 0–24) | 5 | 0 |
+| L0 | hard | 5/7 (71%, 36–92) | 5/7 (71%, 36–92) | 15/21 runs; per-bug mean 71% (95% CI 36–92, 7 bugs) | not measured (16 of 19 unjudged) | n/a | 9 | 0 |
+| L1 | all | 18/20 (90%, 70–97) | 15/20 (75%, 53–89) | 48/60 runs; per-bug mean 80% (95% CI 58–92, 20 bugs) | not measured (14 of 17 unjudged) | 3/12 (25%, 9–53) | 14 | 1 |
+| L1 | easy | 14/14 (100%, 78–100) | 12/14 (86%, 60–96) | 38/42 runs; per-bug mean 90% (95% CI 66–98, 14 bugs) | not measured (14 of 17 unjudged) | 3/12 (25%, 9–53) | 5 | 0 |
+| L1 | hard | 4/6 (67%, 30–90) | 3/6 (50%, 19–81) | 10/18 runs; per-bug mean 56% (95% CI 22–85, 6 bugs) | not measured (14 of 17 unjudged) | n/a | 9 | 1 |
+| L2 | all | 18/20 (90%, 70–97) | 16/20 (80%, 58–92) | 50/60 runs; per-bug mean 83% (95% CI 62–94, 20 bugs) | not measured (14 of 14 unjudged) | 0/12 (0%, 0–24) | 14 | 0 |
+| L2 | easy | 14/14 (100%, 78–100) | 13/14 (93%, 68–99) | 40/42 runs; per-bug mean 95% (95% CI 72–99, 14 bugs) | not measured (14 of 14 unjudged) | 0/12 (0%, 0–24) | 5 | 0 |
 | L2 | hard | 4/6 (67%, 30–90) | 3/6 (50%, 19–81) | 10/18 runs; per-bug mean 56% (95% CI 22–85, 6 bugs) | not measured (14 of 14 unjudged) | n/a | 9 | 0 |
 
 ## Per case
@@ -90,4 +90,7 @@ Created 2026-11-27T00:42:12+00:00, k=3 runs per case and level, status `partial`
 | py-0023-requests-auth-https-downgrade | L1 | 1/3 | 1 | 0 | 0 | 0 | 2 | 0 |
 | py-0023-requests-auth-https-downgrade | L2 | 1/3 | 1 | 0 | 0 | 0 | 2 | 0 |
 | py-0024-urllib3-cookie-redirect | L0 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
-| py-0024-urllib3-cookie-redirect | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 1 |
+| py-0024-urllib3-cookie-redirect | L1 | 1/3 | 1 | 0 | 0 | 0 | 2 | 0 |
+| py-0024-urllib3-cookie-redirect | L2 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
+| py-0025-jinja2-xmlattr-key-injection | L0 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
+| py-0025-jinja2-xmlattr-key-injection | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 1 |

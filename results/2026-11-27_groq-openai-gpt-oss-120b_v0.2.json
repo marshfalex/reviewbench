@@ -7590,10 +7590,1084 @@
    "case": "py-0027-gitpython-clone-ext-protocol-rce",
    "level": "L1",
    "run": 0,
-   "error": "rate_limited: retry-after 2705s (quota)",
-   "summary": "",
-   "usage": {},
+   "error": null,
+   "summary": "Removal of unsafe protocol validation and related exception introduces security risk and backward\u2011compatibility breakage.",
+   "usage": {
+    "input_tokens": 5127,
+    "output_tokens": 1112,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r0/f0",
+     "path": "git/repo/base.py",
+     "line": 215,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe protocol options no longer validated in clone operations",
+     "explanation": "The PR removed the `unsafe_options` check and the `unsafe_protocols` flag from `Repo.clone` and `Repo.clone_from`. This allows callers to pass URLs or `--config` options that enable unsafe Git protocols (e.g., `ext::`) or arbitrary configuration changes, which can lead to command injection or execution of untrusted code. Re\u2011introduce validation (or at least a warning) for unsafe protocols and keep the `unsafe_protocols` parameter to require an explicit opt\u2011in."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r0/f1",
+     "path": "git/exc.py",
+     "line": 45,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Removed `UnsafeOptionsUsedError` breaks external imports",
+     "explanation": "`UnsafeOptionsUsedError` was part of the public API. Its removal means any external code that does `from git.exc import UnsafeOptionsUsedError` will raise an `AttributeError`. Add a backward\u2011compatible stub that subclasses `GitError` (or keep the original class) and document its deprecation instead of deleting it."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks and the UnsafeOptionsUsedError exception introduces security and compatibility concerns.",
+   "usage": {
+    "input_tokens": 5127,
+    "output_tokens": 961,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r1/f0",
+     "path": "git/repo/base.py",
+     "line": 210,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe git clone options no longer validated",
+     "explanation": "The previous implementation rejected URLs or clone options that used unsafe protocols (e.g., `ext::`) or `--upload-pack`/`--config protocol.*` unless the caller set `unsafe_protocols=True`. The recent change removed the `unsafe_options` check and the `UnsafeOptionsUsedError` raise, allowing potentially dangerous options to be passed to `git clone` unchecked. This can lead to command injection or execution of arbitrary code on the host. Re\u2011introduce validation (or at least a warning) for unsafe protocols and retain the exception to block unsafe usage."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r1/f1",
+     "path": "git/exc.py",
+     "line": 45,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Removed UnsafeOptionsUsedError breaks imports",
+     "explanation": "The `UnsafeOptionsUsedError` class was deleted, but other modules in the package may still import it (e.g., `from git.exc import UnsafeOptionsUsedError`). This will raise an ImportError at runtime, breaking functionality for callers that rely on the exception. Either keep the class (even as a subclass of `GitError`) for backward compatibility or update all import sites to stop referencing it."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Removal of unsafe protocol validation and exception class introduces security and compatibility regressions.",
+   "usage": {
+    "input_tokens": 5127,
+    "output_tokens": 766,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r2/f0",
+     "path": "git/repo/base.py",
+     "line": 215,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe protocol usage no longer validated",
+     "explanation": "The recent changes removed the `unsafe_options` check and the `unsafe_protocols` flag from `Repo.clone` and `Repo.clone_from`. This allows callers to clone repositories using unsafe protocols (e.g., `ext::`) without explicit approval, re\u2011introducing a known security risk. Re\u2011add the validation (or a safer whitelist) and raise an exception when unsafe options are detected."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L1/r2/f1",
+     "path": "git/exc.py",
+     "line": 45,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Removed `UnsafeOptionsUsedError` breaks external imports",
+     "explanation": "`UnsafeOptionsUsedError` was deleted from `git.exc`, but external code may still import it, leading to `ImportError` at runtime. Either keep the exception class (even if unused) for backward compatibility or update all import sites and documentation to remove references."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks and the UnsafeOptionsUsedError class introduces a security regression and potential import errors.",
+   "usage": {
+    "input_tokens": 5127,
+    "output_tokens": 1024,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r0/f0",
+     "path": "git/repo/base.py",
+     "line": 215,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe protocol usage no longer blocked",
+     "explanation": "The previous implementation prevented cloning with unsafe protocols (e.g., URLs containing \"ext::\") unless the caller explicitly set `unsafe_protocols=True`. The recent changes removed the `unsafe_options` check and the associated `UnsafeOptionsUsedError` raise, allowing arbitrary unsafe protocols to be used silently. This can lead to command injection or execution of untrusted code. Re\u2011introduce the validation (or a safer alternative) and raise an appropriate exception when unsafe options are detected."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r0/f1",
+     "path": "git/exc.py",
+     "line": 45,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Removed UnsafeOptionsUsedError class may break imports",
+     "explanation": "The `UnsafeOptionsUsedError` exception class was deleted, but other modules in the package may still import it (e.g., `from git.exc import UnsafeOptionsUsedError`). This will cause ImportError at runtime, breaking functionality. Either restore the class (even as a subclass of `GitError`) or update all import sites to handle its removal."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks and related exception introduces security and compatibility concerns.",
+   "usage": {
+    "input_tokens": 5127,
+    "output_tokens": 785,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r1/f0",
+     "path": "git/repo/base.py",
+     "line": 215,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe protocols allowed without explicit opt\u2011in",
+     "explanation": "The previous implementation rejected URLs or clone options that used unsafe protocols (e.g., `ext::`) unless the caller set `unsafe_protocols=True`. The recent change removed the `unsafe_options` check and the `unsafe_protocols` parameter, allowing potentially dangerous protocols to be used silently. This can lead to command injection or arbitrary code execution when cloning from untrusted sources. Re\u2011introduce validation of `url` and `multi_options` and require an explicit opt\u2011in flag before permitting unsafe protocols."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r1/f1",
+     "path": "git/exc.py",
+     "line": 40,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Removed `UnsafeOptionsUsedError` breaks external callers",
+     "explanation": "`UnsafeOptionsUsedError` was part of the public API; external code may catch this exception when cloning repositories. Deleting the class without a backward\u2011compatible alias will raise `AttributeError` for such callers. Restore the exception class (or provide an alias) to preserve API compatibility."
+    }
+   ]
+  },
+  {
+   "case": "py-0027-gitpython-clone-ext-protocol-rce",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Removal of unsafe protocol checks introduces a security regression and breaks the public API.",
+   "usage": {
+    "input_tokens": 5127,
+    "output_tokens": 1142,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r2/f0",
+     "path": "git/repo/base.py",
+     "line": 210,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe protocol options no longer validated",
+     "explanation": "The recent changes removed the `unsafe_options` check and the `unsafe_protocols` flag from `Repo.clone` and `Repo.clone_from`. This allows callers to pass URLs or clone options that use unsafe protocols (e.g., `ext::`) or `--upload-pack` without explicit approval, re\u2011introducing a known security risk. Re\u2011introduce the validation (or a safer alternative) and raise `UnsafeOptionsUsedError` when unsafe options are detected."
+    },
+    {
+     "id": "py-0027-gitpython-clone-ext-protocol-rce/L2/r2/f1",
+     "path": "git/exc.py",
+     "line": 45,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Removed `UnsafeOptionsUsedError` breaks public API",
+     "explanation": "`UnsafeOptionsUsedError` was deleted from `git.exc`, but external code may still import or catch this exception. This will cause `ImportError` or `NameError` at runtime, breaking compatibility. Restore the exception class (or provide a compatibility alias) to preserve the public API."
+    }
+   ]
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "No actionable problems detected in the added code.",
+   "usage": {
+    "input_tokens": 713,
+    "output_tokens": 312,
+    "served_model": "openai/gpt-oss-120b"
+   },
    "findings": []
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "No issues found in the introduced changes.",
+   "usage": {
+    "input_tokens": 713,
+    "output_tokens": 250,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Potential AttributeError when user is None in update_doc",
+   "usage": {
+    "input_tokens": 713,
+    "output_tokens": 498,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0028-truthy-permission-decision/L0/r2/f0",
+     "path": "app/docs.py",
+     "line": 12,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Unchecked user object may cause AttributeError",
+     "explanation": "The function accesses `user.id` in the error message without verifying that `user` is not None. If `user` is None (e.g., unauthenticated request), this raises an AttributeError instead of the intended Forbidden exception, leading to a 500 error. Add a guard to handle a missing user before accessing its attributes, e.g., `if user is None or not permissions.can_edit(user, doc): raise Forbidden(...)`."
+    }
+   ]
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "No issues detected in the added functionality.",
+   "usage": {
+    "input_tokens": 857,
+    "output_tokens": 255,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The new update_doc function assumes a valid authenticated user object, which can cause unhandled errors if called with a missing or malformed user.",
+   "usage": {
+    "input_tokens": 857,
+    "output_tokens": 530,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0028-truthy-permission-decision/L1/r1/f0",
+     "path": "app/docs.py",
+     "line": 13,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Unauthenticated user leads to AttributeError",
+     "explanation": "update_doc accesses user.id and passes the user to permissions.can_edit without first verifying that user is not None and has the expected attributes. If an unauthenticated request reaches this function, it will raise an AttributeError instead of a proper Forbidden error, exposing internal details and causing a 500 response. Fix by adding an explicit check (e.g., if user is None: raise Forbidden(...)) or by ensuring the caller validates authentication before invoking update_doc."
+    }
+   ]
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "No issues found in the added code.",
+   "usage": {
+    "input_tokens": 857,
+    "output_tokens": 269,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Permission check bypass due to misuse of Decision object",
+   "usage": {
+    "input_tokens": 992,
+    "output_tokens": 310,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0028-truthy-permission-decision/L2/r0/f0",
+     "path": "app/docs.py",
+     "line": 13,
+     "category": "security",
+     "severity": "high",
+     "title": "Incorrect permission check allows unauthorized edits",
+     "explanation": "permissions.can_edit returns a Decision dataclass, but the code tests the object directly (`if not permissions.can_edit(user, doc):`). A dataclass instance is always truthy, so the check never fails, letting any user edit any document. Fix by checking the .allowed attribute: `if not permissions.can_edit(user, doc).allowed:` and optionally log the .reason."
+    }
+   ]
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Permission check misuse allows unauthorized document edits.",
+   "usage": {
+    "input_tokens": 992,
+    "output_tokens": 543,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0028-truthy-permission-decision/L2/r1/f0",
+     "path": "app/docs.py",
+     "line": 14,
+     "category": "security",
+     "severity": "high",
+     "title": "Incorrect permission check bypasses authorization",
+     "explanation": "permissions.can_edit returns a Decision object, which is always truthy, so `if not permissions.can_edit(user, doc):` never triggers. This lets any user edit any document, violating access control. Fix by checking the .allowed attribute: `if not permissions.can_edit(user, doc).allowed:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0028-truthy-permission-decision",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Permission check misuse allows unauthorized document edits.",
+   "usage": {
+    "input_tokens": 992,
+    "output_tokens": 543,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0028-truthy-permission-decision/L2/r2/f0",
+     "path": "app/docs.py",
+     "line": 14,
+     "category": "security",
+     "severity": "high",
+     "title": "Incorrect permission check bypasses authorization",
+     "explanation": "permissions.can_edit returns a Decision object, which is always truthy, so `if not permissions.can_edit(user, doc):` never triggers. This lets any user edit any document, violating access control. Fix by checking the .allowed attribute: `if not permissions.can_edit(user, doc).allowed:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The session expiration calculation adds an integer to a datetime, causing a TypeError at runtime.",
+   "usage": {
+    "input_tokens": 742,
+    "output_tokens": 596,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0029-ttl-seconds-vs-ms-clock/L0/r0/f0",
+     "path": "app/sessions.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect datetime arithmetic for expires_at",
+     "explanation": "`now` is a datetime object while `SESSION_TTL_SECONDS` is an int; adding them directly raises a TypeError. Use a timedelta, e.g., `now + datetime.timedelta(seconds=SESSION_TTL_SECONDS)`. Import `datetime` and adjust the `store.put` call accordingly."
+    }
+   ]
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The session expiration calculation adds an integer to a datetime, causing a TypeError at runtime.",
+   "usage": {
+    "input_tokens": 742,
+    "output_tokens": 598,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0029-ttl-seconds-vs-ms-clock/L0/r1/f0",
+     "path": "app/sessions.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect datetime arithmetic for expiration",
+     "explanation": "`now` is a datetime object while `SESSION_TTL_SECONDS` is an int; adding them (`now + SESSION_TTL_SECONDS`) raises a TypeError. Use a timedelta, e.g., `now + datetime.timedelta(seconds=SESSION_TTL_SECONDS)`. Import `datetime` and adjust the code accordingly."
+    }
+   ]
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The session expiration calculation adds an integer to a datetime, causing a TypeError at runtime.",
+   "usage": {
+    "input_tokens": 742,
+    "output_tokens": 598,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0029-ttl-seconds-vs-ms-clock/L0/r2/f0",
+     "path": "app/sessions.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect datetime arithmetic for expiration",
+     "explanation": "`now` is a datetime object while `SESSION_TTL_SECONDS` is an int; adding them (`now + SESSION_TTL_SECONDS`) raises a TypeError. Use a timedelta, e.g., `now + datetime.timedelta(seconds=SESSION_TTL_SECONDS)`. Import `datetime` and adjust the code accordingly."
+    }
+   ]
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Added session expiration but introduced datetime arithmetic bug.",
+   "usage": {
+    "input_tokens": 899,
+    "output_tokens": 534,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0029-ttl-seconds-vs-ms-clock/L1/r0/f0",
+     "path": "app/sessions.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect datetime arithmetic for expires_at",
+     "explanation": "clock.now() returns a datetime, while SESSION_TTL_SECONDS is likely an integer number of seconds. Adding an int directly to a datetime raises a TypeError, causing session creation to fail. Use a timedelta: `expires_at = now + datetime.timedelta(seconds=SESSION_TTL_SECONDS)` (import datetime) or ensure SESSION_TTL_SECONDS is a timedelta."
+    }
+   ]
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Added session expiration but miscalculates expiry time",
+   "usage": {
+    "input_tokens": 899,
+    "output_tokens": 473,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0029-ttl-seconds-vs-ms-clock/L1/r1/f0",
+     "path": "app/sessions.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect expiration calculation",
+     "explanation": "SESSION_TTL_SECONDS is likely an integer number of seconds, but the code adds it directly to a datetime object (now + SESSION_TTL_SECONDS), which raises a TypeError. Use a timedelta, e.g., now + datetime.timedelta(seconds=SESSION_TTL_SECONDS), or ensure SESSION_TTL_SECONDS is a timedelta. This fixes the runtime error and correctly sets the expiration time."
+    }
+   ]
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Added session expiration but incorrectly adds raw seconds to a datetime object, causing a runtime TypeError.",
+   "usage": {
+    "input_tokens": 899,
+    "output_tokens": 562,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0029-ttl-seconds-vs-ms-clock/L1/r2/f0",
+     "path": "app/sessions.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Adding int seconds to datetime causes TypeError",
+     "explanation": "clock.now() likely returns a datetime, and SESSION_TTL_SECONDS is probably an integer number of seconds. Adding an int directly to a datetime raises TypeError. Use a timedelta, e.g., now + datetime.timedelta(seconds=SESSION_TTL_SECONDS), or ensure SESSION_TTL_SECONDS is a timedelta. This fixes the session expiration calculation."
+    }
+   ]
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The session TTL handling mixes milliseconds and seconds, causing premature expiration, and get_session may raise KeyError for legacy sessions lacking expires_at.",
+   "usage": {
+    "input_tokens": 998,
+    "output_tokens": 708,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0029-ttl-seconds-vs-ms-clock/L2/r0/f0",
+     "path": "app/sessions.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "high",
+     "title": "TTL unit mismatch leads to premature session expiration",
+     "explanation": "clock.now() returns milliseconds, but SESSION_TTL_SECONDS is defined in seconds. Adding them directly makes expires_at only seconds later (e.g., 28.8\u202fs for an 8\u2011hour TTL). Convert the TTL to milliseconds: `expires_at = now + SESSION_TTL_SECONDS * 1000`."
+    },
+    {
+     "id": "py-0029-ttl-seconds-vs-ms-clock/L2/r0/f1",
+     "path": "app/sessions.py",
+     "line": 18,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Potential KeyError for sessions without expires_at",
+     "explanation": "If older session records lack the \"expires_at\" field, `session[\"expires_at\"]` will raise a KeyError, breaking get_session. Guard against missing keys, e.g., `if session is None or session.get(\"expires_at\") is None or clock.now() >= session[\"expires_at\"]:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The session expiration logic mixes milliseconds and seconds, causing incorrect TTL and potential KeyError on legacy sessions.",
+   "usage": {
+    "input_tokens": 998,
+    "output_tokens": 661,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0029-ttl-seconds-vs-ms-clock/L2/r1/f0",
+     "path": "app/sessions.py",
+     "line": 9,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Time unit mismatch for session expiration",
+     "explanation": "clock.now() returns milliseconds, but SESSION_TTL_SECONDS is defined in seconds. Adding seconds to a millisecond timestamp makes expires_at far shorter (e.g., 8\u202fhours becomes ~28\u202fseconds). Convert SESSION_TTL_SECONDS to milliseconds (e.g., SESSION_TTL_MS = SESSION_TTL_SECONDS * 1000) or multiply when computing expires_at."
+    },
+    {
+     "id": "py-0029-ttl-seconds-vs-ms-clock/L2/r1/f1",
+     "path": "app/sessions.py",
+     "line": 15,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Potential KeyError for sessions missing expires_at",
+     "explanation": "get_session assumes every stored session has an \"expires_at\" field. If older sessions without this field are present, accessing session[\"expires_at\"] will raise a KeyError, breaking the request flow. Guard against missing field, e.g., use session.get(\"expires_at\") and treat missing as expired."
+    }
+   ]
+  },
+  {
+   "case": "py-0029-ttl-seconds-vs-ms-clock",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Unit mismatch between session TTL configuration (seconds) and timestamp representation (milliseconds) causes premature session expiration.",
+   "usage": {
+    "input_tokens": 998,
+    "output_tokens": 640,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0029-ttl-seconds-vs-ms-clock/L2/r2/f0",
+     "path": "app/sessions.py",
+     "line": 11,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Session TTL added in wrong time unit",
+     "explanation": "clock.now() returns milliseconds, but SESSION_TTL_SECONDS is defined in seconds. Adding them directly makes sessions expire after a few seconds instead of the intended hours. Fix by converting the TTL to milliseconds (e.g., now + SESSION_TTL_SECONDS * 1000) or store timestamps in seconds consistently."
+    }
+   ]
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The changes introduce a potential SQL injection risk by embedding a sort column directly into the query and break the existing function signature, which may cause runtime errors for callers.",
+   "usage": {
+    "input_tokens": 679,
+    "output_tokens": 819,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L0/r0/f0",
+     "path": "app/products.py",
+     "line": 6,
+     "category": "security",
+     "severity": "medium",
+     "title": "Unsafe SQL ordering parameter",
+     "explanation": "The f-string inserts `sort.value` directly into the SQL statement. If a malicious value ever reaches `SortColumn` (e.g., via a future enum extension or tampering), it could lead to SQL injection. Validate the enum against a whitelist of column names or map enum members to safe column strings before interpolation."
+    },
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L0/r0/f1",
+     "path": "app/products.py",
+     "line": 3,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Breaking change to function signature",
+     "explanation": "The function now expects `sort` as the second positional argument, whereas callers previously passed only `limit`. Existing code that calls `list_products(db, 100)` will treat `100` as a `SortColumn`, causing type errors. Preserve backward compatibility by keeping the original signature and adding `sort` as a keyword\u2011only argument or overload."
+    }
+   ]
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The changes introduce a potential SQL injection risk via string interpolation of the sort column and break the existing function signature, which may cause compatibility issues.",
+   "usage": {
+    "input_tokens": 679,
+    "output_tokens": 803,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L0/r1/f0",
+     "path": "app/products.py",
+     "line": 6,
+     "category": "security",
+     "severity": "medium",
+     "title": "Unsafe SQL ordering parameter",
+     "explanation": "The f-string directly injects sort.value into the SQL statement. If a malicious value ever reaches SortColumn (e.g., via a future enum extension or deserialization), it could lead to SQL injection. Validate the enum against a whitelist of column names or map the enum to a safe column string before interpolation."
+    },
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L0/r1/f1",
+     "path": "app/products.py",
+     "line": 3,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Breaking change to function signature",
+     "explanation": "The function now expects a 'sort' argument before 'limit'. Existing callers that passed only (db, limit) will treat the limit as a SortColumn, causing runtime errors. Preserve backward compatibility by making 'sort' a keyword\u2011only argument or adding an overload that retains the original positional order."
+    }
+   ]
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The changes introduce a potential SQL injection risk by embedding a sort column directly into the query and break the existing function signature, which may cause runtime errors for callers.",
+   "usage": {
+    "input_tokens": 679,
+    "output_tokens": 826,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L0/r2/f0",
+     "path": "app/products.py",
+     "line": 6,
+     "category": "security",
+     "severity": "medium",
+     "title": "Unsafe SQL ordering parameter",
+     "explanation": "The f-string inserts `sort.value` directly into the SQL statement. If a malicious value ever reaches `SortColumn` (e.g., via a future enum extension or tampering), it could lead to SQL injection. Validate the enum against a whitelist of column names or map enum members to safe column strings before interpolation."
+    },
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L0/r2/f1",
+     "path": "app/products.py",
+     "line": 3,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Breaking change to function signature",
+     "explanation": "`list_products` previously accepted `(db, limit)`. Adding a positional `sort` argument shifts the meaning of the second argument, so existing callers passing `limit` positionally will now treat it as a `SortColumn`, causing type errors or incorrect queries. Preserve backward compatibility by making `sort` a keyword\u2011only argument or overload the function, and update all call sites accordingly."
+    }
+   ]
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Potential SQL injection risk due to unsanitized dynamic ORDER BY clause.",
+   "usage": {
+    "input_tokens": 779,
+    "output_tokens": 748,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L1/r0/f0",
+     "path": "app/products.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsanitized sort parameter in SQL query",
+     "explanation": "The function builds the ORDER BY clause by interpolating `sort.value` directly into the SQL string. Although the type hint suggests a `SortColumn` enum, Python is dynamic and callers could supply a crafted object or string, leading to SQL injection. Validate that `sort` is a member of the `SortColumn` enum (e.g., `if sort not in SortColumn: raise ValueError`) or map enum members to a whitelist of column names before interpolation."
+    }
+   ]
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Potential SQL injection due to unsanitized column name interpolation",
+   "usage": {
+    "input_tokens": 779,
+    "output_tokens": 623,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L1/r1/f0",
+     "path": "app/products.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "Potential SQL injection via sort parameter",
+     "explanation": "The f-string inserts sort.value directly into the SQL statement, allowing a malicious caller to supply a crafted value that could alter the query (e.g., \"name; DROP TABLE users\"). Even though the type hint is SortColumn, Python does not enforce it at runtime. Validate sort against an explicit whitelist or map enum members to safe column names before interpolation."
+    }
+   ]
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Potential SQL injection due to unsanitized enum value used in query construction.",
+   "usage": {
+    "input_tokens": 779,
+    "output_tokens": 585,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L1/r2/f0",
+     "path": "app/products.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe interpolation of sort column into SQL",
+     "explanation": "The function builds the SELECT statement with an f-string that inserts `sort.value` directly into the query. Although the comment claims `sort` is a `SortColumn` enum, Python's dynamic typing allows callers to pass any object with a `value` attribute (or even monkey\u2011patch the enum), which could contain malicious SQL and lead to injection. Validate that `sort` is a member of the `SortColumn` enum or map it to a whitelist of allowed column names before interpolation. For example, replace the f-string with a safe lookup: `order_by = {SortColumn.NAME: \"name\", SortColumn.PRICE: \"price_cents\"}[sort]` and then use `f\"SELECT ... ORDER BY {order_by}, id LIMIT ?\"`."
+    }
+   ]
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Potential SQL injection due to unvalidated sort identifier",
+   "usage": {
+    "input_tokens": 899,
+    "output_tokens": 637,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L2/r0/f0",
+     "path": "app/products.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "Potential SQL injection via sort parameter",
+     "explanation": "The function builds the SQL query with an f-string that injects sort.value directly into the statement. If a caller passes a non\u2011enum value (e.g., a raw string), malicious SQL can be executed. Enforce that sort is a SortColumn enum (or map the value through a whitelist) before interpolating, or construct the ORDER BY clause using a safe lookup rather than string interpolation."
+    }
+   ]
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Potential SQL injection via unvalidated sort parameter",
+   "usage": {
+    "input_tokens": 899,
+    "output_tokens": 728,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L2/r1/f0",
+     "path": "app/products.py",
+     "line": 7,
+     "category": "security",
+     "severity": "high",
+     "title": "Unvalidated enum value used directly in SQL query",
+     "explanation": "The function embeds `sort.value` into the SQL string via an f-string. While the code assumes `sort` is a `SortColumn` enum, Python's dynamic typing allows callers to pass any object with a `value` attribute, potentially containing malicious SQL. This can lead to SQL injection. Enforce the type (e.g., `if not isinstance(sort, SortColumn): raise ValueError`) or map the enum to a whitelist of column names and use parameterized queries for values only."
+    }
+   ]
+  },
+  {
+   "case": "py-0030-clean-sort-column-whitelist",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Potential SQL injection due to unvalidated sort identifier",
+   "usage": {
+    "input_tokens": 899,
+    "output_tokens": 637,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0030-clean-sort-column-whitelist/L2/r2/f0",
+     "path": "app/products.py",
+     "line": 6,
+     "category": "security",
+     "severity": "high",
+     "title": "Potential SQL injection via sort parameter",
+     "explanation": "The function builds the SQL query with an f-string that injects sort.value directly into the statement. If a caller passes a non\u2011enum value (e.g., a raw string), malicious SQL can be executed. Enforce that sort is a SortColumn enum (or map the value through a whitelist) before interpolating, or construct the ORDER BY clause using a safe lookup rather than string interpolation."
+    }
+   ]
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The changes introduce shared mutable state in Request, remove authentication from delete_project, and omit required user context when deleting a project.",
+   "usage": {
+    "input_tokens": 1625,
+    "output_tokens": 1698,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L0/r0/f0",
+     "path": "app/http.py",
+     "line": 1,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Request class uses class attributes for per\u2011request data",
+     "explanation": "Defining `user` and `json` as class attributes means they are shared across all Request instances, causing data leakage between requests. Change to instance attributes, e.g., define an `__init__(self, user=None, json=None)` and store them on `self`."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L0/r0/f1",
+     "path": "app/views.py",
+     "line": 85,
+     "category": "security",
+     "severity": "high",
+     "title": "delete_project no longer requires authentication",
+     "explanation": "The `@login_required` decorator was removed, allowing unauthenticated callers to delete projects. Re\u2011add the decorator above the function definition."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L0/r0/f2",
+     "path": "app/views.py",
+     "line": 88,
+     "category": "correctness",
+     "severity": "high",
+     "title": "delete_project does not pass user ID to store layer",
+     "explanation": "The call `store.delete_project(project_id)` omits the `user.id` argument that other store methods expect, potentially deleting projects without proper ownership checks. Update to `store.delete_project(user.id, project_id)` (or the correct signature) and adjust the store implementation if needed."
+    }
+   ]
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The changes introduce security and correctness regressions and a maintainability concern.",
+   "usage": {
+    "input_tokens": 1625,
+    "output_tokens": 865,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L0/r1/f0",
+     "path": "app/views.py",
+     "line": 71,
+     "category": "security",
+     "severity": "critical",
+     "title": "Missing authentication on delete_project endpoint",
+     "explanation": "The @login_required decorator was removed from the delete_project view, allowing unauthenticated users to invoke the delete operation. Re\u2011add the decorator to restore access control."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L0/r1/f1",
+     "path": "app/views.py",
+     "line": 73,
+     "category": "correctness",
+     "severity": "high",
+     "title": "delete_project calls store.delete_project with wrong arguments",
+     "explanation": "The original implementation passed the user ID to store.delete_project; the new code only passes project_id, likely causing a permission error or deleting the wrong project. Change the call to store.delete_project(user.id, project_id)."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L0/r1/f2",
+     "path": "app/http.py",
+     "line": 1,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Request class uses mutable class attributes for request data",
+     "explanation": "Defining `user` and `json` as class attributes means they are shared across all Request instances, which can lead to accidental cross\u2011request state leakage. Define an __init__ method that sets `self.user` and `self.json` per instance."
+    }
+   ]
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Missing authentication on delete_project and unsafe Request class design",
+   "usage": {
+    "input_tokens": 1625,
+    "output_tokens": 1847,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L0/r2/f0",
+     "path": "app/views.py",
+     "line": 85,
+     "category": "security",
+     "severity": "high",
+     "title": "delete_project endpoint lacks authentication",
+     "explanation": "The @login_required decorator was removed from delete_project, allowing unauthenticated users to delete projects. Re\u2011add the @login_required decorator above the function definition."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L0/r2/f1",
+     "path": "app/http.py",
+     "line": 2,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Request class uses class attributes for per\u2011request data",
+     "explanation": "Defining `user` and `json` as class attributes makes them shared across all Request instances, causing data leakage between requests. Change them to instance attributes, e.g., define an __init__(self, user=None, json=None) and store values on self."
+    }
+   ]
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Missing authentication on project deletion endpoint.",
+   "usage": {
+    "input_tokens": 2375,
+    "output_tokens": 1471,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L1/r0/f0",
+     "path": "app/views.py",
+     "line": 85,
+     "category": "security",
+     "severity": "high",
+     "title": "delete_project lacks @login_required",
+     "explanation": "The delete_project view no longer has the @login_required decorator, allowing unauthenticated users to delete projects. Re\u2011add the decorator above the function (e.g., @login_required) to enforce authentication."
+    }
+   ]
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Missing authentication on project deletion endpoint.",
+   "usage": {
+    "input_tokens": 2375,
+    "output_tokens": 1505,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L1/r1/f0",
+     "path": "app/views.py",
+     "line": 85,
+     "category": "security",
+     "severity": "high",
+     "title": "delete_project lacks @login_required decorator",
+     "explanation": "The delete_project view is no longer protected by the @login_required decorator, allowing unauthenticated users to invoke the delete operation. Add @login_required above the function definition to enforce authentication."
+    }
+   ]
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Missing authentication on project deletion endpoint.",
+   "usage": {
+    "input_tokens": 2375,
+    "output_tokens": 1505,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L1/r2/f0",
+     "path": "app/views.py",
+     "line": 85,
+     "category": "security",
+     "severity": "high",
+     "title": "delete_project lacks @login_required decorator",
+     "explanation": "The delete_project view is no longer protected by the @login_required decorator, allowing unauthenticated users to invoke the delete operation. Add @login_required above the function definition to enforce authentication."
+    }
+   ]
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The changes introduce several correctness and security issues: a mutable shared Request class, missing authentication on delete_project, and an incorrect store call signature.",
+   "usage": {
+    "input_tokens": 2545,
+    "output_tokens": 1790,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L2/r0/f0",
+     "path": "app/http.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Request class uses class attributes causing shared mutable state",
+     "explanation": "The Request class defines 'user' and 'json' as class attributes. All Request instances will share the same values, so data from one request can leak into another. Define them as instance attributes in __init__ (e.g., def __init__(self, user=None, json=None): self.user=user; self.json=json)."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L2/r0/f1",
+     "path": "app/views.py",
+     "line": 85,
+     "category": "security",
+     "severity": "high",
+     "title": "delete_project view lacks login_required protection",
+     "explanation": "The @login_required decorator was removed from delete_project, allowing unauthenticated callers to delete projects. Re\u2011add the @login_required decorator above the function definition."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L2/r0/f2",
+     "path": "app/views.py",
+     "line": 88,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "store.delete_project called with missing user id argument",
+     "explanation": "All store methods expect the acting user's id as the first argument, but delete_project passes only project_id. This will cause incorrect behavior or errors. Change the call to store.delete_project(user.id, project_id)."
+    }
+   ]
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The changes introduce several correctness and security issues: a mutable shared Request class, missing authentication on delete_project, and an incorrect store call signature.",
+   "usage": {
+    "input_tokens": 2545,
+    "output_tokens": 1790,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L2/r1/f0",
+     "path": "app/http.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Request class uses class attributes causing shared mutable state",
+     "explanation": "The Request class defines 'user' and 'json' as class attributes. All Request instances will share the same values, so data from one request can leak into another. Define them as instance attributes in __init__ (e.g., def __init__(self, user=None, json=None): self.user=user; self.json=json)."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L2/r1/f1",
+     "path": "app/views.py",
+     "line": 85,
+     "category": "security",
+     "severity": "high",
+     "title": "delete_project view lacks login_required protection",
+     "explanation": "The @login_required decorator was removed from delete_project, allowing unauthenticated callers to delete projects. Re\u2011add the @login_required decorator above the function definition."
+    },
+    {
+     "id": "py-0031-refactor-drops-login-required/L2/r1/f2",
+     "path": "app/views.py",
+     "line": 88,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "store.delete_project called with missing user id argument",
+     "explanation": "All store methods expect the acting user's id as the first argument, but delete_project passes only project_id. This will cause incorrect behavior or errors. Change the call to store.delete_project(user.id, project_id)."
+    }
+   ]
   }
  ]
 }

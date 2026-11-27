@@ -10,16 +10,16 @@ Precision is shown only once 80% of the findings needing a human verdict have on
 |---|---|---|---|---|---|---|---|---|---|---|
 | cerebras / `gpt-oss-120b` | L0 | 3 | **33/34 runs; per-bug mean 97% (95% CI 72–100, 12 bugs)** | 12/12 (100%, 76–100) | 11/12 (92%, 65–98) | n/a / n/a | not measured (9 of 9 unjudged) | n/a | 9 | [2026-11-27_cerebras-gpt-oss-120b_v0.2](2026-11-27_cerebras-gpt-oss-120b_v0.2.json) |
 | cerebras / `qwen-3.8-27b` | L0 | 3 | **87/93 runs; per-bug mean 94% (95% CI 79–98, 31 bugs)** | 29/31 (94%, 79–98) | 29/31 (94%, 79–98) | 12/14 (86%, 60–96) / 12/14 (86%, 60–96) | not measured (51 of 51 unjudged) | 0/39 (0%, 0–9) | 51 | [2026-11-27_cerebras-qwen-3.8-27b_v0.2](2026-11-27_cerebras-qwen-3.8-27b_v0.2.json) |
-| groq / `openai/gpt-oss-120b` (partial) ⚠ noisy: control FPR 25% (≥; 1 control findings unjudged) | L0 | 3 | **62/69 runs; per-bug mean 90% (95% CI 71–97, 23 bugs)** | 21/23 (91%, 73–98) | 20/23 (87%, 68–96) | 6/8 (75%, 41–93) / 6/8 (75%, 41–93) | not measured (18 of 21 unjudged) | 3/12 (25%, 9–53) | 18 | [2026-11-27_groq-openai-gpt-oss-120b_v0.2](2026-11-27_groq-openai-gpt-oss-120b_v0.2.json) |
-| groq / `qwen/qwen3.8-27b` (partial) | L0 | 3 | **66/81 runs; per-bug mean 81% (95% CI 63–92, 27 bugs)** | 22/27 (81%, 63–92) | 22/27 (81%, 63–92) | 7/12 (58%, 32–81) / 7/12 (58%, 32–81) | not measured (26 of 29 unjudged) | 3/15 (20%, 7–45) | 26 | [2026-11-27_groq-qwen-qwen3.8-27b_v0.2](2026-11-27_groq-qwen-qwen3.8-27b_v0.2.json) |
+| groq / `openai/gpt-oss-120b` (partial) | L0 | 3 | **64/78 runs; per-bug mean 82% (95% CI 64–92, 26 bugs)** | 22/26 (85%, 66–94) | 20/26 (77%, 58–89) | 7/11 (64%, 35–85) / 6/11 (55%, 28–79) | not measured (31 of 34 unjudged) | 3/15 (20%, 7–45) | 31 | [2026-11-27_groq-openai-gpt-oss-120b_v0.2](2026-11-27_groq-openai-gpt-oss-120b_v0.2.json) |
+| groq / `qwen/qwen3.8-27b` (partial) (1 reviews failed, to retry) | L0 | 3 | **66/81 runs; per-bug mean 81% (95% CI 63–92, 27 bugs)** | 22/27 (81%, 63–92) | 22/27 (81%, 63–92) | 7/12 (58%, 32–81) / 7/12 (58%, 32–81) | not measured (28 of 31 unjudged) | 3/17 (18%, 6–41) | 28 | [2026-11-27_groq-qwen-qwen3.8-27b_v0.2](2026-11-27_groq-qwen-qwen3.8-27b_v0.2.json) |
 | cerebras / `gpt-oss-120b` | L1 | 3 | **33/33 runs; per-bug mean 100% (95% CI 74–100, 11 bugs)** | 11/11 (100%, 74–100) | 11/11 (100%, 74–100) | n/a / n/a | not measured (2 of 2 unjudged) | n/a | 2 | [2026-11-27_cerebras-gpt-oss-120b_v0.2](2026-11-27_cerebras-gpt-oss-120b_v0.2.json) |
 | cerebras / `qwen-3.8-27b` | L1 | 3 | **87/93 runs; per-bug mean 94% (95% CI 79–98, 31 bugs)** | 29/31 (94%, 79–98) | 29/31 (94%, 79–98) | 12/14 (86%, 60–96) / 12/14 (86%, 60–96) | not measured (57 of 60 unjudged) | 3/39 (8%, 3–20) | 57 | [2026-11-27_cerebras-qwen-3.8-27b_v0.2](2026-11-27_cerebras-qwen-3.8-27b_v0.2.json) |
-| groq / `openai/gpt-oss-120b` (partial) (1 reviews failed, to retry) ⚠ noisy: control FPR 25% | L1 | 3 | **52/66 runs; per-bug mean 79% (95% CI 58–91, 22 bugs)** | 20/22 (91%, 72–98) | 16/22 (73%, 52–87) | 6/8 (75%, 41–93) / 4/8 (50%, 22–78) | not measured (15 of 18 unjudged) | 3/12 (25%, 9–53) | 15 | [2026-11-27_groq-openai-gpt-oss-120b_v0.2](2026-11-27_groq-openai-gpt-oss-120b_v0.2.json) |
-| groq / `qwen/qwen3.8-27b` (partial) (1 reviews failed, to retry) | L1 | 3 | **60/78 runs; per-bug mean 78% (95% CI 59–89, 27 bugs)** | 21/27 (78%, 59–89) | 21/27 (78%, 59–89) | 7/12 (58%, 32–81) / 7/12 (58%, 32–81) | not measured (32 of 34 unjudged) | 2/14 (14%, 4–40) | 32 | [2026-11-27_groq-qwen-qwen3.8-27b_v0.2](2026-11-27_groq-qwen-qwen3.8-27b_v0.2.json) |
+| groq / `qwen/qwen3.8-27b` (partial) | L1 | 3 | **61/79 runs; per-bug mean 78% (95% CI 59–89, 27 bugs)** | 21/27 (78%, 59–89) | 21/27 (78%, 59–89) | 7/12 (58%, 32–81) / 7/12 (58%, 32–81) | not measured (34 of 36 unjudged) | 2/14 (14%, 4–40) | 34 | [2026-11-27_groq-qwen-qwen3.8-27b_v0.2](2026-11-27_groq-qwen-qwen3.8-27b_v0.2.json) |
+| groq / `openai/gpt-oss-120b` (partial) | L1 | 3 | **56/78 runs; per-bug mean 72% (95% CI 53–85, 26 bugs)** | 22/26 (85%, 66–94) | 17/26 (65%, 46–81) | 7/11 (64%, 35–85) / 5/11 (45%, 21–72) | not measured (25 of 28 unjudged) | 3/15 (20%, 7–45) | 25 | [2026-11-27_groq-openai-gpt-oss-120b_v0.2](2026-11-27_groq-openai-gpt-oss-120b_v0.2.json) |
 | cerebras / `gpt-oss-120b` | L2 | 3 | **33/33 runs; per-bug mean 100% (95% CI 74–100, 11 bugs)** | 11/11 (100%, 74–100) | 11/11 (100%, 74–100) | n/a / n/a | not measured (4 of 4 unjudged) | n/a | 4 | [2026-11-27_cerebras-gpt-oss-120b_v0.2](2026-11-27_cerebras-gpt-oss-120b_v0.2.json) |
 | cerebras / `qwen-3.8-27b` | L2 | 3 | **93/93 runs; per-bug mean 100% (95% CI 89–100, 31 bugs)** | 31/31 (100%, 89–100) | 31/31 (100%, 89–100) | 14/14 (100%, 78–100) / 14/14 (100%, 78–100) | not measured (54 of 54 unjudged) | 0/38 (0%, 0–9) | 54 | [2026-11-27_cerebras-qwen-3.8-27b_v0.2](2026-11-27_cerebras-qwen-3.8-27b_v0.2.json) |
-| groq / `qwen/qwen3.8-27b` (partial) | L2 | 3 | **69/77 runs; per-bug mean 90% (95% CI 73–97, 26 bugs)** | 24/26 (92%, 76–98) | 23/26 (88%, 71–96) | 9/11 (82%, 52–95) / 9/11 (82%, 52–95) | not measured (20 of 20 unjudged) | 0/15 (0%, 0–20) | 20 | [2026-11-27_groq-qwen-qwen3.8-27b_v0.2](2026-11-27_groq-qwen-qwen3.8-27b_v0.2.json) |
-| groq / `openai/gpt-oss-120b` (partial) | L2 | 3 | **53/66 runs; per-bug mean 80% (95% CI 60–92, 22 bugs)** | 20/22 (91%, 72–98) | 16/22 (73%, 52–87) | 6/8 (75%, 41–93) / 3/8 (38%, 14–69) | not measured (16 of 16 unjudged) | 0/12 (0%, 0–24) | 16 | [2026-11-27_groq-openai-gpt-oss-120b_v0.2](2026-11-27_groq-openai-gpt-oss-120b_v0.2.json) |
+| groq / `qwen/qwen3.8-27b` (partial) | L2 | 3 | **72/80 runs; per-bug mean 90% (95% CI 73–97, 27 bugs)** | 25/27 (93%, 77–98) | 24/27 (89%, 72–96) | 10/12 (83%, 55–95) / 10/12 (83%, 55–95) | not measured (26 of 26 unjudged) | 0/15 (0%, 0–20) | 26 | [2026-11-27_groq-qwen-qwen3.8-27b_v0.2](2026-11-27_groq-qwen-qwen3.8-27b_v0.2.json) |
+| groq / `openai/gpt-oss-120b` (partial) | L2 | 3 | **62/77 runs; per-bug mean 81% (95% CI 62–91, 26 bugs)** | 24/26 (92%, 76–98) | 19/26 (73%, 54–86) | 9/11 (82%, 52–95) / 6/11 (55%, 28–79) | not measured (28 of 28 unjudged) | 0/15 (0%, 0–20) | 28 | [2026-11-27_groq-openai-gpt-oss-120b_v0.2](2026-11-27_groq-openai-gpt-oss-120b_v0.2.json) |
 
 ### Per-run recall by case origin
 
@@ -29,16 +29,16 @@ Synthetic cases were written for this benchmark by LLMs (py-0028 onward by Claud
 |---|---|---|---|
 | cerebras / `gpt-oss-120b` | L0 | 97% (95% CI 72–100, 12 bugs) | n/a |
 | cerebras / `qwen-3.8-27b` | L0 | 91% (95% CI 72–97, 22 bugs) | 100% (95% CI 70–100, 9 bugs) |
-| groq / `openai/gpt-oss-120b` (partial) | L0 | 89% (95% CI 67–97, 18 bugs) | 93% (95% CI 50–100, 5 bugs) |
+| groq / `openai/gpt-oss-120b` (partial) | L0 | 79% (95% CI 58–91, 21 bugs) | 93% (95% CI 50–100, 5 bugs) |
 | groq / `qwen/qwen3.8-27b` (partial) | L0 | 77% (95% CI 57–90, 22 bugs) | 100% (95% CI 57–100, 5 bugs) |
 | cerebras / `gpt-oss-120b` | L1 | 100% (95% CI 74–100, 11 bugs) | n/a |
 | cerebras / `qwen-3.8-27b` | L1 | 91% (95% CI 72–97, 22 bugs) | 100% (95% CI 70–100, 9 bugs) |
-| groq / `openai/gpt-oss-120b` (partial) | L1 | 85% (95% CI 63–95, 18 bugs) | 50% (95% CI 15–85, 4 bugs) |
+| groq / `openai/gpt-oss-120b` (partial) | L1 | 78% (95% CI 57–90, 21 bugs) | 47% (95% CI 15–81, 5 bugs) |
 | groq / `qwen/qwen3.8-27b` (partial) | L1 | 77% (95% CI 57–90, 22 bugs) | 80% (95% CI 38–96, 5 bugs) |
 | cerebras / `gpt-oss-120b` | L2 | 100% (95% CI 74–100, 11 bugs) | n/a |
 | cerebras / `qwen-3.8-27b` | L2 | 100% (95% CI 85–100, 22 bugs) | 100% (95% CI 70–100, 9 bugs) |
-| groq / `openai/gpt-oss-120b` (partial) | L2 | 85% (95% CI 63–95, 18 bugs) | 58% (95% CI 20–89, 4 bugs) |
-| groq / `qwen/qwen3.8-27b` (partial) | L2 | 90% (95% CI 71–97, 21 bugs) | 87% (95% CI 43–98, 5 bugs) |
+| groq / `openai/gpt-oss-120b` (partial) | L2 | 87% (95% CI 67–96, 21 bugs) | 53% (95% CI 19–85, 5 bugs) |
+| groq / `qwen/qwen3.8-27b` (partial) | L2 | 91% (95% CI 72–97, 22 bugs) | 87% (95% CI 43–98, 5 bugs) |
 
 ## v0.1 — public cases
 

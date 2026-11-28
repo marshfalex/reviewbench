@@ -9460,7 +9460,300 @@
    "case": "py-0036-django-admindocs-template-traversal",
    "level": "L1",
    "run": 0,
-   "error": "rate_limited: retry-after 1830s (quota)",
+   "error": null,
+   "summary": "Removal of safe_join introduces a path\u2011traversal risk when reading template files",
+   "usage": {
+    "input_tokens": 4089,
+    "output_tokens": 536,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L1/r0/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 330,
+     "category": "security",
+     "severity": "high",
+     "title": "Potential directory traversal via template path",
+     "explanation": "The code now builds the template file path with Path(directory) / template, which does not sanitize the template variable. An attacker could include \"..\" components in the template name to read files outside the intended template directories. Re\u2011introduce django.utils._os.safe_join (or equivalent validation) to ensure the final path stays within the allowed directory before accessing the file."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Path traversal risk introduced by replacing safe_join with naive Path concatenation.",
+   "usage": {
+    "input_tokens": 4089,
+    "output_tokens": 1174,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L1/r1/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 329,
+     "category": "security",
+     "severity": "high",
+     "title": "Directory traversal vulnerability in template file resolution",
+     "explanation": "The code now builds the template path using `Path(directory) / template`, which does not sanitize the `template` variable. An attacker who can control the `template` parameter (e.g., via the URL) could include `..` components to read files outside the intended template directories, bypassing the previous `safe_join` protection. Replace the Path join with Django's `safe_join` (or re\u2011introduce it) to ensure the final path stays within `directory`.\nFix: `from django.utils._os import safe_join` and use `template_file = Path(safe_join(directory, template))` or validate/clean the `template` value before joining."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Removal of safe_join introduces a path\u2011traversal risk when reading template files",
+   "usage": {
+    "input_tokens": 4089,
+    "output_tokens": 536,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L1/r2/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 330,
+     "category": "security",
+     "severity": "high",
+     "title": "Potential directory traversal via template path",
+     "explanation": "The code now builds the template file path with Path(directory) / template, which does not sanitize the template variable. An attacker could include \"..\" components in the template name to read files outside the intended template directories. Re\u2011introduce django.utils._os.safe_join (or equivalent validation) to ensure the final path stays within the allowed directory before accessing the file."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Path handling regression introduces potential directory traversal vulnerability.",
+   "usage": {
+    "input_tokens": 4089,
+    "output_tokens": 390,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L2/r0/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 332,
+     "category": "security",
+     "severity": "medium",
+     "title": "Unsafe template path construction",
+     "explanation": "The code replaces the previous use of Django's safe_join (which normalizes the path and prevents directory traversal) with Path(directory) / template. This allows a malicious template name containing \"..\" to escape the intended template directory and read arbitrary files on the filesystem. Fix by re\u2011introducing safe_join (or pathlib.Path.resolve() with a check that the resolved path is within the allowed directory) before reading the file."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Removal of safe_join introduces a path\u2011traversal risk when reading template files",
+   "usage": {
+    "input_tokens": 4089,
+    "output_tokens": 536,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L2/r1/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 330,
+     "category": "security",
+     "severity": "high",
+     "title": "Potential directory traversal via template path",
+     "explanation": "The code now builds the template file path with Path(directory) / template, which does not sanitize the template variable. An attacker could include \"..\" components in the template name to read files outside the intended template directories. Re\u2011introduce django.utils._os.safe_join (or equivalent validation) to ensure the final path stays within the allowed directory before accessing the file."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Security issue introduced by replacing safe_join with unsafe Path concatenation, enabling path traversal.",
+   "usage": {
+    "input_tokens": 4089,
+    "output_tokens": 977,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L2/r2/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 329,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal vulnerability in TemplateDetailView",
+     "explanation": "The code now builds a file path with `Path(directory) / template` which does not sanitize the `template` variable. An attacker (a staff user) could supply a template name containing \"..\" or an absolute path to read arbitrary files outside the template directories. The original implementation used `django.utils._os.safe_join` which prevented such traversal. Replace the Path join with `safe_join` (or re\u2011implement its checks) to ensure the resulting path stays within the allowed directory."
+    }
+   ]
+  },
+  {
+   "case": "py-0037-pyjwt-hmac-key-confusion",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The changes introduce potential runtime errors and API contract breaks.",
+   "usage": {
+    "input_tokens": 1828,
+    "output_tokens": 1007,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L0/r0/f0",
+     "path": "jwt/utils.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Removed public helper functions is_pem_format and is_ssh_key",
+     "explanation": "The diff deletes the definitions of `is_pem_format` and `is_ssh_key`. Other modules in the package may import these utilities; after this change they will raise `AttributeError` at import time, breaking functionality. Re\u2011add the functions or update all callers to use the new logic."
+    },
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L0/r0/f1",
+     "path": "jwt/algorithms.py",
+     "line": 45,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "String\u2011substring check may reject valid HMAC keys",
+     "explanation": "The new `invalid_strings` list is checked with `any(string_value in key for string_value in invalid_strings)`. If a legitimate symmetric key happens to contain the byte sequence `b\"ssh-rsa\"` (or any other listed substring), the key will be incorrectly rejected. Use a stricter check (e.g., look for PEM/SSH headers at the start of the key) instead of a generic substring search."
+    },
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L0/r0/f2",
+     "path": "jwt/algorithms.py",
+     "line": 108,
+     "category": "security",
+     "severity": "medium",
+     "title": "Changed exception type for invalid key format",
+     "explanation": "The original code raised `InvalidKeyError` for unsupported key types; the new version raises a generic `TypeError`. Callers that catch `InvalidKeyError` will no longer handle the error, potentially exposing uncaught exceptions. Restore the original exception type or raise a subclass of `InvalidKeyError`."
+    }
+   ]
+  },
+  {
+   "case": "py-0037-pyjwt-hmac-key-confusion",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The changes introduce potential breakage and incorrect error handling.",
+   "usage": {
+    "input_tokens": 1828,
+    "output_tokens": 1348,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L0/r1/f0",
+     "path": "jwt/utils.py",
+     "line": 1,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Removed public helper functions is_pem_format and is_ssh_key",
+     "explanation": "Other modules may still import utils.is_pem_format or utils.is_ssh_key. Deleting them will raise ImportError at runtime, breaking the package. Re\u2011export the functions or keep the original implementations."
+    },
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L0/r1/f1",
+     "path": "jwt/algorithms.py",
+     "line": 115,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "prepare_key raises TypeError instead of InvalidKeyError for unsupported keys",
+     "explanation": "Callers of HMACAlgorithm.prepare_key expect InvalidKeyError for bad keys. Raising TypeError changes the exception contract and may cause uncaught errors. Raise InvalidKeyError with a clear message instead of TypeError."
+    },
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L0/r1/f2",
+     "path": "jwt/algorithms.py",
+     "line": 45,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "Substring check for asymmetric key markers can reject legitimate HMAC secrets",
+     "explanation": "The new logic flags any key containing the byte strings \"-----BEGIN PUBLIC KEY-----\", \"ssh-rsa\", etc. A legitimate symmetric secret that happens to contain those substrings would be rejected, leading to confusing errors. Use proper PEM/SSH parsing (e.g., the removed is_pem_format/is_ssh_key helpers) instead of raw substring matching."
+    }
+   ]
+  },
+  {
+   "case": "py-0037-pyjwt-hmac-key-confusion",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The changes introduce missing utility functions and alter exception handling, potentially causing runtime errors.",
+   "usage": {
+    "input_tokens": 1828,
+    "output_tokens": 1290,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L0/r2/f0",
+     "path": "jwt/utils.py",
+     "line": 2,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Removed public helpers is_pem_format and is_ssh_key",
+     "explanation": "The functions `is_pem_format` and `is_ssh_key` were deleted from `jwt/utils.py` but may still be imported elsewhere in the package. This will raise ImportError at import time, breaking any code that relies on them. Re\u2011add the functions or update all import sites to use the new logic."
+    },
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L0/r2/f1",
+     "path": "jwt/algorithms.py",
+     "line": 115,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Changed exception type for invalid EdDSA key input",
+     "explanation": "The method now raises `TypeError` instead of the library\u2011specific `InvalidKeyError` when a non\u2011PEM/SSH key is supplied. Callers that catch `InvalidKeyError` will no longer handle the error, leading to uncaught exceptions. Restore raising `InvalidKeyError` (or a subclass) to preserve the original API contract."
+    }
+   ]
+  },
+  {
+   "case": "py-0037-pyjwt-hmac-key-confusion",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The changes introduce security validation gaps, alter exception behavior, and remove utility functions that may be used elsewhere.",
+   "usage": {
+    "input_tokens": 3371,
+    "output_tokens": 1887,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L1/r0/f0",
+     "path": "jwt/algorithms.py",
+     "line": 53,
+     "category": "security",
+     "severity": "high",
+     "title": "Insufficient asymmetric key detection in HMACAlgorithm.prepare_key",
+     "explanation": "The new logic only checks for a few PEM/SSH substrings, allowing many other asymmetric key formats (e.g., \"-----BEGIN PRIVATE KEY-----\", EC keys, etc.) to be accepted as HMAC secrets. This can lead to misuse of asymmetric keys and potential security issues. Restore comprehensive detection (e.g., reuse the original is_pem_format/is_ssh_key helpers or a robust regex) to reject any PEM or SSH key."
+    },
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L1/r0/f1",
+     "path": "jwt/algorithms.py",
+     "line": 115,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Changed exception type in OKPAlgorithm.prepare_key",
+     "explanation": "The method now raises TypeError instead of InvalidKeyError when the key is not a PEM/OpenSSH key. Callers that catch InvalidKeyError will miss this error, potentially causing uncaught exceptions. Revert to raising InvalidKeyError or document the change and update callers accordingly."
+    },
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L1/r0/f2",
+     "path": "jwt/utils.py",
+     "line": 70,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Removed is_pem_format and is_ssh_key utilities",
+     "explanation": "The functions were deleted from utils.py but may still be imported by other modules, leading to ImportError at runtime. Either keep the functions (even as thin wrappers) or ensure all imports are removed/updated across the codebase."
+    }
+   ]
+  },
+  {
+   "case": "py-0037-pyjwt-hmac-key-confusion",
+   "level": "L1",
+   "run": 1,
+   "error": "rate_limited: retry-after 1593s (quota)",
    "summary": "",
    "usage": {},
    "findings": []

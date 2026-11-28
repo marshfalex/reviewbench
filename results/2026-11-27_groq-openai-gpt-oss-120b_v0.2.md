@@ -6,15 +6,15 @@ Created 2026-11-27T00:42:12+00:00, k=3 runs per case and level, status `partial`
 
 | level | difficulty | any-of-k recall | all-of-k recall | per-run recall | precision (adjudicated) | control runs w/ FP | unadjudicated | errors |
 |---|---|---|---|---|---|---|---|---|
-| L0 | all | 24/29 (83%, 66–92) | 22/29 (76%, 58–88) | 70/87 runs; per-bug mean 80% (95% CI 63–91, 29 bugs) | not measured (37 of 40 unjudged) | 3/21 (14%, 5–35) | 37 | 0 |
-| L0 | easy | 16/17 (94%, 73–99) | 15/17 (88%, 66–97) | 47/51 runs; per-bug mean 92% (95% CI 70–98, 17 bugs) | not measured (37 of 40 unjudged) | 3/12 (25%, 9–53) | 12 | 0 |
-| L0 | hard | 8/12 (67%, 39–86) | 7/12 (58%, 32–81) | 23/36 runs; per-bug mean 64% (95% CI 37–84, 12 bugs) | not measured (37 of 40 unjudged) | 0/9 (0%, 0–30) | 25 | 0 |
-| L1 | all | 24/28 (86%, 68–94) | 18/28 (64%, 46–79) | 60/84 runs; per-bug mean 71% (95% CI 53–85, 28 bugs) | not measured (27 of 30 unjudged) | 3/21 (14%, 5–35) | 27 | 1 |
-| L1 | easy | 16/16 (100%, 81–100) | 12/16 (75%, 50–90) | 40/48 runs; per-bug mean 83% (95% CI 59–95, 16 bugs) | not measured (27 of 30 unjudged) | 3/12 (25%, 9–53) | 10 | 1 |
-| L1 | hard | 8/12 (67%, 39–86) | 6/12 (50%, 25–75) | 20/36 runs; per-bug mean 56% (95% CI 30–79, 12 bugs) | not measured (27 of 30 unjudged) | 0/9 (0%, 0–30) | 17 | 0 |
-| L2 | all | 26/28 (93%, 77–98) | 20/28 (71%, 53–85) | 67/84 runs; per-bug mean 80% (95% CI 62–91, 28 bugs) | not measured (32 of 32 unjudged) | 0/21 (0%, 0–16) | 32 | 0 |
-| L2 | easy | 16/16 (100%, 81–100) | 13/16 (81%, 57–93) | 42/48 runs; per-bug mean 88% (95% CI 64–97, 16 bugs) | not measured (32 of 32 unjudged) | 0/12 (0%, 0–24) | 10 | 0 |
-| L2 | hard | 10/12 (83%, 55–95) | 7/12 (58%, 32–81) | 25/36 runs; per-bug mean 69% (95% CI 42–88, 12 bugs) | not measured (32 of 32 unjudged) | 0/9 (0%, 0–30) | 22 | 0 |
+| L0 | all | 25/30 (83%, 66–93) | 22/30 (73%, 56–86) | 71/90 runs; per-bug mean 79% (95% CI 61–90, 30 bugs) | not measured (43 of 46 unjudged) | 3/21 (14%, 5–35) | 43 | 0 |
+| L0 | easy | 16/17 (94%, 73–99) | 15/17 (88%, 66–97) | 47/51 runs; per-bug mean 92% (95% CI 70–98, 17 bugs) | not measured (43 of 46 unjudged) | 3/12 (25%, 9–53) | 12 | 0 |
+| L0 | hard | 9/13 (69%, 42–87) | 7/13 (54%, 29–77) | 24/39 runs; per-bug mean 62% (95% CI 36–82, 13 bugs) | not measured (43 of 46 unjudged) | 0/9 (0%, 0–30) | 31 | 0 |
+| L1 | all | 26/30 (87%, 70–95) | 19/30 (63%, 46–78) | 63/88 runs; per-bug mean 72% (95% CI 54–85, 30 bugs) | not measured (29 of 32 unjudged) | 3/21 (14%, 5–35) | 29 | 1 |
+| L1 | easy | 17/17 (100%, 82–100) | 12/17 (71%, 47–87) | 42/51 runs; per-bug mean 82% (95% CI 59–94, 17 bugs) | not measured (29 of 32 unjudged) | 3/12 (25%, 9–53) | 11 | 0 |
+| L1 | hard | 9/13 (69%, 42–87) | 7/13 (54%, 29–77) | 21/37 runs; per-bug mean 59% (95% CI 33–81, 13 bugs) | not measured (29 of 32 unjudged) | 0/9 (0%, 0–30) | 18 | 1 |
+| L2 | all | 27/29 (93%, 78–98) | 20/29 (69%, 51–83) | 69/87 runs; per-bug mean 79% (95% CI 62–90, 29 bugs) | not measured (33 of 33 unjudged) | 0/21 (0%, 0–16) | 33 | 0 |
+| L2 | easy | 17/17 (100%, 82–100) | 13/17 (76%, 53–90) | 44/51 runs; per-bug mean 86% (95% CI 63–96, 17 bugs) | not measured (33 of 33 unjudged) | 0/12 (0%, 0–24) | 11 | 0 |
+| L2 | hard | 10/12 (83%, 55–95) | 7/12 (58%, 32–81) | 25/36 runs; per-bug mean 69% (95% CI 42–88, 12 bugs) | not measured (33 of 33 unjudged) | 0/9 (0%, 0–30) | 22 | 0 |
 
 ## Per case
 
@@ -126,4 +126,7 @@ Created 2026-11-27T00:42:12+00:00, k=3 runs per case and level, status `partial`
 | py-0035-gitpython-ref-path-traversal | L1 | 1/3 | 1 | 0 | 0 | 0 | 2 | 0 |
 | py-0035-gitpython-ref-path-traversal | L2 | 1/3 | 1 | 0 | 0 | 0 | 2 | 0 |
 | py-0036-django-admindocs-template-traversal | L0 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
-| py-0036-django-admindocs-template-traversal | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 1 |
+| py-0036-django-admindocs-template-traversal | L1 | 2/3 | 2 | 0 | 0 | 0 | 1 | 0 |
+| py-0036-django-admindocs-template-traversal | L2 | 2/3 | 2 | 0 | 0 | 0 | 1 | 0 |
+| py-0037-pyjwt-hmac-key-confusion | L0 | 1/3 | 1 | 0 | 0 | 0 | 6 | 0 |
+| py-0037-pyjwt-hmac-key-confusion | L1 | 1/1 | 1 | 0 | 0 | 0 | 1 | 1 |

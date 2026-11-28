@@ -9368,7 +9368,1060 @@
    "case": "py-0036-django-admindocs-template-traversal",
    "level": "L2",
    "run": 2,
-   "error": "rate_limited: retry-after 1363s (quota)",
+   "error": null,
+   "summary": "The PR removes the use of `safe_join` in `TemplateDetailView` to construct file paths, replacing it with direct `Path` concatenation. This introduces a path traversal vulnerability, allowing users to read arbitrary files on the server by providing a template name containing `../` sequences.",
+   "usage": {
+    "input_tokens": 4351,
+    "output_tokens": 239,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L2/r2/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 332,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal vulnerability in TemplateDetailView",
+     "explanation": "The change from `safe_join(directory, template)` to `Path(directory) / template` removes the protection against path traversal. The `template` variable is derived from user input (`self.kwargs['template']`) and is not sanitized. An attacker can provide a template name like `../../etc/passwd` to read arbitrary files on the system. The `safe_join` function was specifically designed to prevent this by ensuring the resulting path stays within the base directory. The fix is to revert to using `safe_join` or implement equivalent path sanitization logic to ensure the resolved path is within the allowed template directories."
+    }
+   ]
+  },
+  {
+   "case": "py-0037-pyjwt-hmac-key-confusion",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR replaces robust PEM/SSH key detection with naive substring matching, which introduces a high risk of false positives (e.g., rejecting valid HMAC secrets that contain key headers) and breaks EdDSA key handling by raising TypeError instead of InvalidKeyError for non-PEM inputs.",
+   "usage": {
+    "input_tokens": 1931,
+    "output_tokens": 346,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L0/r0/f0",
+     "path": "jwt/algorithms.py",
+     "line": 52,
+     "category": "correctness",
+     "severity": "high",
+     "title": "False positive in HMAC key validation",
+     "explanation": "Using `any(string_value in key ...)` to check for PEM/SSH headers is overly broad. A valid HMAC secret that happens to contain a substring like `ssh-rsa` or `-----BEGIN PUBLIC KEY-----` (e.g., in a comment or base64 data) will be incorrectly rejected as an asymmetric key. The previous `is_pem_format` used a strict regex to ensure the entire key was a valid PEM block."
+    },
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L0/r0/f1",
+     "path": "jwt/algorithms.py",
+     "line": 124,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Inconsistent error type for EdDSA keys",
+     "explanation": "The `prepare_key` method for EdDSA now raises `TypeError` for non-PEM/SSH string keys, whereas the previous implementation raised `InvalidKeyError`. This breaks API consistency and may cause callers expecting `InvalidKeyError` to fail unexpectedly."
+    }
+   ]
+  },
+  {
+   "case": "py-0037-pyjwt-hmac-key-confusion",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR replaces robust PEM/SSH key detection with naive substring matching, which introduces a high risk of false positives (e.g., rejecting valid HMAC secrets that contain key headers) and breaks EdDSA key handling by raising TypeError instead of InvalidKeyError for non-PEM inputs.",
+   "usage": {
+    "input_tokens": 1931,
+    "output_tokens": 348,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L0/r1/f0",
+     "path": "jwt/algorithms.py",
+     "line": 52,
+     "category": "correctness",
+     "severity": "high",
+     "title": "False positive in HMAC key validation",
+     "explanation": "Using `any(string_value in key ...)` to check for PEM/SSH headers is overly broad. A valid HMAC secret that happens to contain a substring like `ssh-rsa` or `-----BEGIN PUBLIC KEY-----` (e.g., in a comment or base64 data) will be incorrectly rejected as an asymmetric key. The previous `is_pem_format` used a strict regex to ensure the entire key was a valid PEM block."
+    },
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L0/r1/f1",
+     "path": "jwt/algorithms.py",
+     "line": 124,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Inconsistent error type for EdDSA keys",
+     "explanation": "The `prepare_key` method for EdDSA now raises `TypeError` when a string key is not recognized as PEM or SSH. The previous implementation raised `InvalidKeyError`. This inconsistency may break callers that specifically catch `InvalidKeyError` for all key validation failures."
+    }
+   ]
+  },
+  {
+   "case": "py-0037-pyjwt-hmac-key-confusion",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR replaces robust PEM/SSH key detection with naive substring matching, which introduces a high risk of false positives (e.g., rejecting valid HMAC secrets that contain key headers) and breaks EdDSA key handling by raising TypeError instead of InvalidKeyError for non-PEM inputs.",
+   "usage": {
+    "input_tokens": 1931,
+    "output_tokens": 366,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L0/r2/f0",
+     "path": "jwt/algorithms.py",
+     "line": 52,
+     "category": "correctness",
+     "severity": "high",
+     "title": "False positive in HMAC key validation",
+     "explanation": "Using `any(string_value in key ...)` to check for PEM/SSH headers is overly broad. A valid HMAC secret that happens to contain a substring like `ssh-rsa` or `-----BEGIN PUBLIC KEY-----` (e.g., in a comment or base64 data) will be incorrectly rejected as an asymmetric key. The previous `is_pem_format` used a strict regex to ensure the entire key was a valid PEM block."
+    },
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L0/r2/f1",
+     "path": "jwt/algorithms.py",
+     "line": 124,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Inconsistent error type for EdDSA keys",
+     "explanation": "The `prepare_key` method for EdDSA now raises `TypeError` when a string key is not recognized as PEM or SSH. However, the rest of the library (and the previous implementation) raises `InvalidKeyError` for invalid keys. This inconsistency will break callers that catch `InvalidKeyError` to handle bad keys, leading to unhandled exceptions."
+    }
+   ]
+  },
+  {
+   "case": "py-0037-pyjwt-hmac-key-confusion",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR replaces robust PEM/SSH key detection with a hardcoded list of magic strings, which fails to reject many valid asymmetric keys (e.g., EC, DSA, generic PKCS#8) when used as HMAC secrets. It also changes the error type for invalid EdDSA keys from InvalidKeyError to TypeError, breaking API contracts.",
+   "usage": {
+    "input_tokens": 3634,
+    "output_tokens": 326,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L1/r0/f0",
+     "path": "jwt/algorithms.py",
+     "line": 46,
+     "category": "security",
+     "severity": "high",
+     "title": "Incomplete asymmetric key detection for HMAC",
+     "explanation": "The hardcoded list of invalid strings only checks for specific RSA and generic PEM headers. It fails to detect EC, DSA, or generic PKCS#8 keys (e.g., '-----BEGIN EC PRIVATE KEY-----' or '-----BEGIN PRIVATE KEY-----'), allowing asymmetric keys to be silently used as HMAC secrets, which is a security anti-pattern."
+    },
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L1/r0/f1",
+     "path": "jwt/algorithms.py",
+     "line": 124,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Inconsistent exception type for invalid EdDSA keys",
+     "explanation": "The code now raises TypeError instead of InvalidKeyError for invalid EdDSA keys. This breaks the expected exception hierarchy for callers catching InvalidKeyError, leading to unhandled exceptions or incorrect error handling."
+    }
+   ]
+  },
+  {
+   "case": "py-0037-pyjwt-hmac-key-confusion",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR replaces robust PEM/SSH key detection with a hardcoded list of substrings for HMAC validation and changes EdDSA key loading to raise `TypeError` instead of `InvalidKeyError` for invalid inputs.",
+   "usage": {
+    "input_tokens": 3634,
+    "output_tokens": 338,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L1/r1/f0",
+     "path": "jwt/algorithms.py",
+     "line": 46,
+     "category": "security",
+     "severity": "medium",
+     "title": "Incomplete asymmetric key detection for HMAC",
+     "explanation": "The hardcoded list of invalid strings misses common asymmetric key formats such as `-----BEGIN EC PRIVATE KEY-----`, `-----BEGIN OPENSSH PRIVATE KEY-----`, and `ssh-ed25519`. This allows asymmetric keys to be used as HMAC secrets, which is a security anti-pattern (asymmetric keys are not designed for HMAC and may lead to weak or unexpected behavior). Fix: Restore the use of `is_pem_format` and `is_ssh_key` or implement a more comprehensive check that covers all standard PEM and SSH key types."
+    },
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L1/r1/f1",
+     "path": "jwt/algorithms.py",
+     "line": 124,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Inconsistent exception type for invalid EdDSA keys",
+     "explanation": "The `prepare_key` method for EdDSA algorithms now raises `TypeError` for invalid key inputs, whereas the rest of the library (and the previous implementation) raises `InvalidKeyError`. This breaks the expected exception hierarchy for callers that catch `InvalidKeyError` to handle key-related errors. Fix: Raise `InvalidKeyError` instead of `TypeError` to maintain consistency with the library's error handling contract."
+    }
+   ]
+  },
+  {
+   "case": "py-0037-pyjwt-hmac-key-confusion",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR replaces robust PEM/SSH key detection with a hardcoded list of magic strings, which fails to reject many valid asymmetric keys (e.g., EC, DSA, generic RSA) when used as HMAC secrets. It also changes the error type for invalid EdDSA keys from InvalidKeyError to TypeError, breaking API contracts.",
+   "usage": {
+    "input_tokens": 3634,
+    "output_tokens": 365,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L1/r2/f0",
+     "path": "jwt/algorithms.py",
+     "line": 46,
+     "category": "security",
+     "severity": "high",
+     "title": "Incomplete asymmetric key detection for HMAC",
+     "explanation": "The hardcoded list of invalid strings only checks for specific PEM headers (RSA, generic public, certificate) and 'ssh-rsa'. It fails to detect other valid asymmetric keys such as EC ('-----BEGIN EC PRIVATE KEY-----'), DSA, or generic private keys ('-----BEGIN PRIVATE KEY-----'). This allows users to accidentally use asymmetric keys as HMAC secrets, which is a security anti-pattern that the previous `is_pem_format` check correctly prevented."
+    },
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L1/r2/f1",
+     "path": "jwt/algorithms.py",
+     "line": 124,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Inconsistent error type for invalid EdDSA keys",
+     "explanation": "The `prepare_key` method for EdDSA algorithms now raises `TypeError` instead of `InvalidKeyError` when the key is not a recognized PEM or SSH format. This breaks the expected exception hierarchy for key validation errors, potentially causing unhandled exceptions in code that specifically catches `InvalidKeyError`."
+    }
+   ]
+  },
+  {
+   "case": "py-0037-pyjwt-hmac-key-confusion",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR replaces robust PEM/SSH key detection with a hardcoded list of substrings for HMAC validation and changes EdDSA key loading to raise `TypeError` instead of `InvalidKeyError` for invalid inputs.",
+   "usage": {
+    "input_tokens": 3634,
+    "output_tokens": 338,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L2/r0/f0",
+     "path": "jwt/algorithms.py",
+     "line": 46,
+     "category": "security",
+     "severity": "medium",
+     "title": "Incomplete asymmetric key detection for HMAC",
+     "explanation": "The hardcoded list of invalid strings misses common asymmetric key formats such as `-----BEGIN EC PRIVATE KEY-----`, `-----BEGIN OPENSSH PRIVATE KEY-----`, and `ssh-ed25519`. This allows asymmetric keys to be used as HMAC secrets, which is a security anti-pattern (asymmetric keys are not designed for HMAC and may lead to weak or unexpected behavior). Fix: Restore the use of `is_pem_format` and `is_ssh_key` or implement a more comprehensive check that covers all standard PEM and SSH key types."
+    },
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L2/r0/f1",
+     "path": "jwt/algorithms.py",
+     "line": 124,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Inconsistent exception type for invalid EdDSA keys",
+     "explanation": "The `prepare_key` method for EdDSA algorithms now raises `TypeError` for invalid key inputs, whereas the rest of the library (and the previous implementation) raises `InvalidKeyError`. This breaks the expected exception hierarchy for callers that catch `InvalidKeyError` to handle key-related errors. Fix: Raise `InvalidKeyError` instead of `TypeError` to maintain consistency with the library's error handling contract."
+    }
+   ]
+  },
+  {
+   "case": "py-0037-pyjwt-hmac-key-confusion",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR replaces robust PEM/SSH key detection with a hardcoded list of substrings for HMAC validation and changes EdDSA key loading to raise `TypeError` instead of `InvalidKeyError` for invalid inputs.",
+   "usage": {
+    "input_tokens": 3634,
+    "output_tokens": 330,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L2/r1/f0",
+     "path": "jwt/algorithms.py",
+     "line": 46,
+     "category": "security",
+     "severity": "medium",
+     "title": "Incomplete asymmetric key detection for HMAC",
+     "explanation": "The hardcoded list of invalid strings misses common asymmetric key formats such as `-----BEGIN EC PRIVATE KEY-----`, `-----BEGIN OPENSSH PRIVATE KEY-----`, and `ssh-ed25519`. This allows asymmetric keys to be used as HMAC secrets, which is a security anti-pattern (e.g., using an RSA private key as an HMAC key). The previous `is_pem_format` and `is_ssh_key` utilities provided comprehensive detection. Fix: Restore the use of `is_pem_format` and `is_ssh_key` or expand the list to cover all standard PEM/SSH key types."
+    },
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L2/r1/f1",
+     "path": "jwt/algorithms.py",
+     "line": 124,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Inconsistent exception type for invalid EdDSA keys",
+     "explanation": "The `prepare_key` method now raises `TypeError` for invalid key inputs, whereas the rest of the library (and the previous implementation) raises `InvalidKeyError`. This breaks the expected exception hierarchy for callers catching `InvalidKeyError`. Fix: Raise `InvalidKeyError` instead of `TypeError`."
+    }
+   ]
+  },
+  {
+   "case": "py-0037-pyjwt-hmac-key-confusion",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR replaces robust PEM/SSH key detection with a hardcoded list of magic strings, which fails to reject many valid asymmetric keys (e.g., EC, DSA, generic PKCS#8) when used as HMAC secrets. It also changes the error type for invalid EdDSA keys from InvalidKeyError to TypeError, breaking API contracts.",
+   "usage": {
+    "input_tokens": 3634,
+    "output_tokens": 326,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L2/r2/f0",
+     "path": "jwt/algorithms.py",
+     "line": 46,
+     "category": "security",
+     "severity": "high",
+     "title": "Incomplete asymmetric key detection for HMAC",
+     "explanation": "The hardcoded list of invalid strings only checks for specific RSA and generic PEM headers. It fails to detect EC, DSA, or generic PKCS#8 keys (e.g., '-----BEGIN EC PRIVATE KEY-----' or '-----BEGIN PRIVATE KEY-----'), allowing asymmetric keys to be silently used as HMAC secrets, which is a security anti-pattern."
+    },
+    {
+     "id": "py-0037-pyjwt-hmac-key-confusion/L2/r2/f1",
+     "path": "jwt/algorithms.py",
+     "line": 124,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Inconsistent error type for invalid EdDSA keys",
+     "explanation": "The code now raises TypeError instead of InvalidKeyError for invalid EdDSA keys. This breaks the expected exception hierarchy for callers catching InvalidKeyError, leading to unhandled exceptions or incorrect error handling."
+    }
+   ]
+  },
+  {
+   "case": "py-0038-requests-proxy-auth-https-leak",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes a security check that prevented the `Proxy-Authorization` header from being added to HTTPS requests. This causes the proxy credentials to be sent in plaintext to the proxy server, leaking them to any network observer between the client and the proxy.",
+   "usage": {
+    "input_tokens": 605,
+    "output_tokens": 235,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0038-requests-proxy-auth-https-leak/L0/r0/f0",
+     "path": "requests/sessions.py",
+     "line": 142,
+     "category": "security",
+     "severity": "critical",
+     "title": "Proxy credentials leaked in plaintext for HTTPS requests",
+     "explanation": "The removed condition `not scheme.startswith('https')` was specifically added to prevent the `Proxy-Authorization` header from being sent to the proxy for HTTPS requests. In HTTPS, the connection to the proxy is tunneled (CONNECT), and the proxy should not see the credentials intended for the target server. By removing this check, the credentials are now sent in the initial request to the proxy, exposing them to network sniffers and the proxy itself, which is a significant security vulnerability."
+    }
+   ]
+  },
+  {
+   "case": "py-0038-requests-proxy-auth-https-leak",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes a security check that prevented the `Proxy-Authorization` header from being added to HTTPS requests. This causes the proxy credentials to be sent in plaintext to the proxy server, leaking them to any network observer between the client and the proxy.",
+   "usage": {
+    "input_tokens": 605,
+    "output_tokens": 235,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0038-requests-proxy-auth-https-leak/L0/r1/f0",
+     "path": "requests/sessions.py",
+     "line": 142,
+     "category": "security",
+     "severity": "critical",
+     "title": "Proxy credentials leaked in plaintext for HTTPS requests",
+     "explanation": "The removed condition `not scheme.startswith('https')` was specifically added to prevent the `Proxy-Authorization` header from being sent to the proxy for HTTPS requests. In HTTPS, the connection to the proxy is tunneled (CONNECT), and the proxy should not see the credentials intended for the target server. By removing this check, the credentials are now sent in the initial request to the proxy, exposing them to network sniffers and the proxy itself, which is a significant security vulnerability."
+    }
+   ]
+  },
+  {
+   "case": "py-0038-requests-proxy-auth-https-leak",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes a security check that prevented the `Proxy-Authorization` header from being added to HTTPS requests. This causes the proxy credentials to be sent in plaintext to the proxy server, leaking them to any network observer between the client and the proxy.",
+   "usage": {
+    "input_tokens": 605,
+    "output_tokens": 252,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0038-requests-proxy-auth-https-leak/L0/r2/f0",
+     "path": "requests/sessions.py",
+     "line": 142,
+     "category": "security",
+     "severity": "critical",
+     "title": "Proxy credentials leaked in plaintext for HTTPS requests",
+     "explanation": "The removed condition `not scheme.startswith('https')` was specifically added to prevent the `Proxy-Authorization` header from being sent to the proxy for HTTPS requests. In HTTPS, the connection to the proxy is tunneled (CONNECT), and the proxy should not see the credentials intended for the target server. By removing this check, the credentials are now sent in the initial request to the proxy, exposing them to anyone who can intercept the traffic between the client and the proxy. Fix: Restore the condition `if not scheme.startswith('https') and username and password:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0038-requests-proxy-auth-https-leak",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes a security check that prevented the `Proxy-Authorization` header from being added to HTTPS requests. This change re-introduces a vulnerability where proxy credentials are sent in plaintext over the initial HTTP CONNECT request to the proxy, potentially leaking credentials to the proxy or an attacker on the network path.",
+   "usage": {
+    "input_tokens": 2077,
+    "output_tokens": 263,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0038-requests-proxy-auth-https-leak/L1/r0/f0",
+     "path": "requests/sessions.py",
+     "line": 142,
+     "category": "security",
+     "severity": "high",
+     "title": "Proxy credentials leaked in plaintext for HTTPS requests",
+     "explanation": "The removed condition `not scheme.startswith('https')` was specifically added to prevent `Proxy-Authorization` headers from being sent for HTTPS requests. When using an HTTPS proxy, the client first sends an HTTP CONNECT request to the proxy. If `Proxy-Authorization` is included in this initial request, the credentials are transmitted in plaintext (Base64) before the TLS tunnel is established. An attacker on the network or a malicious proxy can intercept these credentials. The fix is to restore the check: `if not scheme.startswith('https') and username and password:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0038-requests-proxy-auth-https-leak",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes a security check that prevented the `Proxy-Authorization` header from being added to HTTPS requests. This change re-introduces a vulnerability where proxy credentials are sent in plaintext over the initial HTTP CONNECT request to the proxy, potentially leaking credentials to the proxy or an attacker on the network path.",
+   "usage": {
+    "input_tokens": 2077,
+    "output_tokens": 276,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0038-requests-proxy-auth-https-leak/L1/r1/f0",
+     "path": "requests/sessions.py",
+     "line": 142,
+     "category": "security",
+     "severity": "high",
+     "title": "Proxy credentials leaked in plaintext for HTTPS requests",
+     "explanation": "The removed condition `not scheme.startswith('https')` was specifically added to prevent `Proxy-Authorization` headers from being sent to proxies for HTTPS requests. When using an HTTPS proxy, the client first sends an HTTP CONNECT request to the proxy. If `Proxy-Authorization` is included in this initial request, the credentials are transmitted in plaintext (Base64) before the TLS tunnel is established. An attacker with access to the network path between the client and the proxy (or a malicious proxy) can intercept these credentials. The fix is to restore the check: `if not scheme.startswith('https') and username and password:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0038-requests-proxy-auth-https-leak",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes a security check that prevented the `Proxy-Authorization` header from being added to HTTPS requests. This change re-introduces a vulnerability where proxy credentials are sent in plaintext over the initial HTTP CONNECT request to the proxy, potentially leaking credentials to the proxy or an attacker on the network path.",
+   "usage": {
+    "input_tokens": 4125,
+    "output_tokens": 276,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0038-requests-proxy-auth-https-leak/L1/r2/f0",
+     "path": "requests/sessions.py",
+     "line": 142,
+     "category": "security",
+     "severity": "high",
+     "title": "Proxy credentials leaked in plaintext for HTTPS requests",
+     "explanation": "The removed condition `not scheme.startswith('https')` was specifically added to prevent `Proxy-Authorization` headers from being sent to proxies for HTTPS requests. When using an HTTPS proxy, the client first sends an HTTP CONNECT request to the proxy. If `Proxy-Authorization` is included in this initial request, the credentials are transmitted in plaintext (Base64) before the TLS tunnel is established. An attacker with access to the network path between the client and the proxy (or a malicious proxy) can intercept these credentials. The fix is to restore the check: `if not scheme.startswith('https') and username and password:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0038-requests-proxy-auth-https-leak",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes a security check that prevented the `Proxy-Authorization` header from being added to HTTPS requests. This change re-introduces a vulnerability where proxy credentials are sent in plaintext over the initial HTTP CONNECT request to the proxy, potentially leaking credentials to the proxy or an attacker on the network path.",
+   "usage": {
+    "input_tokens": 2077,
+    "output_tokens": 276,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0038-requests-proxy-auth-https-leak/L2/r0/f0",
+     "path": "requests/sessions.py",
+     "line": 142,
+     "category": "security",
+     "severity": "high",
+     "title": "Proxy credentials leaked in plaintext for HTTPS requests",
+     "explanation": "The removed condition `not scheme.startswith('https')` was specifically added to prevent `Proxy-Authorization` headers from being sent to proxies for HTTPS requests. When using an HTTPS proxy, the client first sends an HTTP CONNECT request to the proxy. If `Proxy-Authorization` is included in this initial request, the credentials are transmitted in plaintext (Base64) before the TLS tunnel is established. An attacker with access to the network path between the client and the proxy (or a malicious proxy) can intercept these credentials. The fix is to restore the check: `if not scheme.startswith('https') and username and password:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0038-requests-proxy-auth-https-leak",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes a security check that prevented the `Proxy-Authorization` header from being added to HTTPS requests. This change re-introduces a vulnerability where proxy credentials are sent in plaintext over the initial HTTP CONNECT request to the proxy, potentially leaking credentials to the proxy or an attacker on the network path.",
+   "usage": {
+    "input_tokens": 4125,
+    "output_tokens": 276,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0038-requests-proxy-auth-https-leak/L2/r1/f0",
+     "path": "requests/sessions.py",
+     "line": 142,
+     "category": "security",
+     "severity": "high",
+     "title": "Proxy credentials leaked in plaintext for HTTPS requests",
+     "explanation": "The removed condition `not scheme.startswith('https')` was specifically added to prevent `Proxy-Authorization` headers from being sent to proxies for HTTPS requests. When using an HTTPS proxy, the client first sends an HTTP CONNECT request to the proxy. If `Proxy-Authorization` is included in this initial request, the credentials are transmitted in plaintext (Base64) before the TLS tunnel is established. An attacker with access to the network path between the client and the proxy (or a malicious proxy) can intercept these credentials. The fix is to restore the check: `if not scheme.startswith('https') and username and password:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0038-requests-proxy-auth-https-leak",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes a security check that prevented the `Proxy-Authorization` header from being added to HTTPS requests. This change re-introduces a vulnerability where proxy credentials are sent in plaintext over the initial HTTP CONNECT request to the proxy, potentially leaking credentials to the proxy or an attacker on the network path.",
+   "usage": {
+    "input_tokens": 4125,
+    "output_tokens": 276,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0038-requests-proxy-auth-https-leak/L2/r2/f0",
+     "path": "requests/sessions.py",
+     "line": 142,
+     "category": "security",
+     "severity": "high",
+     "title": "Proxy credentials leaked in plaintext for HTTPS requests",
+     "explanation": "The removed condition `not scheme.startswith('https')` was specifically added to prevent `Proxy-Authorization` headers from being sent to proxies for HTTPS requests. When using an HTTPS proxy, the client first sends an HTTP CONNECT request to the proxy. If `Proxy-Authorization` is included in this initial request, the credentials are transmitted in plaintext (Base64) before the TLS tunnel is established. An attacker with access to the network path between the client and the proxy (or a malicious proxy) can intercept these credentials. The fix is to restore the check: `if not scheme.startswith('https') and username and password:`."
+    }
+   ]
+  },
+  {
+   "case": "py-0039-clean-click-abort-chains-cause",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR changes the exception chaining behavior for EOFError and KeyboardInterrupt, preserving the original exception instead of suppressing it. This is a minor behavioral change that could affect debugging and error reporting.",
+   "usage": {
+    "input_tokens": 596,
+    "output_tokens": 196,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0039-clean-click-abort-chains-cause/L0/r0/f0",
+     "path": "src/click/core.py",
+     "line": 126,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Exception chaining change may affect debugging",
+     "explanation": "Changing `raise Abort() from None` to `raise Abort() from e` preserves the original exception in the traceback. While this can be useful for debugging, it changes the existing behavior and may cause confusion for users who expect the original exception to be suppressed. Consider documenting this change or ensuring it aligns with the project's error handling conventions."
+    }
+   ]
+  },
+  {
+   "case": "py-0039-clean-click-abort-chains-cause",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR changes the exception chaining behavior for EOFError and KeyboardInterrupt, preserving the original exception instead of suppressing it. This is a minor behavioral change that could affect debugging and error reporting.",
+   "usage": {
+    "input_tokens": 596,
+    "output_tokens": 196,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0039-clean-click-abort-chains-cause/L0/r1/f0",
+     "path": "src/click/core.py",
+     "line": 126,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Exception chaining change may affect debugging",
+     "explanation": "Changing `raise Abort() from None` to `raise Abort() from e` preserves the original exception in the traceback. While this can be useful for debugging, it changes the existing behavior and may cause confusion for users who expect the original exception to be suppressed. Consider documenting this change or ensuring it aligns with the project's error handling conventions."
+    }
+   ]
+  },
+  {
+   "case": "py-0039-clean-click-abort-chains-cause",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR changes the exception chaining behavior for EOFError and KeyboardInterrupt, preserving the original exception instead of suppressing it. This is a minor behavioral change that could affect debugging and error reporting.",
+   "usage": {
+    "input_tokens": 596,
+    "output_tokens": 196,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0039-clean-click-abort-chains-cause/L0/r2/f0",
+     "path": "src/click/core.py",
+     "line": 126,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Exception chaining change may affect debugging",
+     "explanation": "Changing `raise Abort() from None` to `raise Abort() from e` preserves the original exception in the traceback. While this can be useful for debugging, it changes the existing behavior and may cause confusion for users who expect the original exception to be suppressed. Consider documenting this change or ensuring it aligns with the project's error handling conventions."
+    }
+   ]
+  },
+  {
+   "case": "py-0039-clean-click-abort-chains-cause",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR changes the exception chaining for `EOFError` and `KeyboardInterrupt` from `from None` to `from e`. This is a regression that will cause the full traceback of the original `KeyboardInterrupt` or `EOFError` to be printed to stderr when the resulting `Abort` exception is handled in standalone mode, polluting the clean 'Aborted!' message.",
+   "usage": {
+    "input_tokens": 1945,
+    "output_tokens": 320,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0039-clean-click-abort-chains-cause/L1/r0/f0",
+     "path": "src/click/core.py",
+     "line": 126,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Unintended traceback output for Abort exceptions",
+     "explanation": "Changing `raise Abort() from None` to `raise Abort() from e` preserves the original `KeyboardInterrupt` or `EOFError` in the `__context__` of the `Abort` exception. When `Abort` is caught in standalone mode (line 158), `sys.exit(1)` is called. If the `SystemExit` raised by `sys.exit` is not caught by the application (e.g., in a script), Python's default exception handler will print the traceback for `SystemExit`, which will include the chained `Abort` and the original `KeyboardInterrupt`/`EOFError`. This results in a noisy traceback being printed instead of just the 'Aborted!' message. The original `from None` was intentional to suppress this."
+    }
+   ]
+  },
+  {
+   "case": "py-0039-clean-click-abort-chains-cause",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR changes the exception chaining for `EOFError` and `KeyboardInterrupt` from `from None` to `from e`. This is a regression that will cause the full traceback of the original `KeyboardInterrupt` or `EOFError` to be printed to stderr when the resulting `Abort` exception is handled in standalone mode, polluting the clean 'Aborted!' message.",
+   "usage": {
+    "input_tokens": 1945,
+    "output_tokens": 315,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0039-clean-click-abort-chains-cause/L1/r1/f0",
+     "path": "src/click/core.py",
+     "line": 126,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Unintended traceback output for Abort exceptions",
+     "explanation": "Changing `raise Abort() from None` to `raise Abort() from e` preserves the original `KeyboardInterrupt` or `EOFError` in the `__context__` of the `Abort` exception. When `Abort` is caught in standalone mode (line 156), `sys.exit(1)` is called. If the `SystemExit` raised by `sys.exit` is not caught by the application (e.g., in a script), Python's default exception handler will print the traceback for `SystemExit`, which will include the chained `KeyboardInterrupt` traceback. This results in a noisy, multi-line traceback instead of the intended clean 'Aborted!' message. The original `from None` was used specifically to suppress this context."
+    }
+   ]
+  },
+  {
+   "case": "py-0039-clean-click-abort-chains-cause",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR changes the exception chaining for `EOFError` and `KeyboardInterrupt` from `from None` to `from e`. This is a regression that will cause the full traceback of the original `KeyboardInterrupt` or `EOFError` to be printed to stderr when the resulting `Abort` exception is handled in standalone mode, polluting the clean 'Aborted!' message.",
+   "usage": {
+    "input_tokens": 1945,
+    "output_tokens": 320,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0039-clean-click-abort-chains-cause/L1/r2/f0",
+     "path": "src/click/core.py",
+     "line": 126,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Unintended traceback output for Abort exceptions",
+     "explanation": "Changing `raise Abort() from None` to `raise Abort() from e` preserves the original `KeyboardInterrupt` or `EOFError` in the `__context__` of the `Abort` exception. When `Abort` is caught in standalone mode (line 156), `sys.exit(1)` is called. If the `SystemExit` raised by `sys.exit` is not caught by the application (e.g., in a script), Python's default exception handler will print the traceback for `SystemExit`, which will include the chained `Abort` and the original `KeyboardInterrupt`/`EOFError`. This results in a noisy traceback being printed instead of just the 'Aborted!' message. The original `from None` was intentional to suppress this."
+    }
+   ]
+  },
+  {
+   "case": "py-0039-clean-click-abort-chains-cause",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR changes the exception chaining for `EOFError` and `KeyboardInterrupt` from `from None` to `from e`. This is a regression that will cause the full traceback of the original `KeyboardInterrupt` or `EOFError` to be printed to stderr when the resulting `Abort` exception is handled in standalone mode, polluting the clean 'Aborted!' message.",
+   "usage": {
+    "input_tokens": 1945,
+    "output_tokens": 317,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0039-clean-click-abort-chains-cause/L2/r0/f0",
+     "path": "src/click/core.py",
+     "line": 126,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Unintended traceback output for Abort exceptions",
+     "explanation": "Changing `raise Abort() from None` to `raise Abort() from e` preserves the original `KeyboardInterrupt` or `EOFError` in the `__context__` of the `Abort` exception. When `Abort` is caught in standalone mode (line 156), `sys.exit(1)` is called. If the `SystemExit` raised by `sys.exit` is not caught by the application (e.g., in a script), Python's default exception handler will print the traceback for `SystemExit`, which will include the chained `KeyboardInterrupt` traceback. This results in a noisy, confusing error message instead of the clean 'Aborted!' message intended by Click. The original `from None` was used specifically to suppress this context."
+    }
+   ]
+  },
+  {
+   "case": "py-0039-clean-click-abort-chains-cause",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR changes the exception chaining for `EOFError` and `KeyboardInterrupt` from `from None` to `from e`. This is a regression that will cause the full traceback of the original `KeyboardInterrupt` or `EOFError` to be printed to stderr when the resulting `Abort` exception is handled in standalone mode, polluting the clean 'Aborted!' message.",
+   "usage": {
+    "input_tokens": 1945,
+    "output_tokens": 320,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0039-clean-click-abort-chains-cause/L2/r1/f0",
+     "path": "src/click/core.py",
+     "line": 126,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Unintended traceback output for Abort exceptions",
+     "explanation": "Changing `raise Abort() from None` to `raise Abort() from e` preserves the original `KeyboardInterrupt` or `EOFError` in the `__context__` of the `Abort` exception. When `Abort` is caught in standalone mode (line 158), `sys.exit(1)` is called. If the `SystemExit` raised by `sys.exit` is not caught by the application (e.g., in a script), Python's default exception handler will print the traceback for `SystemExit`, which will include the chained `Abort` and the original `KeyboardInterrupt`/`EOFError`. This results in a noisy traceback being printed instead of just the 'Aborted!' message. The original `from None` was intentional to suppress this."
+    }
+   ]
+  },
+  {
+   "case": "py-0039-clean-click-abort-chains-cause",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR changes the exception chaining for `EOFError` and `KeyboardInterrupt` from `from None` to `from e`. This is a behavioral regression that will cause the full traceback of the original `KeyboardInterrupt` or `EOFError` to be printed to stderr when the resulting `Abort` exception is handled in non-standalone mode, breaking the clean 'Aborted!' output contract.",
+   "usage": {
+    "input_tokens": 1945,
+    "output_tokens": 307,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0039-clean-click-abort-chains-cause/L2/r2/f0",
+     "path": "src/click/core.py",
+     "line": 126,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Unintended traceback leakage for Abort exceptions",
+     "explanation": "Changing `raise Abort() from None` to `raise Abort() from e` preserves the original `KeyboardInterrupt` or `EOFError` in the `__context__` of the `Abort` exception. In non-standalone mode, `Abort` is re-raised to the caller. If the caller (or a test) catches `Abort` and prints the exception using standard Python formatting (e.g., `traceback.print_exc()` or `str(e)` in some contexts), the full traceback of the original `KeyboardInterrupt` will be exposed, which is noisy and breaks the expected clean 'Aborted!' behavior. The original `from None` was intentional to suppress this context."
+    }
+   ]
+  },
+  {
+   "case": "py-0040-clean-click-empty-envvar-is-none",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a bug in the `Option` class where the return value `rv` is no longer returned if it is a falsy value (e.g., an empty string), causing valid environment variable values to be ignored.",
+   "usage": {
+    "input_tokens": 553,
+    "output_tokens": 240,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0040-clean-click-empty-envvar-is-none/L0/r0/f0",
+     "path": "src/click/core.py",
+     "line": 59,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Falsy environment variable values are incorrectly ignored",
+     "explanation": "The condition `if rv:` will evaluate to `False` for empty strings (`\"\"`), which are valid environment variable values. This means that if an environment variable is set to an empty string, it will be ignored, and the function will return `None` instead of the empty string. This can lead to unexpected behavior in commands that rely on empty string values from environment variables. The fix is to change the condition to `if rv is not None:` to ensure that only `None` values are ignored."
+    }
+   ]
+  },
+  {
+   "case": "py-0040-clean-click-empty-envvar-is-none",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces a bug in the `Option` class where the return value `rv` is no longer returned if it is a falsy value (e.g., an empty string), causing valid environment variable values to be ignored.",
+   "usage": {
+    "input_tokens": 553,
+    "output_tokens": 240,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0040-clean-click-empty-envvar-is-none/L0/r1/f0",
+     "path": "src/click/core.py",
+     "line": 59,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Falsy environment variable values are incorrectly ignored",
+     "explanation": "The condition `if rv:` will evaluate to `False` for empty strings (`\"\"`), which are valid environment variable values. This means that if an environment variable is set to an empty string, it will be ignored, and the function will return `None` instead of the empty string. This can lead to unexpected behavior in commands that rely on empty string values from environment variables. The fix is to change the condition to `if rv is not None:` to ensure that only `None` values are ignored."
+    }
+   ]
+  },
+  {
+   "case": "py-0040-clean-click-empty-envvar-is-none",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR introduces a bug in the `Option` class where the return value `rv` is no longer returned if it is a falsy value (e.g., an empty string), causing valid environment variable values to be ignored.",
+   "usage": {
+    "input_tokens": 553,
+    "output_tokens": 240,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0040-clean-click-empty-envvar-is-none/L0/r2/f0",
+     "path": "src/click/core.py",
+     "line": 59,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Falsy environment variable values are incorrectly ignored",
+     "explanation": "The condition `if rv:` will evaluate to `False` for empty strings (`\"\"`), which are valid environment variable values. This means that if an environment variable is set to an empty string, it will be ignored, and the function will return `None` instead of the empty string. This can lead to unexpected behavior in commands that rely on empty string values from environment variables. The fix is to change the condition to `if rv is not None:` to ensure that only `None` values are ignored."
+    }
+   ]
+  },
+  {
+   "case": "py-0040-clean-click-empty-envvar-is-none",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a behavioral regression in `Option.resolve_envvar_value` by changing the check from `is not None` to a truthiness check (`if rv:`). This causes empty string environment variables to be ignored, which is a bug for options that accept empty strings as valid values.",
+   "usage": {
+    "input_tokens": 958,
+    "output_tokens": 223,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0040-clean-click-empty-envvar-is-none/L1/r0/f0",
+     "path": "src/click/core.py",
+     "line": 59,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Empty string environment variables are ignored",
+     "explanation": "The change from `if rv is not None:` to `if rv:` means that if an environment variable is set to an empty string (e.g., `FOO_BAR=\"\"`), it will be treated as if it were not set. This breaks the ability to explicitly set an option to an empty string via environment variables, which is a valid use case for options that accept empty strings (e.g., `--name=\"\"`). The fix is to revert to `if rv is not None:` to preserve the original behavior."
+    }
+   ]
+  },
+  {
+   "case": "py-0040-clean-click-empty-envvar-is-none",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces a behavioral regression in `Option.resolve_envvar_value` by changing the check from `is not None` to a truthiness check (`if rv`). This causes empty string environment variables to be ignored, which is a valid value in many contexts (e.g., clearing a default or explicitly setting an empty value).",
+   "usage": {
+    "input_tokens": 958,
+    "output_tokens": 209,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0040-clean-click-empty-envvar-is-none/L1/r1/f0",
+     "path": "src/click/core.py",
+     "line": 59,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Empty string environment variables are ignored",
+     "explanation": "The condition `if rv:` treats an empty string (`\"\"`) as falsy, causing the function to return `None` instead of the empty string. This breaks use cases where an environment variable is explicitly set to an empty value to override a default or indicate 'no value'. The check should be `if rv is not None:` to preserve the original behavior of accepting any non-`None` value from the environment."
+    }
+   ]
+  },
+  {
+   "case": "py-0040-clean-click-empty-envvar-is-none",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR introduces a behavioral regression in `Option.resolve_envvar_value` by changing the check from `is not None` to a truthiness check (`if rv`). This causes empty string environment variables to be ignored, which is a valid value in many contexts (e.g., clearing a default or explicitly setting an empty value).",
+   "usage": {
+    "input_tokens": 958,
+    "output_tokens": 209,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0040-clean-click-empty-envvar-is-none/L1/r2/f0",
+     "path": "src/click/core.py",
+     "line": 59,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Empty string environment variables are ignored",
+     "explanation": "The condition `if rv:` treats an empty string (`\"\"`) as falsy, causing the function to return `None` instead of the empty string. This breaks use cases where an environment variable is explicitly set to an empty value to override a default or indicate 'no value'. The check should be `if rv is not None:` to preserve the original behavior of accepting any non-`None` value from the environment."
+    }
+   ]
+  },
+  {
+   "case": "py-0040-clean-click-empty-envvar-is-none",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR introduces a behavioral regression in `Option.resolve_envvar_value` by changing the check from `is not None` to a truthiness check (`if rv`). This causes empty string environment variables to be ignored, which is a valid value in many contexts (e.g., clearing a default or explicitly setting an empty value).",
+   "usage": {
+    "input_tokens": 958,
+    "output_tokens": 209,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0040-clean-click-empty-envvar-is-none/L2/r0/f0",
+     "path": "src/click/core.py",
+     "line": 59,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Empty string environment variables are ignored",
+     "explanation": "The condition `if rv:` treats an empty string (`\"\"`) as falsy, causing the function to return `None` instead of the empty string. This breaks use cases where an environment variable is explicitly set to an empty value to override a default or indicate 'no value'. The check should be `if rv is not None:` to preserve the original behavior of accepting any non-`None` value from the environment."
+    }
+   ]
+  },
+  {
+   "case": "py-0040-clean-click-empty-envvar-is-none",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR introduces a behavioral regression in `Option.resolve_envvar_value` by changing the check from `is not None` to a truthiness check (`if rv:`). This causes empty string environment variables to be ignored, which is a bug for options that accept empty strings as valid values.",
+   "usage": {
+    "input_tokens": 958,
+    "output_tokens": 223,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0040-clean-click-empty-envvar-is-none/L2/r1/f0",
+     "path": "src/click/core.py",
+     "line": 59,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Empty string environment variables are ignored",
+     "explanation": "The change from `if rv is not None:` to `if rv:` means that if an environment variable is set to an empty string (e.g., `FOO_BAR=\"\"`), it will be treated as if it were not set. This breaks the ability to explicitly set an option to an empty string via environment variables, which is a valid use case for options that accept empty strings (e.g., `--name=\"\"`). The fix is to revert to `if rv is not None:` to preserve the original behavior."
+    }
+   ]
+  },
+  {
+   "case": "py-0040-clean-click-empty-envvar-is-none",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR introduces a behavioral regression in `Option.resolve_envvar_value` by changing the check from `is not None` to a truthiness check (`if rv:`). This causes empty string environment variables to be ignored, which is a bug for options that accept empty strings as valid values.",
+   "usage": {
+    "input_tokens": 958,
+    "output_tokens": 223,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0040-clean-click-empty-envvar-is-none/L2/r2/f0",
+     "path": "src/click/core.py",
+     "line": 59,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Empty string environment variables are ignored",
+     "explanation": "The change from `if rv is not None:` to `if rv:` means that if an environment variable is set to an empty string (e.g., `FOO_BAR=\"\"`), it will be treated as if it were not set. This breaks the ability to explicitly set an option to an empty string via environment variables, which is a valid use case for options that accept empty strings (e.g., `--name=\"\"`). The fix is to revert to `if rv is not None:` to preserve the original behavior."
+    }
+   ]
+  },
+  {
+   "case": "py-0041-clean-click-invalid-glob-pattern",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR adds a try/except block to catch re.error from glob() and treats invalid patterns as empty expansions. This is a reasonable defensive change, but the docstring update is slightly misleading and the exception handling could be more specific.",
+   "usage": {
+    "input_tokens": 841,
+    "output_tokens": 204,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0041-clean-click-invalid-glob-pattern/L0/r0/f0",
+     "path": "src/click/utils.py",
+     "line": 63,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Catching re.error may mask unrelated regex errors",
+     "explanation": "Catching re.error broadly could mask unexpected regex compilation errors that are not related to invalid glob patterns. Consider catching a more specific exception or adding a comment explaining why re.error is expected here. In practice, glob() only raises re.error for malformed patterns, so this is low risk, but a comment would improve clarity."
+    }
+   ]
+  },
+  {
+   "case": "py-0041-clean-click-invalid-glob-pattern",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR adds a try/except block to catch re.error from glob() and treats invalid patterns as empty expansions. This is a reasonable defensive change, but the docstring update is slightly misleading and the exception handling could be more specific.",
+   "usage": {
+    "input_tokens": 841,
+    "output_tokens": 204,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0041-clean-click-invalid-glob-pattern/L0/r1/f0",
+     "path": "src/click/utils.py",
+     "line": 63,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Catching re.error may mask unrelated regex errors",
+     "explanation": "Catching re.error broadly could mask unexpected regex compilation errors that are not related to invalid glob patterns. Consider catching a more specific exception or adding a comment explaining why re.error is expected here. In practice, glob() only raises re.error for malformed patterns, so this is low risk, but a comment would improve clarity."
+    }
+   ]
+  },
+  {
+   "case": "py-0041-clean-click-invalid-glob-pattern",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR adds a try/except block to catch re.error from glob() and treats invalid patterns as empty expansions. This is a reasonable defensive change, but the docstring update is slightly misleading and the exception handling could be more specific.",
+   "usage": {
+    "input_tokens": 841,
+    "output_tokens": 203,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0041-clean-click-invalid-glob-pattern/L0/r2/f0",
+     "path": "src/click/utils.py",
+     "line": 63,
+     "category": "maintainability",
+     "severity": "low",
+     "title": "Catching re.error may mask unrelated regex errors",
+     "explanation": "Catching re.error broadly could mask unexpected regex errors that are not related to invalid glob patterns. Consider catching a more specific exception or adding a comment explaining why re.error is expected here. In practice, glob() only raises re.error for invalid patterns, so this is low risk, but a comment would improve clarity."
+    }
+   ]
+  },
+  {
+   "case": "py-0041-clean-click-invalid-glob-pattern",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR adds a try/except block to catch `re.error` from `glob.glob` and treats invalid patterns as empty expansions. The implementation is correct and aligns with the documented behavior change. No bugs, security vulnerabilities, or significant maintainability issues were identified.",
+   "usage": {
+    "input_tokens": 1327,
+    "output_tokens": 65,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0041-clean-click-invalid-glob-pattern",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR adds a try/except block to catch `re.error` from `glob.glob` and treats invalid patterns as empty expansions. The implementation is correct and aligns with the documented behavior change. No bugs, security vulnerabilities, or significant maintainability issues were identified.",
+   "usage": {
+    "input_tokens": 1327,
+    "output_tokens": 65,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0041-clean-click-invalid-glob-pattern",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR adds a try/except block to catch `re.error` from `glob.glob` and treats invalid patterns as empty expansions. The implementation is correct and aligns with the documented behavior change. No bugs, security vulnerabilities, or significant maintainability issues were identified.",
+   "usage": {
+    "input_tokens": 1327,
+    "output_tokens": 65,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0041-clean-click-invalid-glob-pattern",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR adds a try/except block to catch `re.error` from `glob.glob` and treats invalid patterns as empty expansions. The implementation is correct and aligns with the documented behavior change. No bugs, security vulnerabilities, or significant maintainability issues were identified.",
+   "usage": {
+    "input_tokens": 1327,
+    "output_tokens": 65,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0041-clean-click-invalid-glob-pattern",
+   "level": "L2",
+   "run": 1,
+   "error": "rate_limited: retries exhausted",
    "summary": "",
    "usage": {},
    "findings": []

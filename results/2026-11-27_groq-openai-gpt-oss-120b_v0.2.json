@@ -8668,6 +8668,134 @@
      "explanation": "All store methods expect the acting user's id as the first argument, but delete_project passes only project_id. This will cause incorrect behavior or errors. Change the call to store.delete_project(user.id, project_id)."
     }
    ]
+  },
+  {
+   "case": "py-0031-refactor-drops-login-required",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Security regression: delete_project view is no longer protected by authentication.",
+   "usage": {
+    "input_tokens": 2545,
+    "output_tokens": 1503,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0031-refactor-drops-login-required/L2/r2/f0",
+     "path": "app/views.py",
+     "line": 85,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing @login_required on delete_project",
+     "explanation": "The delete_project view previously had the @login_required decorator, ensuring only authenticated users could delete a project. The decorator was removed, allowing unauthenticated requests to invoke the deletion logic, which is a security vulnerability. Re\u2011add the @login_required decorator above the function definition."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The changes introduce functional bugs in pagination handling and input validation.",
+   "usage": {
+    "input_tokens": 1633,
+    "output_tokens": 992,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L0/r0/f0",
+     "path": "app/listing.py",
+     "line": 31,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Off\u2011by\u2011one error in paginate() offset calculation",
+     "explanation": "The function treats page numbers as 1\u2011based but computes the offset as `page * size` instead of `(page - 1) * size`. This skips the first page's items and returns wrong slices for all pages. Fix by changing `offset = page * size` to `offset = (page - 1) * size`."
+    },
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L0/r0/f1",
+     "path": "app/listing.py",
+     "line": 13,
+     "category": "correctness",
+     "severity": "high",
+     "title": "clamp_per_page() does not handle non\u2011numeric strings",
+     "explanation": "When `raw_per_page` contains an invalid string (e.g., \"abc\"), `int(per_page)` raises a ValueError, bubbling up and causing a server error. The function should gracefully fall back to the default value. Fix by wrapping the conversion in a try/except and returning `DEFAULT_PER_PAGE` on failure."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Pagination offset miscalculated causing off\u2011by\u2011one page results.",
+   "usage": {
+    "input_tokens": 1633,
+    "output_tokens": 1808,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L0/r1/f0",
+     "path": "app/listing.py",
+     "line": 26,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Off\u2011by\u2011one error in paginate() offset calculation",
+     "explanation": "The function computes `offset = page * size`, which skips the first page (page 1 returns items starting at index `size`). The correct offset for 1\u2011based pages is `(page - 1) * size`. Change the line to `offset = (page - 1) * size`."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The updated listing utilities introduce several functional regressions and a robustness issue.",
+   "usage": {
+    "input_tokens": 1633,
+    "output_tokens": 1961,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L0/r2/f0",
+     "path": "app/listing.py",
+     "line": 18,
+     "category": "correctness",
+     "severity": "high",
+     "title": "clamp_per_page crashes on non\u2011numeric input",
+     "explanation": "The function calls int(per_page) directly. If the query string supplies a non\u2011numeric value (e.g., \"abc\"), int() raises ValueError and the request fails with a 500 error. Wrap the conversion in a try/except and fall back to DEFAULT_PER_PAGE (or clamp to the valid range)."
+    },
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L0/r2/f1",
+     "path": "app/listing.py",
+     "line": 29,
+     "category": "correctness",
+     "severity": "high",
+     "title": "paginate uses wrong offset for 1\u2011based pages",
+     "explanation": "The offset is calculated as page * size, which skips the first page (page\u202f1 starts at index\u202fsize). It should be (page - 1) * size. Change the line to `offset = (page - 1) * size`."
+    },
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L0/r2/f2",
+     "path": "app/listing.py",
+     "line": 34,
+     "category": "maintainability",
+     "severity": "medium",
+     "title": "_url discards existing query parameters",
+     "explanation": "The helper builds URLs as `base_url + '?' + urlencode({'page': page})`, overwriting any query string already present (e.g., filter parameters). This breaks navigation links when the listing is filtered. Parse the existing query string, update/insert the `page` parameter, and re\u2011encode the full query."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L1",
+   "run": 0,
+   "error": "rate_limited: retry-after 1357s (quota)",
+   "summary": "",
+   "usage": {},
+   "findings": []
   }
  ]
 }

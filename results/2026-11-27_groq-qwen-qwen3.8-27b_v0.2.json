@@ -8759,7 +8759,616 @@
    "case": "py-0033-clean-click-help-formfeed",
    "level": "L0",
    "run": 2,
-   "error": "rate_limited: retries exhausted",
+   "error": null,
+   "summary": "The PR refactors the help text processing in `Command.format_help_text` to apply `inspect.cleandoc` and form-feed partitioning before the deprecation prefix is added. This is a behavioral change that can alter the output for deprecated commands with multi-line help text, and it changes the order of operations in a way that may be unintended.",
+   "usage": {
+    "input_tokens": 671,
+    "output_tokens": 360,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0033-clean-click-help-formfeed/L0/r2/f0",
+     "path": "src/click/core.py",
+     "line": 15,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Behavioral change: cleandoc and form-feed partitioning now applied before deprecation prefix",
+     "explanation": "Previously, `inspect.cleandoc` and `.partition(\"\\f\")[0]` were applied to the final text (after the deprecation prefix was added). Now they are applied to `self.help` before the prefix is added. For a deprecated command with multi-line help, `cleandoc` will strip leading whitespace from all lines, which may change the intended formatting of the help text. Additionally, if the help text contains a form feed character, the truncation now happens before the deprecation prefix is prepended, which is likely the intended behavior but is a subtle change. The main concern is that `cleandoc` on the raw help text may alter formatting in ways that were not present before, since previously `cleandoc` was applied to the already-prefixed string. Consider whether the deprecation prefix should be added before or after `cleandoc` to preserve the original formatting behavior."
+    }
+   ]
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR refactors the help text processing in `Command.format_help_text` to apply `inspect.cleandoc` and form-feed truncation before prepending the deprecation notice. This is a behavioral improvement (prevents the deprecation prefix from being stripped by `cleandoc` if the help text is a docstring) and does not introduce any bugs, security vulnerabilities, or maintainability issues.",
+   "usage": {
+    "input_tokens": 869,
+    "output_tokens": 93,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR refactors the help text processing in `Command.format_help_text` to apply `inspect.cleandoc` and form-feed truncation before prepending the deprecation notice. This is a behavioral improvement (prevents the deprecation prefix from being stripped by `cleandoc` if the help text is a docstring) and does not introduce any bugs, security vulnerabilities, or maintainability issues.",
+   "usage": {
+    "input_tokens": 869,
+    "output_tokens": 93,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR refactors the help text processing in `Command.format_help_text` to apply `inspect.cleandoc` and form-feed truncation before prepending the deprecation notice. This is a behavioral improvement (prevents the deprecation prefix from being stripped by `cleandoc` if the help text is a docstring) and does not introduce any bugs, security vulnerabilities, or maintainability issues.",
+   "usage": {
+    "input_tokens": 869,
+    "output_tokens": 93,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR refactors the help text processing in `Command.format_help_text` to apply `inspect.cleandoc` and form-feed truncation before prepending the deprecation notice. This is a behavioral improvement (prevents the deprecation prefix from being stripped by `cleandoc` if the help text is a docstring) and does not introduce any bugs, security vulnerabilities, or maintainability issues.",
+   "usage": {
+    "input_tokens": 869,
+    "output_tokens": 93,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR refactors the help text processing in `Command.format_help_text` to apply `inspect.cleandoc` and form-feed truncation before prepending the deprecation notice. This is a behavioral improvement (prevents the deprecation prefix from being stripped by `cleandoc` if the help text is a docstring) and does not introduce any bugs, security vulnerabilities, or maintainability issues.",
+   "usage": {
+    "input_tokens": 869,
+    "output_tokens": 93,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR refactors the help text processing in `Command.format_help_text` to apply `inspect.cleandoc` and form-feed truncation before prepending the deprecation notice. This is a behavioral improvement (prevents the deprecation prefix from being stripped by `cleandoc` if the help text is a docstring) and does not introduce any bugs, security vulnerabilities, or maintainability issues.",
+   "usage": {
+    "input_tokens": 869,
+    "output_tokens": 93,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR updates the logic for generating the `complete_var` environment variable name to also replace dots with underscores, aligning with the new documentation. The change is correct and improves consistency for program names containing dots.",
+   "usage": {
+    "input_tokens": 652,
+    "output_tokens": 64,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR updates the logic for generating the `complete_var` environment variable name to also replace dots with underscores, aligning with the new documentation. The change is correct and improves consistency for program names containing dots.",
+   "usage": {
+    "input_tokens": 652,
+    "output_tokens": 64,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR updates the logic for generating the `complete_var` environment variable name to also replace dots with underscores, aligning with the new documentation. The change is correct and improves consistency for program names containing dots.",
+   "usage": {
+    "input_tokens": 652,
+    "output_tokens": 64,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR updates the shell completion variable generation to replace dots with underscores, which is a necessary change for compatibility with shells that do not allow dots in variable names. The change is correct and well-documented.",
+   "usage": {
+    "input_tokens": 986,
+    "output_tokens": 63,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR updates the shell completion variable generation to replace dots with underscores, which is a necessary change for compatibility with shells that do not allow dots in variable names. The change is correct and well-documented.",
+   "usage": {
+    "input_tokens": 986,
+    "output_tokens": 63,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR updates the shell completion variable generation to replace dots with underscores, which is a necessary change for compatibility with modern shells that do not allow dots in environment variable names. The change is correct and well-documented.",
+   "usage": {
+    "input_tokens": 986,
+    "output_tokens": 65,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR updates the shell completion variable generation to replace dots with underscores, which is a necessary change for compatibility with shells that do not allow dots in variable names. The change is correct and well-documented.",
+   "usage": {
+    "input_tokens": 986,
+    "output_tokens": 63,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR updates the shell completion variable generation to replace dots with underscores, which is a necessary change for compatibility with modern shells that do not allow dots in environment variable names. The change is correct and well-documented.",
+   "usage": {
+    "input_tokens": 986,
+    "output_tokens": 65,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR updates the shell completion variable generation to replace dots with underscores, which is a necessary change for compatibility with modern shells that do not allow dots in environment variable names. The change is correct and well-documented.",
+   "usage": {
+    "input_tokens": 986,
+    "output_tokens": 65,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes a path traversal validation check from the `SymbolicReference` class, which could allow malicious or malformed reference paths to escape the repository directory.",
+   "usage": {
+    "input_tokens": 624,
+    "output_tokens": 223,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L0/r0/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 93,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal validation removed",
+     "explanation": "The removal of the `if \"..\" in str(ref_path): raise ValueError(...)` check allows `ref_path` to contain `..` sequences. If `ref_path` is user-controlled or derived from untrusted input, this could lead to path traversal, allowing the code to read or manipulate files outside the intended repository directory. The fix is to restore the validation or implement a more robust path sanitization check (e.g., using `os.path.realpath` to ensure the resolved path stays within the repository root)."
+    }
+   ]
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes a path traversal validation check from the `SymbolicReference` class, which could allow malicious or malformed reference paths to escape the repository directory.",
+   "usage": {
+    "input_tokens": 624,
+    "output_tokens": 223,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L0/r1/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 93,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal validation removed",
+     "explanation": "The removal of the `if \"..\" in str(ref_path): raise ValueError(...)` check allows `ref_path` to contain `..` sequences. If `ref_path` is user-controlled or derived from untrusted input, this could lead to path traversal, allowing the code to read or manipulate files outside the intended repository directory. The fix is to restore the validation or implement a more robust path sanitization check (e.g., using `os.path.realpath` to ensure the resolved path stays within the repository root)."
+    }
+   ]
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes a path traversal validation check from the `SymbolicReference` class, which could allow malicious or malformed reference paths to escape the repository directory.",
+   "usage": {
+    "input_tokens": 624,
+    "output_tokens": 223,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L0/r2/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 93,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal validation removed",
+     "explanation": "The removal of the `if \"..\" in str(ref_path): raise ValueError(...)` check allows `ref_path` to contain `..` sequences. If `ref_path` is user-controlled or derived from untrusted input, this could lead to path traversal, allowing the code to read or manipulate files outside the intended repository directory. The fix is to restore the validation or implement a more robust path sanitization check (e.g., using `os.path.realpath` to ensure the resolved path stays within the repository root)."
+    }
+   ]
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes a path traversal validation check from `SymbolicReference._get_ref_info_helper`, allowing `ref_path` to contain `..` sequences. This exposes the method to path traversal attacks, potentially allowing an attacker to read arbitrary files on the system (e.g., `/etc/passwd`) or manipulate git internals outside the repository directory.",
+   "usage": {
+    "input_tokens": 1832,
+    "output_tokens": 233,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L1/r0/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 93,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal vulnerability due to removed validation",
+     "explanation": "The removal of the `if \"..\" in str(ref_path): raise ValueError(...)` check allows `ref_path` to contain path traversal sequences. The `ref_path` is directly used in `os.path.join(repodir, str(ref_path))` to open a file. An attacker could pass a path like `../../etc/passwd` to read arbitrary files on the system. The fix is to restore the validation or use a more robust path sanitization mechanism that ensures the resolved path remains within the repository directory."
+    }
+   ]
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes a path traversal validation check from `SymbolicReference._get_ref_info_helper`, allowing arbitrary file reads via crafted `ref_path` arguments.",
+   "usage": {
+    "input_tokens": 1832,
+    "output_tokens": 238,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L1/r1/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 93,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal vulnerability in reference resolution",
+     "explanation": "The removed check `if \"..\" in str(ref_path): raise ValueError(...)` was the only guard preventing path traversal in `_get_ref_info_helper`. The method directly concatenates `ref_path` into a file path via `os.path.join(repodir, str(ref_path))` and opens it. An attacker who can control `ref_path` (e.g., via a malicious remote, crafted `.git` file, or API input) can read arbitrary files on the system (e.g., `/etc/passwd` via `../../etc/passwd`). Fix: restore the validation or use a safer path resolution that ensures the resolved path remains within `repodir` (e.g., `os.path.realpath` and prefix check)."
+    }
+   ]
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes a path traversal validation check from `SymbolicReference._get_ref_info_helper`, allowing `ref_path` to contain `..` sequences. This exposes the method to path traversal attacks, potentially allowing an attacker to read arbitrary files on the system (e.g., `/etc/passwd`) or manipulate git internals outside the repository directory.",
+   "usage": {
+    "input_tokens": 1832,
+    "output_tokens": 244,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L1/r2/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 93,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal vulnerability due to removed validation",
+     "explanation": "The removal of the `if \"..\" in str(ref_path): raise ValueError(...)` check allows `ref_path` to contain path traversal sequences. The `ref_path` is directly used in `os.path.join(repodir, str(ref_path))` to open a file. An attacker could pass a path like `../../etc/passwd` to read arbitrary files on the system. The fix is to restore the validation or use a more robust path sanitization mechanism (e.g., `os.path.realpath` and checking if the resolved path is within the expected repository directory)."
+    }
+   ]
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes a path traversal validation check from `SymbolicReference._get_ref_info_helper`, allowing `ref_path` to contain `..` sequences. This exposes the method to path traversal attacks, enabling an attacker to read arbitrary files outside the repository directory (e.g., `/etc/passwd` or `.git/config` from a parent directory) by passing a crafted `ref_path`.",
+   "usage": {
+    "input_tokens": 1832,
+    "output_tokens": 242,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L2/r0/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 93,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal vulnerability due to removed validation",
+     "explanation": "The removal of the `if \"..\" in str(ref_path): raise ValueError(...)` check allows `ref_path` to contain `..` sequences. This is used in `os.path.join(repodir, str(ref_path))` on line 96, which can resolve to paths outside the intended repository directory. An attacker could pass a `ref_path` like `../../etc/passwd` to read sensitive files. Fix: Restore the validation check or use a safer path resolution method that prevents directory traversal."
+    }
+   ]
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes a path traversal validation check from `SymbolicReference._get_ref_info_helper`, allowing `ref_path` to contain `..` sequences. This exposes the method to path traversal attacks, potentially allowing an attacker to read arbitrary files on the system (e.g., `/etc/passwd`) or manipulate git internals outside the repository directory.",
+   "usage": {
+    "input_tokens": 1832,
+    "output_tokens": 233,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L2/r1/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 93,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal vulnerability due to removed validation",
+     "explanation": "The removal of the `if \"..\" in str(ref_path): raise ValueError(...)` check allows `ref_path` to contain path traversal sequences. The `ref_path` is directly used in `os.path.join(repodir, str(ref_path))` to open a file. An attacker could pass a path like `../../etc/passwd` to read arbitrary files on the system. The fix is to restore the validation or use a more robust path sanitization mechanism that ensures the resolved path remains within the repository directory."
+    }
+   ]
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes a path traversal validation check from `SymbolicReference._get_ref_info_helper`, allowing `ref_path` to contain `..` sequences. This exposes the method to path traversal attacks, potentially allowing an attacker to read arbitrary files on the system (e.g., `/etc/passwd`) or manipulate git internals outside the repository directory.",
+   "usage": {
+    "input_tokens": 1832,
+    "output_tokens": 244,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L2/r2/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 93,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal vulnerability due to removed validation",
+     "explanation": "The removal of the `if \"..\" in str(ref_path): raise ValueError(...)` check allows `ref_path` to contain path traversal sequences. The `ref_path` is directly used in `os.path.join(repodir, str(ref_path))` to open a file. An attacker could pass a path like `../../etc/passwd` to read arbitrary files on the system. The fix is to restore the validation or use a more robust path sanitization mechanism (e.g., `os.path.realpath` and checking if the resolved path is within the expected repository directory)."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes the use of `safe_join` in favor of direct path concatenation, which introduces a path traversal vulnerability in the `TemplateDetailView`.",
+   "usage": {
+    "input_tokens": 696,
+    "output_tokens": 198,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L0/r0/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 332,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal vulnerability",
+     "explanation": "Replacing `safe_join(directory, template)` with `Path(directory) / template` allows the `template` variable (derived from user input) to contain path traversal sequences (e.g., `../../etc/passwd`). This allows an attacker to read arbitrary files on the server. The fix is to revert to using `safe_join` or implement equivalent path sanitization to ensure the resolved path remains within the intended directory."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes the use of `safe_join` in favor of direct path concatenation, which reintroduces a potential path traversal vulnerability in the `TemplateDetailView`.",
+   "usage": {
+    "input_tokens": 696,
+    "output_tokens": 202,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L0/r1/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 332,
+     "category": "security",
+     "severity": "high",
+     "title": "Path traversal vulnerability",
+     "explanation": "Replacing `safe_join(directory, template)` with `Path(directory) / template` allows the `template` variable (derived from user input) to contain path traversal sequences (e.g., `../../etc/passwd`). This could allow an attacker to read arbitrary files on the server. The fix is to revert to using `safe_join` or implement equivalent path sanitization to ensure the resulting path remains within the intended directory."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes the use of `safe_join` in favor of direct path concatenation, which introduces a path traversal vulnerability in the `TemplateDetailView`.",
+   "usage": {
+    "input_tokens": 696,
+    "output_tokens": 198,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L0/r2/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 332,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal vulnerability",
+     "explanation": "Replacing `safe_join(directory, template)` with `Path(directory) / template` allows the `template` variable (derived from user input) to contain path traversal sequences (e.g., `../../etc/passwd`). This allows an attacker to read arbitrary files on the server. The fix is to revert to using `safe_join` or implement equivalent path sanitization to ensure the resolved path remains within the intended directory."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes the use of `safe_join` in `TemplateDetailView` to construct file paths, replacing it with direct `Path` concatenation. This introduces a path traversal vulnerability, allowing users to read arbitrary files on the server by providing a template name containing `../` sequences.",
+   "usage": {
+    "input_tokens": 4351,
+    "output_tokens": 239,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L1/r0/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 332,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal vulnerability in TemplateDetailView",
+     "explanation": "The change from `safe_join(directory, template)` to `Path(directory) / template` removes the protection against path traversal. The `template` variable is derived from user input (`self.kwargs['template']`) and is not sanitized. An attacker can provide a template name like `../../etc/passwd` to read arbitrary files on the server. The `safe_join` function was specifically designed to prevent this by ensuring the resulting path stays within the base directory. The fix is to revert to using `safe_join` or implement equivalent path sanitization logic to ensure the resolved path is within the allowed template directories."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes the use of `safe_join` in `TemplateDetailView` to construct file paths, replacing it with direct `Path` concatenation. This introduces a path traversal vulnerability, allowing users to read arbitrary files on the server by providing a template name containing `../` sequences.",
+   "usage": {
+    "input_tokens": 4351,
+    "output_tokens": 239,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L1/r1/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 332,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal vulnerability in TemplateDetailView",
+     "explanation": "The change from `safe_join(directory, template)` to `Path(directory) / template` removes the protection against path traversal. The `template` variable is derived from user input (`self.kwargs['template']`) and is not sanitized. An attacker can provide a template name like `../../etc/passwd` to read arbitrary files on the server. The `safe_join` function was specifically designed to prevent this by ensuring the resulting path stays within the base directory. The fix is to revert to using `safe_join` or implement equivalent path sanitization logic to ensure the resolved path is within the allowed template directories."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The PR removes the use of `safe_join` in `TemplateDetailView` to construct file paths, replacing it with direct `Path` concatenation. This introduces a path traversal vulnerability, allowing users to read arbitrary files on the server by providing a template name containing `../` sequences.",
+   "usage": {
+    "input_tokens": 4351,
+    "output_tokens": 239,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L1/r2/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 332,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal vulnerability in TemplateDetailView",
+     "explanation": "The change from `safe_join(directory, template)` to `Path(directory) / template` removes the protection against path traversal. The `template` variable is derived from user input (`self.kwargs['template']`) and is not sanitized. An attacker can provide a template name like `../../etc/passwd` to read arbitrary files on the server. The `safe_join` function was specifically designed to prevent this by ensuring the resulting path stays within the base directory. The fix is to revert to using `safe_join` or implement equivalent path sanitization logic to ensure the resolved path is within the allowed template directories."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The PR removes the use of `safe_join` in `TemplateDetailView` to construct file paths, replacing it with direct `Path` concatenation. This introduces a path traversal vulnerability, allowing users to read arbitrary files on the server by providing a template name containing `../` sequences.",
+   "usage": {
+    "input_tokens": 4351,
+    "output_tokens": 239,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L2/r0/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 332,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal vulnerability in TemplateDetailView",
+     "explanation": "The change from `safe_join(directory, template)` to `Path(directory) / template` removes the protection against path traversal. The `template` variable is derived from user input (`self.kwargs['template']`) and is not sanitized. An attacker can provide a template name like `../../etc/passwd` to read arbitrary files on the server. The `safe_join` function was specifically designed to prevent this by ensuring the resulting path stays within the base directory. The fix is to revert to using `safe_join` or implement equivalent path sanitization logic to ensure the resolved path is within the allowed template directories."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "The PR removes the use of `safe_join` in `TemplateDetailView` to construct file paths, replacing it with direct `Path` concatenation. This introduces a path traversal vulnerability, allowing users to read arbitrary files on the server by providing a template name containing `../` sequences.",
+   "usage": {
+    "input_tokens": 4351,
+    "output_tokens": 239,
+    "served_model": "qwen/qwen3.8-27b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L2/r1/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 332,
+     "category": "security",
+     "severity": "critical",
+     "title": "Path traversal vulnerability in TemplateDetailView",
+     "explanation": "The change from `safe_join(directory, template)` to `Path(directory) / template` removes the protection against path traversal. The `template` variable is derived from user input (`self.kwargs['template']`) and is not sanitized. An attacker can provide a template name like `../../etc/passwd` to read arbitrary files on the server. The `safe_join` function was specifically designed to prevent this by ensuring the resulting path stays within the base directory. The fix is to revert to using `safe_join` or implement equivalent path sanitization logic to ensure the resolved path is within the allowed template directories."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L2",
+   "run": 2,
+   "error": "rate_limited: retry-after 1363s (quota)",
    "summary": "",
    "usage": {},
    "findings": []

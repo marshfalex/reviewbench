@@ -6,15 +6,15 @@ Created 2026-11-27T00:42:12+00:00, k=3 runs per case and level, status `partial`
 
 | level | difficulty | any-of-k recall | all-of-k recall | per-run recall | precision (adjudicated) | control runs w/ FP | unadjudicated | errors |
 |---|---|---|---|---|---|---|---|---|
-| L0 | all | 23/27 (85%, 68–94) | 21/27 (78%, 59–89) | 67/81 runs; per-bug mean 83% (95% CI 65–93, 27 bugs) | not measured (34 of 37 unjudged) | 3/15 (20%, 7–45) | 34 | 0 |
-| L0 | easy | 15/15 (100%, 80–100) | 14/15 (93%, 70–99) | 44/45 runs; per-bug mean 98% (95% CI 76–100, 15 bugs) | not measured (34 of 37 unjudged) | 3/12 (25%, 9–53) | 9 | 0 |
-| L0 | hard | 8/12 (67%, 39–86) | 7/12 (58%, 32–81) | 23/36 runs; per-bug mean 64% (95% CI 37–84, 12 bugs) | not measured (34 of 37 unjudged) | 0/3 (0%, 0–56) | 25 | 0 |
-| L1 | all | 22/26 (85%, 66–94) | 17/26 (65%, 46–81) | 56/78 runs; per-bug mean 72% (95% CI 53–85, 26 bugs) | not measured (25 of 28 unjudged) | 3/15 (20%, 7–45) | 25 | 1 |
-| L1 | easy | 15/15 (100%, 80–100) | 12/15 (80%, 55–93) | 39/45 runs; per-bug mean 87% (95% CI 62–96, 15 bugs) | not measured (25 of 28 unjudged) | 3/12 (25%, 9–53) | 8 | 0 |
-| L1 | hard | 7/11 (64%, 35–85) | 5/11 (45%, 21–72) | 17/33 runs; per-bug mean 52% (95% CI 26–77, 11 bugs) | not measured (25 of 28 unjudged) | 0/3 (0%, 0–56) | 17 | 1 |
-| L2 | all | 24/26 (92%, 76–98) | 19/26 (73%, 54–86) | 63/78 runs; per-bug mean 81% (95% CI 62–91, 26 bugs) | not measured (28 of 28 unjudged) | 0/15 (0%, 0–20) | 28 | 0 |
-| L2 | easy | 15/15 (100%, 80–100) | 13/15 (87%, 62–96) | 41/45 runs; per-bug mean 91% (95% CI 67–98, 15 bugs) | not measured (28 of 28 unjudged) | 0/12 (0%, 0–24) | 8 | 0 |
-| L2 | hard | 9/11 (82%, 52–95) | 6/11 (55%, 28–79) | 22/33 runs; per-bug mean 67% (95% CI 38–87, 11 bugs) | not measured (28 of 28 unjudged) | 0/3 (0%, 0–56) | 20 | 0 |
+| L0 | all | 24/29 (83%, 66–92) | 22/29 (76%, 58–88) | 70/87 runs; per-bug mean 80% (95% CI 63–91, 29 bugs) | not measured (37 of 40 unjudged) | 3/21 (14%, 5–35) | 37 | 0 |
+| L0 | easy | 16/17 (94%, 73–99) | 15/17 (88%, 66–97) | 47/51 runs; per-bug mean 92% (95% CI 70–98, 17 bugs) | not measured (37 of 40 unjudged) | 3/12 (25%, 9–53) | 12 | 0 |
+| L0 | hard | 8/12 (67%, 39–86) | 7/12 (58%, 32–81) | 23/36 runs; per-bug mean 64% (95% CI 37–84, 12 bugs) | not measured (37 of 40 unjudged) | 0/9 (0%, 0–30) | 25 | 0 |
+| L1 | all | 24/28 (86%, 68–94) | 18/28 (64%, 46–79) | 60/84 runs; per-bug mean 71% (95% CI 53–85, 28 bugs) | not measured (27 of 30 unjudged) | 3/21 (14%, 5–35) | 27 | 1 |
+| L1 | easy | 16/16 (100%, 81–100) | 12/16 (75%, 50–90) | 40/48 runs; per-bug mean 83% (95% CI 59–95, 16 bugs) | not measured (27 of 30 unjudged) | 3/12 (25%, 9–53) | 10 | 1 |
+| L1 | hard | 8/12 (67%, 39–86) | 6/12 (50%, 25–75) | 20/36 runs; per-bug mean 56% (95% CI 30–79, 12 bugs) | not measured (27 of 30 unjudged) | 0/9 (0%, 0–30) | 17 | 0 |
+| L2 | all | 26/28 (93%, 77–98) | 20/28 (71%, 53–85) | 67/84 runs; per-bug mean 80% (95% CI 62–91, 28 bugs) | not measured (32 of 32 unjudged) | 0/21 (0%, 0–16) | 32 | 0 |
+| L2 | easy | 16/16 (100%, 81–100) | 13/16 (81%, 57–93) | 42/48 runs; per-bug mean 88% (95% CI 64–97, 16 bugs) | not measured (32 of 32 unjudged) | 0/12 (0%, 0–24) | 10 | 0 |
+| L2 | hard | 10/12 (83%, 55–95) | 7/12 (58%, 32–81) | 25/36 runs; per-bug mean 69% (95% CI 42–88, 12 bugs) | not measured (32 of 32 unjudged) | 0/9 (0%, 0–30) | 22 | 0 |
 
 ## Per case
 
@@ -114,4 +114,16 @@ Created 2026-11-27T00:42:12+00:00, k=3 runs per case and level, status `partial`
 | py-0031-refactor-drops-login-required | L1 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
 | py-0031-refactor-drops-login-required | L2 | 3/3 | 3 | 0 | 0 | 0 | 4 | 0 |
 | py-0032-refactor-pagination-off-by-one | L0 | 3/3 | 3 | 0 | 0 | 0 | 3 | 0 |
-| py-0032-refactor-pagination-off-by-one | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 1 |
+| py-0032-refactor-pagination-off-by-one | L1 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
+| py-0032-refactor-pagination-off-by-one | L2 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
+| py-0033-clean-click-help-formfeed | L0 | control | 0 | 0 | 0 | 0 | 0 | 0 |
+| py-0033-clean-click-help-formfeed | L1 | control | 0 | 0 | 0 | 0 | 0 | 0 |
+| py-0033-clean-click-help-formfeed | L2 | control | 0 | 0 | 0 | 0 | 2 | 0 |
+| py-0034-clean-click-completion-var-dots | L0 | control | 0 | 0 | 0 | 0 | 0 | 0 |
+| py-0034-clean-click-completion-var-dots | L1 | control | 0 | 0 | 0 | 0 | 0 | 0 |
+| py-0034-clean-click-completion-var-dots | L2 | control | 0 | 0 | 0 | 0 | 0 | 0 |
+| py-0035-gitpython-ref-path-traversal | L0 | 0/3 | 0 | 0 | 0 | 0 | 3 | 0 |
+| py-0035-gitpython-ref-path-traversal | L1 | 1/3 | 1 | 0 | 0 | 0 | 2 | 0 |
+| py-0035-gitpython-ref-path-traversal | L2 | 1/3 | 1 | 0 | 0 | 0 | 2 | 0 |
+| py-0036-django-admindocs-template-traversal | L0 | 3/3 | 3 | 0 | 0 | 0 | 0 | 0 |
+| py-0036-django-admindocs-template-traversal | L1 | 0/0 | 0 | 0 | 0 | 0 | 0 | 1 |

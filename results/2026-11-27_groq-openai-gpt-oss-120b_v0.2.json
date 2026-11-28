@@ -8792,7 +8792,675 @@
    "case": "py-0032-refactor-pagination-off-by-one",
    "level": "L1",
    "run": 0,
-   "error": "rate_limited: retry-after 1357s (quota)",
+   "error": null,
+   "summary": "The pagination offset calculation is incorrect, causing off\u2011by\u2011one errors in page results.",
+   "usage": {
+    "input_tokens": 2369,
+    "output_tokens": 622,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L1/r0/f0",
+     "path": "app/listing.py",
+     "line": 31,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Off\u2011by\u2011one error in paginate() offset calculation",
+     "explanation": "Pages are documented as 1\u2011based, but the function computes `offset = page * size` instead of `(page - 1) * size`. This skips the first page's items and shifts all pages forward. Fix by changing the line to `offset = (page - 1) * size`."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Bug in pagination offset calculation causing incorrect page results.",
+   "usage": {
+    "input_tokens": 2369,
+    "output_tokens": 645,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L1/r1/f0",
+     "path": "app/listing.py",
+     "line": 31,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Off\u2011by\u2011one error in paginate() offset",
+     "explanation": "The function treats pages as 1\u2011based but computes the slice start as `offset = page * size`, which skips the first page and shifts all pages forward. This returns the wrong items for every page. Fix by using `offset = (page - 1) * size`."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "The pagination offset calculation is incorrect, causing off\u2011by\u2011one errors in page results.",
+   "usage": {
+    "input_tokens": 2369,
+    "output_tokens": 622,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L1/r2/f0",
+     "path": "app/listing.py",
+     "line": 31,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Off\u2011by\u2011one error in paginate() offset calculation",
+     "explanation": "Pages are documented as 1\u2011based, but the function computes `offset = page * size` instead of `(page - 1) * size`. This skips the first page's items and shifts all pages forward. Fix by changing the line to `offset = (page - 1) * size`."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "The pagination offset calculation is incorrect, causing off\u2011by\u2011one errors in page results.",
+   "usage": {
+    "input_tokens": 2369,
+    "output_tokens": 622,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L2/r0/f0",
+     "path": "app/listing.py",
+     "line": 31,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Off\u2011by\u2011one error in paginate() offset calculation",
+     "explanation": "Pages are documented as 1\u2011based, but the function computes `offset = page * size` instead of `(page - 1) * size`. This skips the first page's items and shifts all pages forward. Fix by changing the line to `offset = (page - 1) * size`."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Bug in pagination offset calculation causing off\u2011by\u2011one page results.",
+   "usage": {
+    "input_tokens": 2369,
+    "output_tokens": 926,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L2/r1/f0",
+     "path": "app/listing.py",
+     "line": 25,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Incorrect offset for 1\u2011based pagination",
+     "explanation": "The `paginate` function treats pages as 1\u2011based but computes the start offset as `page * size` instead of `(page - 1) * size`. This skips the first page of items and can return empty results for the last page. Fix by changing the line to `offset = (page - 1) * size`."
+    }
+   ]
+  },
+  {
+   "case": "py-0032-refactor-pagination-off-by-one",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "The pagination offset calculation is incorrect, causing off\u2011by\u2011one errors in page results.",
+   "usage": {
+    "input_tokens": 2369,
+    "output_tokens": 622,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0032-refactor-pagination-off-by-one/L2/r2/f0",
+     "path": "app/listing.py",
+     "line": 31,
+     "category": "correctness",
+     "severity": "high",
+     "title": "Off\u2011by\u2011one error in paginate() offset calculation",
+     "explanation": "Pages are documented as 1\u2011based, but the function computes `offset = page * size` instead of `(page - 1) * size`. This skips the first page's items and shifts all pages forward. Fix by changing the line to `offset = (page - 1) * size`."
+    }
+   ]
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "No issues detected in the introduced changes.",
+   "usage": {
+    "input_tokens": 717,
+    "output_tokens": 544,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "No actionable issues detected in the changes.",
+   "usage": {
+    "input_tokens": 717,
+    "output_tokens": 703,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "No issues detected in the changed code.",
+   "usage": {
+    "input_tokens": 717,
+    "output_tokens": 735,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "No issues detected in the changes.",
+   "usage": {
+    "input_tokens": 898,
+    "output_tokens": 775,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "No actionable issues detected in the changes.",
+   "usage": {
+    "input_tokens": 898,
+    "output_tokens": 706,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "No actionable issues detected in the changes.",
+   "usage": {
+    "input_tokens": 898,
+    "output_tokens": 463,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Potential TypeError when help text is a lazy translation object and loss of whitespace cleaning after deprecation handling.",
+   "usage": {
+    "input_tokens": 898,
+    "output_tokens": 1022,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0033-clean-click-help-formfeed/L2/r0/f0",
+     "path": "src/click/core.py",
+     "line": 15,
+     "category": "correctness",
+     "severity": "high",
+     "title": "inspect.cleandoc called on possibly non\u2011string help value",
+     "explanation": "The new code calls `inspect.cleandoc(self.help)` before any translation handling. If `self.help` is a lazy translation object (e.g., a gettext proxy), `cleandoc` expects a real string and will raise a TypeError, breaking help rendering. The original implementation applied `cleandoc` after translation, which safely handled lazy objects. Fix by moving the `cleandoc` call after the deprecation formatting (as before) or by converting the help value to `str` before cleaning."
+    }
+   ]
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "No issues detected in the changed code.",
+   "usage": {
+    "input_tokens": 898,
+    "output_tokens": 553,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0033-clean-click-help-formfeed",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Missing post\u2011processing of help text after deprecation handling can produce malformed output.",
+   "usage": {
+    "input_tokens": 898,
+    "output_tokens": 954,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0033-clean-click-help-formfeed/L2/r2/f0",
+     "path": "src/click/core.py",
+     "line": 20,
+     "category": "correctness",
+     "severity": "medium",
+     "title": "Help text not cleaned after adding deprecation prefix",
+     "explanation": "The original implementation cleaned and truncated the help text *after* applying the deprecation translation. The new code cleans before the translation and never re\u2011applies `inspect.cleandoc`/form\u2011feed truncation, so translated strings or added prefixes may retain unwanted indentation or form\u2011feed characters, breaking the formatted help output. Fix by moving the `inspect.cleandoc(...).partition(\"\\f\")[0]` call after the deprecation block (or re\u2011apply it after formatting)."
+    }
+   ]
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "No issues detected in the changes.",
+   "usage": {
+    "input_tokens": 708,
+    "output_tokens": 413,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "No issues detected in the introduced changes.",
+   "usage": {
+    "input_tokens": 708,
+    "output_tokens": 456,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "No issues found",
+   "usage": {
+    "input_tokens": 708,
+    "output_tokens": 369,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "No issues detected in the changes.",
+   "usage": {
+    "input_tokens": 1019,
+    "output_tokens": 423,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "No issues detected in the changes.",
+   "usage": {
+    "input_tokens": 1019,
+    "output_tokens": 277,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "No issues detected in the introduced changes.",
+   "usage": {
+    "input_tokens": 1019,
+    "output_tokens": 402,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "No issues detected in the changes.",
+   "usage": {
+    "input_tokens": 1019,
+    "output_tokens": 562,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "No issues detected in the introduced changes.",
+   "usage": {
+    "input_tokens": 1019,
+    "output_tokens": 528,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0034-clean-click-completion-var-dots",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "No issues detected in the introduced changes.",
+   "usage": {
+    "input_tokens": 1019,
+    "output_tokens": 405,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": []
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Removal of reference path validation introduces a directory traversal risk.",
+   "usage": {
+    "input_tokens": 683,
+    "output_tokens": 676,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L0/r0/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 90,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing validation for symbolic reference path allows directory traversal",
+     "explanation": "The original code raised a ValueError when \"..\" appeared in `ref_path`, preventing path traversal attacks. The PR deletes this check, so a crafted `ref_path` containing \"..\" can cause `_git_dir` to resolve outside the repository, potentially exposing or modifying arbitrary files. Re\u2011introduce the validation (or use a safe path\u2011normalisation check) before using `ref_path`."
+    }
+   ]
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Removed validation for \"..\" in symbolic reference paths, introducing a path traversal risk.",
+   "usage": {
+    "input_tokens": 683,
+    "output_tokens": 483,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L0/r1/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 90,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing validation allows directory traversal via reference path",
+     "explanation": "The original code raised a ValueError when \"..\" appeared in `ref_path`, preventing path traversal attacks. The PR deletes this check, so a crafted reference like \"../../etc/passwd\" could be passed to `_git_dir`, causing the code to read files outside the repository. Re\u2011introduce the validation or sanitize `ref_path` (e.g., use `os.path.normpath` and verify the result is within the repo directory) before using it."
+    }
+   ]
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Removed validation for reference paths introduces path traversal risk.",
+   "usage": {
+    "input_tokens": 683,
+    "output_tokens": 498,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L0/r2/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 90,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing validation for \"..\" in reference path allows directory traversal",
+     "explanation": "The original code raised a ValueError when the reference path contained \"..\", preventing path traversal attacks. The change deletes this check, so a crafted ref_path like \"../etc/passwd\" can be passed to _git_dir, potentially causing the library to read or write files outside the repository. Re\u2011introduce the validation (or use a safe path\u2011joining method that rejects parent\u2011directory components) before using ref_path."
+    }
+   ]
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L1",
+   "run": 0,
+   "error": null,
+   "summary": "Removed validation allows path traversal via reference paths",
+   "usage": {
+    "input_tokens": 1796,
+    "output_tokens": 674,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L1/r0/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 108,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing validation of reference path enables directory traversal",
+     "explanation": "The original code rejected reference names containing \"..\" to prevent escaping the repository directory. The recent change removed this check, so a crafted ref_path like \"../etc/passwd\" will be joined with the git directory and opened, allowing an attacker to read arbitrary files on the filesystem. Re\u2011introduce the validation (e.g., `if \"..\" in str(ref_path) or os.path.isabs(str(ref_path)): raise ValueError(...)`) or use a safe path resolution method before opening the file."
+    }
+   ]
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L1",
+   "run": 1,
+   "error": null,
+   "summary": "Removal of reference path validation introduces a directory traversal vulnerability.",
+   "usage": {
+    "input_tokens": 3588,
+    "output_tokens": 647,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L1/r1/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 95,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing validation of ref_path allows path traversal",
+     "explanation": "The original code rejected reference paths containing \"..\" to prevent directory traversal when opening the reference file. The recent change removed this check, so a malicious ref_path like \"../../etc/passwd\" could be concatenated with the repository directory and opened, exposing arbitrary files. Re\u2011introduce validation (e.g., raise ValueError if \"..\" in str(ref_path) or if the path is absolute) or use a safe path\u2011joining method that normalizes and verifies the final path stays within the repository."
+    }
+   ]
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L1",
+   "run": 2,
+   "error": null,
+   "summary": "Removed validation of reference paths introduces directory traversal risk.",
+   "usage": {
+    "input_tokens": 1796,
+    "output_tokens": 768,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L1/r2/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 115,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing reference path validation allows path traversal",
+     "explanation": "The previous code rejected reference strings containing \"..\" to prevent accessing files outside the repository. Its removal means an attacker can supply a crafted ref_path like \"../../etc/passwd\" and the function will open that file via `os.path.join(repodir, str(ref_path))`, leading to arbitrary file read. Re\u2011introduce the validation (e.g., `if \"..\" in str(ref_path) or os.path.isabs(str(ref_path)):` raise ValueError) or use a safe path\u2011joining utility that normalizes and checks the final path stays within the repo directory."
+    }
+   ]
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L2",
+   "run": 0,
+   "error": null,
+   "summary": "Removed reference path validation introduces a directory traversal vulnerability.",
+   "usage": {
+    "input_tokens": 1796,
+    "output_tokens": 662,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L2/r0/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 115,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing validation of reference path allows directory traversal",
+     "explanation": "The previous check for \"..\" in `ref_path` was removed. Without this validation, a crafted `ref_path` containing \"..\" can cause `open(os.path.join(repodir, str(ref_path)))` to read files outside the repository directory, potentially exposing sensitive data. Re\u2011introduce the validation (e.g., raise ValueError if \"..\" or absolute paths are present) or sanitize the path using a safe join that rejects traversal components."
+    }
+   ]
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L2",
+   "run": 1,
+   "error": null,
+   "summary": "Removed validation introduces path traversal vulnerability",
+   "usage": {
+    "input_tokens": 1796,
+    "output_tokens": 1472,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L2/r1/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 124,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing reference path validation allows directory traversal",
+     "explanation": "The previous check that raised ValueError when '..' appeared in ref_path was removed. As a result, an attacker can supply a ref_path containing '..' to cause open(os.path.join(repodir, str(ref_path))) to read files outside the repository, exposing arbitrary file contents. Re\u2011introduce validation (e.g., reject paths containing '..' or absolute paths) or safely normalize and ensure the final path is within the repository directory before opening the file."
+    }
+   ]
+  },
+  {
+   "case": "py-0035-gitpython-ref-path-traversal",
+   "level": "L2",
+   "run": 2,
+   "error": null,
+   "summary": "Removed validation of reference paths introduces a directory traversal vulnerability.",
+   "usage": {
+    "input_tokens": 1796,
+    "output_tokens": 879,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0035-gitpython-ref-path-traversal/L2/r2/f0",
+     "path": "git/refs/symbolic.py",
+     "line": 95,
+     "category": "security",
+     "severity": "high",
+     "title": "Missing validation of reference path allows directory traversal",
+     "explanation": "The previous check that raised an error when \"..\" appeared in `ref_path` was deleted. Without this validation, a crafted `ref_path` containing \"..\" can cause `open(os.path.join(repodir, str(ref_path)))` to access files outside the repository directory, leading to arbitrary file read and potential information disclosure. Re\u2011introduce the validation (e.g., `if \"..\" in str(ref_path): raise ValueError(...)`) or resolve the path and ensure it stays within the repository root before opening."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L0",
+   "run": 0,
+   "error": null,
+   "summary": "Potential path traversal vulnerability introduced by replacing safe_join with naive Path concatenation.",
+   "usage": {
+    "input_tokens": 746,
+    "output_tokens": 606,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L0/r0/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 332,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe file path construction allows directory traversal",
+     "explanation": "The code now builds the template file path using `Path(directory) / template`, which does not prevent `template` from containing \"..\" or absolute paths. An attacker could supply a crafted template name to read arbitrary files on the server, leading to information disclosure. Replace the construction with Django's `safe_join` (or re\u2011implement its checks) to ensure the resulting path stays within `directory`."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L0",
+   "run": 1,
+   "error": null,
+   "summary": "Potential path traversal vulnerability introduced by replacing safe_join with naive Path concatenation.",
+   "usage": {
+    "input_tokens": 746,
+    "output_tokens": 608,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L0/r1/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 332,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe template file path construction",
+     "explanation": "The code now builds the template file path using `Path(directory) / template`, which does not prevent directory traversal or absolute path overrides. An attacker could supply a template name like \"../../secret.txt\" or an absolute path to read arbitrary files on the server, leading to information disclosure. Replace the construction with Django's `safe_join` (or re\u2011implement its checks) to ensure the resulting path stays within the intended directory."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L0",
+   "run": 2,
+   "error": null,
+   "summary": "Potential path traversal vulnerability introduced by replacing safe_join with naive Path concatenation.",
+   "usage": {
+    "input_tokens": 746,
+    "output_tokens": 606,
+    "served_model": "openai/gpt-oss-120b"
+   },
+   "findings": [
+    {
+     "id": "py-0036-django-admindocs-template-traversal/L0/r2/f0",
+     "path": "django/contrib/admindocs/views.py",
+     "line": 332,
+     "category": "security",
+     "severity": "high",
+     "title": "Unsafe file path construction allows directory traversal",
+     "explanation": "The code now builds the template file path using `Path(directory) / template`, which does not prevent `template` from containing \"..\" or absolute paths. An attacker could supply a crafted template name to read arbitrary files on the server, leading to information disclosure. Replace the construction with Django's `safe_join` (or re\u2011implement its checks) to ensure the resulting path stays within `directory`."
+    }
+   ]
+  },
+  {
+   "case": "py-0036-django-admindocs-template-traversal",
+   "level": "L1",
+   "run": 0,
+   "error": "rate_limited: retry-after 1830s (quota)",
    "summary": "",
    "usage": {},
    "findings": []
